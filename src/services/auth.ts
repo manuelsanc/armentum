@@ -1,6 +1,48 @@
 import type { User, LoginResponse, RegisterRequest } from "../types";
 import { apiPost, apiGet, setStoredTokens, clearStoredTokens, getStoredTokens } from "./api";
 
+// Backend response format (different from frontend User type)
+interface BackendUser {
+  id: string;
+  email: string;
+  nombre?: string;
+  roles?: string[];
+  is_active?: boolean;
+  email_verified?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface BackendLoginResponse {
+  user: BackendUser;
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+// Map backend user to frontend User type
+function mapBackendUserToUser(backendUser: BackendUser): User {
+  // Determine userType from roles array
+  let userType: "admin" | "corista" | "public" = "public";
+  if (backendUser.roles && backendUser.roles.length > 0) {
+    if (backendUser.roles.includes("admin") || backendUser.roles.includes("director")) {
+      userType = "admin";
+    } else if (backendUser.roles.includes("corista")) {
+      userType = "corista";
+    }
+  }
+
+  return {
+    id: backendUser.id,
+    email: backendUser.email,
+    nombre: backendUser.nombre,
+    userType,
+    createdAt: backendUser.created_at || new Date().toISOString(),
+    updatedAt: backendUser.updated_at || new Date().toISOString(),
+  };
+}
+
 export interface AuthError {
   message: string;
   code: "INVALID_CREDENTIALS" | "SERVER_ERROR" | "NETWORK_ERROR" | "UNAUTHORIZED";
@@ -44,7 +86,7 @@ export async function login(
     };
   }
 
-  const response = await apiPost<LoginResponse>("/auth/login", {
+  const response = await apiPost<BackendLoginResponse>("/auth/login", {
     email,
     password,
     userType,
@@ -60,14 +102,23 @@ export async function login(
   }
 
   if (response.data) {
+    const mappedUser = mapBackendUserToUser(response.data.user);
     setStoredTokens({
-      accessToken: response.data.accessToken,
-      refreshToken: response.data.refreshToken,
+      accessToken: response.data.access_token,
+      refreshToken: response.data.refresh_token,
     });
-    sessionStorage.setItem("user", JSON.stringify(response.data.user));
+    sessionStorage.setItem("user", JSON.stringify(mappedUser));
+
+    return {
+      data: {
+        user: mappedUser,
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token,
+      },
+    };
   }
 
-  return { data: response.data };
+  return { error: { message: "Unknown error", code: "SERVER_ERROR" } };
 }
 
 export async function register(
@@ -103,7 +154,7 @@ export async function register(
   }
 
   const registerData: RegisterRequest = { email, password, nombre };
-  const response = await apiPost<LoginResponse>("/auth/register", registerData);
+  const response = await apiPost<BackendLoginResponse>("/auth/register", registerData);
 
   if (response.error) {
     return {
@@ -115,14 +166,23 @@ export async function register(
   }
 
   if (response.data) {
+    const mappedUser = mapBackendUserToUser(response.data.user);
     setStoredTokens({
-      accessToken: response.data.accessToken,
-      refreshToken: response.data.refreshToken,
+      accessToken: response.data.access_token,
+      refreshToken: response.data.refresh_token,
     });
-    sessionStorage.setItem("user", JSON.stringify(response.data.user));
+    sessionStorage.setItem("user", JSON.stringify(mappedUser));
+
+    return {
+      data: {
+        user: mappedUser,
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token,
+      },
+    };
   }
 
-  return { data: response.data };
+  return { error: { message: "Unknown error", code: "SERVER_ERROR" } };
 }
 
 export function logout(): void {
@@ -140,7 +200,7 @@ export async function getCurrentUser(): Promise<UserResult> {
     };
   }
 
-  const response = await apiGet<User>("/auth/me");
+  const response = await apiGet<BackendUser>("/auth/me");
 
   if (response.error) {
     return {
@@ -152,10 +212,12 @@ export async function getCurrentUser(): Promise<UserResult> {
   }
 
   if (response.data) {
-    sessionStorage.setItem("user", JSON.stringify(response.data));
+    const mappedUser = mapBackendUserToUser(response.data);
+    sessionStorage.setItem("user", JSON.stringify(mappedUser));
+    return { data: mappedUser };
   }
 
-  return { data: response.data };
+  return { error: { message: "Unknown error", code: "SERVER_ERROR" } };
 }
 
 export async function refreshToken(): Promise<{ success: boolean; error?: AuthError }> {
@@ -170,7 +232,7 @@ export async function refreshToken(): Promise<{ success: boolean; error?: AuthEr
     };
   }
 
-  const response = await apiPost<{ accessToken: string; refreshToken: string }>("/auth/refresh", {
+  const response = await apiPost<{ access_token: string; refresh_token: string }>("/auth/refresh", {
     refreshToken: tokens.refreshToken,
   });
 
@@ -186,8 +248,8 @@ export async function refreshToken(): Promise<{ success: boolean; error?: AuthEr
   }
 
   setStoredTokens({
-    accessToken: response.data.accessToken,
-    refreshToken: response.data.refreshToken,
+    accessToken: response.data.access_token,
+    refreshToken: response.data.refresh_token,
   });
 
   return { success: true };
