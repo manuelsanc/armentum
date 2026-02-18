@@ -4,7 +4,7 @@
  */
 
 import { create } from "zustand";
-import { login, logout, getCurrentUser } from "@/services/auth";
+import { login, logout, getCurrentUser } from "../services/auth";
 
 export interface AuthUser {
   email: string;
