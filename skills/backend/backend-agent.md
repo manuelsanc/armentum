@@ -1,8 +1,11 @@
 # 🐍 Backend Agent Skills
 
-**Agent Model**: `gpt-4o-mini`  
+**Agent Model**: `opencode/gpt-5.1-codex-mini`  
 **Primary Skill**: FastAPI development  
 **MCP Servers**: Filesystem, Git, GitHub  
+**Cost**: $0.25/1M input, $2/1M output (~$3-5/month estimated)  
+
+---  
 
 ## Core Skills
 

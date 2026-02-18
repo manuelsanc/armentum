@@ -335,62 +335,75 @@ FASE 8: DEPLOY & POLISH (Semana 8)
 
 ## Asignacion por Agente
 
-### Backend Agent (gpt-4o-mini)
+### Backend Agent (opencode/gpt-5.1-codex-mini)
 **Total Tareas**: 35
 **Estimado**: 40-50 horas
+**Costo**: ~$3-5/mes (estimado 10-15M tokens)
 ```
 T001-T006, T015-T024, T029-T032, T037-T044,
 T049-T063, T070-T075, T094-T098
 ```
 
-### Database Agent (claude-haiku-4-5)
-**Total Tareas**: 9
-**Estimado**: 12-15 horas
-```
-T003, T007-T014, T096
-```
-
-### Frontend Agent (claude-haiku-4-5)
+### Frontend Agent (opencode/claude-haiku-4-5)
 **Total Tareas**: 20
 **Estimado**: 30-35 horas
+**Costo**: ~$5-8/mes (estimado 5-8M tokens)
 ```
 T025-T028, T033-T036, T045-T048, T064-T069, T076-T078
 ```
 
-### UI/UX Agent (claude-3-5-sonnet)
-**Total Tareas**: 4
-**Estimado**: 8-10 horas
+### Database Agent (opencode/glm-4.7-free)
+**Total Tareas**: 9
+**Estimado**: 12-15 horas
+**Costo**: FREE
 ```
-T045, T064, T069, T076 (diseno de componentes nuevos)
+T003, T007-T014, T096
 ```
 
-### Testing Agent (claude-haiku-4-5)
+### Testing Agent (opencode/glm-4.7-free)
 **Total Tareas**: 12
 **Estimado**: 15-20 horas
+**Costo**: FREE
 ```
 T079-T090
 ```
 
-### CI/CD Agent (gpt-4o-mini)
+### CI/CD Agent (opencode/glm-4.7-free)
 **Total Tareas**: 3
 **Estimado**: 5-8 horas
+**Costo**: FREE
 ```
 T006, T091-T093
 ```
 
-### Architecture Agent (claude-3-5-sonnet)
+### Orchestration Agent (opencode/glm-4.7-free)
+**Costo**: FREE
+
+### Planning Agent (opencode/glm-4.7-free)
+**Total Tareas**: 1
+**Estimado**: 2-3 horas
+**Costo**: FREE
+```
+T099
+```
+
+### Architecture Agent (opencode/glm-4.7-free)
 **Total Tareas**: 2
 **Estimado**: 4-6 horas
+**Costo**: FREE
 ```
 T095, T100
 ```
 
-### Planning Agent (claude-3-5-sonnet)
-**Total Tareas**: 1
-**Estimado**: 2-3 horas
+### UI/UX Agent (opencode/glm-4.7-free)
+**Total Tareas**: 4
+**Estimado**: 8-10 horas
+**Costo**: FREE
 ```
-T099
+T045, T064, T069, T076 (diseno de componentes nuevos)
 ```
+
+**COSTO TOTAL MENSUAL**: $8-13 (7 agentes FREE + 2 agentes de bajo costo)
 
 ---
 

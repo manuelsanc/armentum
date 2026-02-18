@@ -1,8 +1,11 @@
 # 🎼 Orchestration Agent Skills
 
-**Agent Model**: `claude-opus-4-1`  
+**Agent Model**: `opencode/glm-4.7-free`  
 **Primary Skill**: Coordination and workflow management  
 **MCP Servers**: GitHub, Filesystem, Git  
+**Cost**: FREE  
+
+---  
 
 ---
 

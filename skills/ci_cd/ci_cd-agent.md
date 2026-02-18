@@ -1,8 +1,11 @@
 # 🚀 CI/CD Agent Skills
 
-**Agent Model**: `gpt-4o-mini`  
+**Agent Model**: `opencode/glm-4.7-free`  
 **Primary Skill**: Deployment and automation  
 **MCP Servers**: GitHub, Filesystem, Git  
+**Cost**: FREE  
+
+---  
 
 ## Core Skills
 

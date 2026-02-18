@@ -1,8 +1,11 @@
 # ⚛️ Frontend Agent Skills
 
-**Agent Model**: `claude-haiku-4-5`  
+**Agent Model**: `opencode/claude-haiku-4-5`  
 **Primary Skill**: React component implementation  
 **MCP Servers**: Filesystem, Git, GitHub  
+**Cost**: $1/1M input, $5/1M output (~$5-8/month estimated)  
+
+---  
 
 ## Core Skills
 

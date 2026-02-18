@@ -1,8 +1,11 @@
 # 🗄️ Database Agent Skills
 
-**Agent Model**: `claude-haiku-4-5`  
+**Agent Model**: `opencode/glm-4.7-free`  
 **Primary Skill**: Database design and optimization  
 **MCP Servers**: Filesystem, Git  
+**Cost**: FREE  
+
+---  
 
 ## Core Skills
 

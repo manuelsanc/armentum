@@ -13,7 +13,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │           ORCHESTRATION AGENT (Master Conductor)            │
-│              [claude-opus-4-1 - Orchestrator]              │
+│              [glm-4.7-free - FREE]                          │
 └────────────┬────────────────────────────────────────────────┘
              │
     ┌────────┼────────┬──────────┬──────────┬────────┐
@@ -22,17 +22,19 @@
 ┌────────┐┌────────┐┌────────┐┌────────┐┌──────┐┌─────────┐
 │Planning││Arch.   ││UI/UX   ││Frontend││Python││Database │
 │Agent   ││Agent   ││Agent   ││Agent   ││Agent ││Agent    │
-│Claude-3││Claude-3││Claude-3││Claude-3││GPT-4o││Claude-3 │
-│Sonnet  ││Sonnet  ││Sonnet  ││Haiku   ││Mini  ││Haiku    │
+│glm-4.7 ││glm-4.7 ││glm-4.7 ││Claude  ││GPT-5 ││glm-4.7  │
+│ FREE   ││ FREE   ││ FREE   ││Haiku   ││Codex ││ FREE    │
 └────────┘└────────┘└────────┘└────────┘└──────┘└─────────┘
     │        │        │          │          │        │
     └────────┼────────┴──────────┼──────────┼────────┘
              │                   │          │
     ┌────────▼───────────────────▼──────────▼────────┐
     │  Testing Agent        │  CI/CD Agent           │
-    │  [claude-haiku-4-5]   │  [GPT-4o-mini]       │
+    │  [glm-4.7-free]       │  [glm-4.7-free]       │
     └───────────────────────┴────────────────────────┘
 ```
+
+**Cost Summary**: 7 agents FREE + 2 paid agents = ~$8-13/month
 
 ---
 
@@ -42,8 +44,9 @@
 
 | Property | Value |
 |----------|-------|
-| **Model** | `claude-opus-4-1` |
-| **Rationale** | Highest reasoning capability needed for complex orchestration |
+| **Model** | `opencode/glm-4.7-free` |
+| **Cost** | FREE |
+| **Rationale** | Strong reasoning for coordination, no cost |
 | **MCP Servers** | GitHub, Filesystem, Git |
 | **Tools** | Task delegation, state management, workflow coordination |
 | **Skills** | Project management, communication between agents, context bridging |
@@ -64,8 +67,9 @@
 
 | Property | Value |
 |----------|-------|
-| **Model** | `claude-3-5-sonnet-20241022` |
-| **Rationale** | Strong planning and analysis without highest cost |
+| **Model** | `opencode/glm-4.7-free` |
+| **Cost** | FREE |
+| **Rationale** | Strong planning and analysis, no cost |
 | **MCP Servers** | GitHub (issues/projects), Filesystem |
 | **Tools** | Issue creation, task breakdown, dependency analysis |
 | **Skills** | Requirement analysis, task decomposition, timeline estimation |
@@ -87,8 +91,9 @@
 
 | Property | Value |
 |----------|-------|
-| **Model** | `claude-3-5-sonnet-20241022` |
-| **Rationale** | Deep reasoning for architectural decisions |
+| **Model** | `opencode/glm-4.7-free` |
+| **Cost** | FREE |
+| **Rationale** | Deep reasoning for architectural decisions, no cost |
 | **MCP Servers** | GitHub, Filesystem, Git |
 | **Tools** | File search, code analysis, architecture documentation |
 | **Skills** | System design, API design, database schema design, performance optimization |
@@ -111,8 +116,9 @@
 
 | Property | Value |
 |----------|-------|
-| **Model** | `claude-3-5-sonnet-20241022` |
-| **Rationale** | Strong code generation for UI components |
+| **Model** | `opencode/glm-4.7-free` |
+| **Cost** | FREE |
+| **Rationale** | Strong code generation for UI components, no cost |
 | **MCP Servers** | Filesystem, Git |
 | **Tools** | File read/write, code generation, component analysis |
 | **Skills** | React component design, CSS/Tailwind, responsive design, accessibility |
@@ -132,8 +138,9 @@
 
 | Property | Value |
 |----------|-------|
-| **Model** | `claude-haiku-4-5` |
-| **Rationale** | Sufficient for React coding, cost-effective |
+| **Model** | `opencode/claude-haiku-4-5` |
+| **Cost** | $1/1M input, $5/1M output (~$5-8/month) |
+| **Rationale** | Best for React/TypeScript development |
 | **MCP Servers** | Filesystem, Git, GitHub |
 | **Tools** | File operations, code generation, linting |
 | **Skills** | React hooks, state management (Zustand/Context), API integration, error handling |
@@ -154,8 +161,9 @@
 
 | Property | Value |
 |----------|-------|
-| **Model** | `gpt-4o-mini` |
-| **Rationale** | OpenAI's GPT-4o-mini excels at Python code generation |
+| **Model** | `opencode/gpt-5.1-codex-mini` |
+| **Cost** | $0.25/1M input, $2/1M output (~$3-5/month) |
+| **Rationale** | Best Python/FastAPI coding value |
 | **MCP Servers** | Filesystem, Git, GitHub |
 | **Tools** | File operations, code generation, debugging |
 | **Skills** | FastAPI/Flask, SQLAlchemy, authentication, API design |
@@ -185,8 +193,9 @@
 
 | Property | Value |
 |----------|-------|
-| **Model** | `claude-haiku-4-5` |
-| **Rationale** | SQL expertise, cost-effective for focused DB work |
+| **Model** | `opencode/glm-4.7-free` |
+| **Cost** | FREE |
+| **Rationale** | SQL expertise, strong schema design, no cost |
 | **MCP Servers** | Filesystem, Git |
 | **Tools** | File operations, code generation |
 | **Skills** | SQL design, schema migrations, indexing, query optimization, Supabase |
@@ -206,8 +215,9 @@
 
 | Property | Value |
 |----------|-------|
-| **Model** | `claude-haiku-4-5` |
-| **Rationale** | Capable for test writing and debugging |
+| **Model** | `opencode/glm-4.7-free` |
+| **Cost** | FREE |
+| **Rationale** | Capable for test writing and debugging, no cost |
 | **MCP Servers** | Filesystem, Git, GitHub |
 | **Tools** | File operations, code generation, test framework integration |
 | **Skills** | Test design, mocking, fixtures, coverage analysis |
@@ -234,8 +244,9 @@
 
 | Property | Value |
 |----------|-------|
-| **Model** | `gpt-4o-mini` |
-| **Rationale** | Good YAML/config generation for CI/CD |
+| **Model** | `opencode/glm-4.7-free` |
+| **Cost** | FREE |
+| **Rationale** | Good YAML/config generation for CI/CD, no cost |
 | **MCP Servers** | GitHub, Filesystem, Git |
 | **Tools** | File operations, GitHub Actions API |
 | **Skills** | GitHub Actions, Docker, environment management, deployment |
@@ -365,22 +376,23 @@ Monitoring:       Vercel Analytics + Supabase logs
 
 ## Model Selection Rationale
 
-| Agent | Model | Why |
-|-------|-------|-----|
-| Orchestration | claude-opus-4-1 | Complex reasoning, workflow management |
-| Planning | claude-3-5-sonnet | Strong analysis, task breakdown |
-| Architecture | claude-3-5-sonnet | System design expertise |
-| UI/UX | claude-3-5-sonnet | Component generation quality |
-| Frontend | claude-haiku-4-5 | Cost-effective React coding |
-| Backend | gpt-4o-mini | Python strength, cost-effective |
-| Database | claude-haiku-4-5 | SQL expertise, focused use |
-| Testing | claude-haiku-4-5 | Test writing capability |
-| CI/CD | gpt-4o-mini | YAML/config generation |
+| Agent | Model | Cost | Why |
+|-------|-------|------|-----|
+| Orchestration | glm-4.7-free | FREE | Strong reasoning, coordination works well |
+| Planning | glm-4.7-free | FREE | Task breakdown is straightforward |
+| Architecture | glm-4.7-free | FREE | System design, schema design is strong |
+| UI/UX | glm-4.7-free | FREE | Component design works well |
+| Frontend | claude-haiku-4-5 | $1/$5 per 1M | Best for React/TypeScript |
+| Backend | gpt-5.1-codex-mini | $0.25/$2 per 1M | Best Python/FastAPI value |
+| Database | glm-4.7-free | FREE | SQL generation is excellent |
+| Testing | glm-4.7-free | FREE | Test writing works well |
+| CI/CD | glm-4.7-free | FREE | YAML configs are simple |
 
 ### Cost Optimization
-- Use cheaper models (haiku, gpt-4o-mini) for focused, well-defined tasks
-- Use powerful models (sonnet, opus) for complex reasoning/planning
-- Estimated monthly cost for solo developer: **$50-100** (with careful usage)
+- **7 agents use FREE model (glm-4.7-free)**
+- **2 agents use low-cost paid models**
+- Estimated monthly cost for solo developer: **$8-13/month**
+- **Savings: 85-90% compared to original configuration**
 
 ---
 

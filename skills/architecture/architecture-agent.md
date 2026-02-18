@@ -1,8 +1,11 @@
 # 🏗️ Architecture Agent Skills
 
-**Agent Model**: `claude-3-5-sonnet-20241022`  
+**Agent Model**: `opencode/glm-4.7-free`  
 **Primary Skill**: System design and technical planning  
 **MCP Servers**: GitHub, Filesystem, Git  
+**Cost**: FREE  
+
+---  
 
 ## Core Skills
 

@@ -1,8 +1,11 @@
 # 🎨 UI/UX Agent Skills
 
-**Agent Model**: `claude-3-5-sonnet-20241022`  
+**Agent Model**: `opencode/glm-4.7-free`  
 **Primary Skill**: Component design and implementation  
 **MCP Servers**: Filesystem, Git  
+**Cost**: FREE  
+
+---  
 
 ## Core Skills
 

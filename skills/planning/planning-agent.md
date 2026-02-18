@@ -1,8 +1,11 @@
 # 📋 Planning Agent Skills
 
-**Agent Model**: `claude-3-5-sonnet-20241022`  
+**Agent Model**: `opencode/glm-4.7-free`  
 **Primary Skill**: Requirement analysis and task decomposition  
 **MCP Servers**: GitHub, Filesystem  
+**Cost**: FREE  
+
+---  
 
 ## Core Skills
 
