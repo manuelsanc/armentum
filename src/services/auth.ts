@@ -1,47 +1,35 @@
-/**
- * Authentication Service
- * Handles all authentication-related API calls
- */
-
-import { apiPost } from "./api";
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-  userType: "corista" | "admin";
-}
-
-export interface AuthResponse {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-    userType: "corista" | "admin";
-  };
-}
+import type { User, LoginResponse, RegisterRequest } from "../types";
+import { apiPost, apiGet, setStoredTokens, clearStoredTokens, getStoredTokens } from "./api";
 
 export interface AuthError {
   message: string;
-  code: "INVALID_CREDENTIALS" | "SERVER_ERROR" | "NETWORK_ERROR";
+  code: "INVALID_CREDENTIALS" | "SERVER_ERROR" | "NETWORK_ERROR" | "UNAUTHORIZED";
 }
 
-/**
- * Authenticate user with email and password
- * @param email - User email
- * @param password - User password
- * @param userType - User type (corista or admin)
- * @returns Promise with authentication response
- */
+export interface LoginResult {
+  data?: LoginResponse;
+  error?: AuthError;
+}
+
+export interface RegisterResult {
+  data?: LoginResponse;
+  error?: AuthError;
+}
+
+export interface UserResult {
+  data?: User;
+  error?: AuthError;
+}
+
 export async function login(
   email: string,
   password: string,
-  userType: "corista" | "admin"
-): Promise<{ data?: AuthResponse; error?: AuthError }> {
-  // Validate inputs
+  userType?: "corista" | "admin"
+): Promise<LoginResult> {
   if (!email || !password) {
     return {
       error: {
-        message: "Email and password are required",
+        message: "Email y contraseña son requeridos",
         code: "INVALID_CREDENTIALS",
       },
     };
@@ -50,72 +38,173 @@ export async function login(
   if (!email.includes("@")) {
     return {
       error: {
-        message: "Invalid email format",
+        message: "Formato de email inválido",
         code: "INVALID_CREDENTIALS",
       },
     };
   }
 
-  try {
-    const response = await apiPost<AuthResponse>("/auth/login", {
-      email,
-      password,
-      userType,
-    });
+  const response = await apiPost<LoginResponse>("/auth/login", {
+    email,
+    password,
+    userType,
+  });
 
-    if (response.error) {
-      return {
-        error: {
-          message: response.error,
-          code: "SERVER_ERROR",
-        },
-      };
-    }
-
-    // Store token in session storage
-    if (response.data?.token) {
-      sessionStorage.setItem("authToken", response.data.token);
-      sessionStorage.setItem("userType", userType);
-      sessionStorage.setItem("userEmail", email);
-    }
-
-    return { data: response.data };
-  } catch (error) {
+  if (response.error) {
     return {
       error: {
-        message: "Network error. Please try again.",
-        code: "NETWORK_ERROR",
+        message: response.error,
+        code: response.status === 401 ? "INVALID_CREDENTIALS" : "SERVER_ERROR",
       },
     };
   }
-}
 
-/**
- * Log out current user
- */
-export function logout(): void {
-  sessionStorage.removeItem("authToken");
-  sessionStorage.removeItem("userType");
-  sessionStorage.removeItem("userEmail");
-}
-
-/**
- * Get current user from session storage
- */
-export function getCurrentUser(): { email: string; userType: "corista" | "admin" } | null {
-  const email = sessionStorage.getItem("userEmail");
-  const userType = sessionStorage.getItem("userType") as "corista" | "admin";
-
-  if (!email || !userType) {
-    return null;
+  if (response.data) {
+    setStoredTokens({
+      accessToken: response.data.accessToken,
+      refreshToken: response.data.refreshToken,
+    });
+    sessionStorage.setItem("user", JSON.stringify(response.data.user));
   }
 
-  return { email, userType };
+  return { data: response.data };
 }
 
-/**
- * Check if user is authenticated
- */
+export async function register(
+  email: string,
+  password: string,
+  nombre?: string
+): Promise<RegisterResult> {
+  if (!email || !password) {
+    return {
+      error: {
+        message: "Email y contraseña son requeridos",
+        code: "INVALID_CREDENTIALS",
+      },
+    };
+  }
+
+  if (!email.includes("@")) {
+    return {
+      error: {
+        message: "Formato de email inválido",
+        code: "INVALID_CREDENTIALS",
+      },
+    };
+  }
+
+  if (password.length < 8) {
+    return {
+      error: {
+        message: "La contraseña debe tener al menos 8 caracteres",
+        code: "INVALID_CREDENTIALS",
+      },
+    };
+  }
+
+  const registerData: RegisterRequest = { email, password, nombre };
+  const response = await apiPost<LoginResponse>("/auth/register", registerData);
+
+  if (response.error) {
+    return {
+      error: {
+        message: response.error,
+        code: "SERVER_ERROR",
+      },
+    };
+  }
+
+  if (response.data) {
+    setStoredTokens({
+      accessToken: response.data.accessToken,
+      refreshToken: response.data.refreshToken,
+    });
+    sessionStorage.setItem("user", JSON.stringify(response.data.user));
+  }
+
+  return { data: response.data };
+}
+
+export function logout(): void {
+  clearStoredTokens();
+}
+
+export async function getCurrentUser(): Promise<UserResult> {
+  const tokens = getStoredTokens();
+  if (!tokens) {
+    return {
+      error: {
+        message: "No authenticated",
+        code: "UNAUTHORIZED",
+      },
+    };
+  }
+
+  const response = await apiGet<User>("/auth/me");
+
+  if (response.error) {
+    return {
+      error: {
+        message: response.error,
+        code: response.status === 401 ? "UNAUTHORIZED" : "SERVER_ERROR",
+      },
+    };
+  }
+
+  if (response.data) {
+    sessionStorage.setItem("user", JSON.stringify(response.data));
+  }
+
+  return { data: response.data };
+}
+
+export async function refreshToken(): Promise<{ success: boolean; error?: AuthError }> {
+  const tokens = getStoredTokens();
+  if (!tokens?.refreshToken) {
+    return {
+      success: false,
+      error: {
+        message: "No refresh token available",
+        code: "UNAUTHORIZED",
+      },
+    };
+  }
+
+  const response = await apiPost<{ accessToken: string; refreshToken: string }>("/auth/refresh", {
+    refreshToken: tokens.refreshToken,
+  });
+
+  if (response.error || !response.data) {
+    clearStoredTokens();
+    return {
+      success: false,
+      error: {
+        message: response.error || "Refresh failed",
+        code: "UNAUTHORIZED",
+      },
+    };
+  }
+
+  setStoredTokens({
+    accessToken: response.data.accessToken,
+    refreshToken: response.data.refreshToken,
+  });
+
+  return { success: true };
+}
+
+export function getStoredUser(): User | null {
+  const userJson = sessionStorage.getItem("user");
+  if (userJson) {
+    try {
+      return JSON.parse(userJson) as User;
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 export function isAuthenticated(): boolean {
-  return !!sessionStorage.getItem("authToken");
+  return !!getStoredTokens()?.accessToken;
 }

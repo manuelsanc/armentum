@@ -1,15 +1,16 @@
 # 🗄️ Database Agent Skills
 
-**Agent Model**: `opencode/glm-4.7-free`  
+**Agent Model**: `opencode/glm-5-free`  
 **Primary Skill**: Database design and optimization  
 **MCP Servers**: Filesystem, Git  
-**Cost**: FREE  
+**Cost**: FREE
 
----  
+---
 
 ## Core Skills
 
 ### 1. Schema Design
+
 ```
 ✓ Design tables
 ✓ Define relationships
@@ -19,6 +20,7 @@
 ```
 
 ### 2. Migrations
+
 ```
 ✓ Create migration scripts
 ✓ Handle schema changes
@@ -28,6 +30,7 @@
 ```
 
 ### 3. Query Optimization
+
 ```
 ✓ Write efficient queries
 ✓ Add appropriate indexes
@@ -37,6 +40,7 @@
 ```
 
 ### 4. Row Level Security
+
 ```
 ✓ Setup RLS policies
 ✓ Define security rules
@@ -46,6 +50,7 @@
 ```
 
 ### 5. Maintenance
+
 ```
 ✓ Backup strategy
 ✓ Monitor performance
@@ -66,5 +71,4 @@
 ✅ Fast queries  
 ✅ RLS working  
 ✅ Migrations smooth  
-✅ Data integrity  
-
+✅ Data integrity

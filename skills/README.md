@@ -34,55 +34,64 @@ skills/
 ## 🤖 Agents Overview
 
 ### 1. 🎼 Orchestration Agent
-**Model**: `opencode/glm-4.7-free` (FREE)  
+
+**Model**: `opencode/glm-5-free` (FREE)  
 **Role**: Master conductor of all agents  
 **Skills**: Workflow management, task delegation, state management  
 **Read**: [orchestration-agent.md](./orchestration/orchestration-agent.md)
 
 ### 2. 📋 Planning Agent
-**Model**: `opencode/glm-4.7-free` (FREE)  
+
+**Model**: `opencode/glm-5-free` (FREE)  
 **Role**: Break down features into actionable tasks  
 **Skills**: User story writing, task breakdown, risk analysis  
 **Read**: [planning-agent.md](./planning/planning-agent.md)
 
 ### 3. 🏗️ Architecture Agent
-**Model**: `opencode/glm-4.7-free` (FREE)  
+
+**Model**: `opencode/glm-5-free` (FREE)  
 **Role**: Design system architecture  
 **Skills**: System design, API design, database planning  
 **Read**: [architecture-agent.md](./architecture/architecture-agent.md)
 
 ### 4. 🎨 UI/UX Agent
-**Model**: `opencode/glm-4.7-free` (FREE)  
+
+**Model**: `opencode/glm-5-free` (FREE)  
 **Role**: Convert designs to components  
 **Skills**: Component design, responsive design, accessibility  
 **Read**: [ui_ux-agent.md](./ui_ux/ui_ux-agent.md)
 
 ### 5. ⚛️ Frontend Agent
+
 **Model**: `opencode/claude-haiku-4-5` ($1/$5 per 1M tokens)  
 **Role**: Implement React features  
 **Skills**: React development, state management, API integration  
 **Read**: [frontend-agent.md](./frontend/frontend-agent.md)
 
 ### 6. 🐍 Backend Agent
+
 **Model**: `opencode/gpt-5.1-codex-mini` ($0.25/$2 per 1M tokens)  
 **Role**: Implement Python APIs  
 **Skills**: FastAPI development, database operations, authentication  
 **Read**: [backend-agent.md](./backend/backend-agent.md)
 
 ### 7. 🗄️ Database Agent
-**Model**: `opencode/glm-4.7-free` (FREE)  
+
+**Model**: `opencode/glm-5-free` (FREE)  
 **Role**: Design and optimize database  
 **Skills**: Schema design, migrations, query optimization  
 **Read**: [database-agent.md](./database/database-agent.md)
 
 ### 8. 🧪 Testing Agent
-**Model**: `opencode/glm-4.7-free` (FREE)  
+
+**Model**: `opencode/glm-5-free` (FREE)  
 **Role**: Implement comprehensive tests  
 **Skills**: Test design, unit/integration/E2E testing, coverage  
 **Read**: [testing-agent.md](./testing/testing-agent.md)
 
 ### 9. 🚀 CI/CD Agent
-**Model**: `opencode/glm-4.7-free` (FREE)  
+
+**Model**: `opencode/glm-5-free` (FREE)  
 **Role**: Setup automation and deployment  
 **Skills**: GitHub Actions, code quality, deployment automation  
 **Read**: [ci_cd-agent.md](./ci_cd/ci_cd-agent.md)
@@ -125,6 +134,7 @@ Deliver to User
 ### Skill File Format
 
 Each skill file includes:
+
 - **Agent Model**: Which Claude/GPT model to use
 - **Primary Skill**: Main area of expertise
 - **MCP Servers**: Tools the agent has access to
@@ -138,29 +148,34 @@ Each skill file includes:
 ## 🎯 Skill Categories
 
 ### Orchestration & Planning
+
 - Task breakdown
 - Dependency analysis
 - Timeline estimation
 - Risk management
 
 ### Design & Architecture
+
 - System design
 - API design
 - Database design
 - Code organization
 
 ### Implementation
+
 - Frontend (React)
 - Backend (FastAPI/Python)
 - Database (PostgreSQL)
 
 ### Quality Assurance
+
 - Unit testing
 - Integration testing
 - E2E testing
 - Performance testing
 
 ### DevOps & Automation
+
 - CI/CD pipelines
 - Code quality checks
 - Automated deployment
@@ -198,17 +213,20 @@ Each skill file includes:
 ## 🚀 Quick Start
 
 ### First Time Setup
+
 1. Read this README.md
 2. Read [docs/AGENTS.md](../docs/development/AGENTS.md)
 3. Skim each skill file (5 min each)
 
 ### To Use Agents
+
 1. Refer to appropriate skill file
 2. Follow format guidelines
 3. Provide context and constraints
 4. Monitor progress through Orchestrator
 
 ### To Add New Skills
+
 1. Create new markdown file in relevant folder
 2. Follow format from existing skill files
 3. Update this README.md
@@ -218,17 +236,17 @@ Each skill file includes:
 
 ## 📊 Skill Categories by Agent
 
-| Agent | Planning | Design | Coding | Testing | Deployment |
-|-------|----------|--------|--------|---------|------------|
-| Orchestration | ✓ | ✓ | - | - | - |
-| Planning | ✓✓ | - | - | - | - |
-| Architecture | ✓ | ✓✓ | - | - | - |
-| UI/UX | - | ✓✓ | ✓ | - | - |
-| Frontend | - | - | ✓✓ | ✓ | - |
-| Backend | - | ✓ | ✓✓ | ✓ | - |
-| Database | ✓ | ✓✓ | ✓ | ✓ | - |
-| Testing | - | ✓ | ✓ | ✓✓ | ✓ |
-| CI/CD | - | - | ✓ | ✓ | ✓✓ |
+| Agent         | Planning | Design | Coding | Testing | Deployment |
+| ------------- | -------- | ------ | ------ | ------- | ---------- |
+| Orchestration | ✓        | ✓      | -      | -       | -          |
+| Planning      | ✓✓       | -      | -      | -       | -          |
+| Architecture  | ✓        | ✓✓     | -      | -       | -          |
+| UI/UX         | -        | ✓✓     | ✓      | -       | -          |
+| Frontend      | -        | -      | ✓✓     | ✓       | -          |
+| Backend       | -        | ✓      | ✓✓     | ✓       | -          |
+| Database      | ✓        | ✓✓     | ✓      | ✓       | -          |
+| Testing       | -        | ✓      | ✓      | ✓✓      | ✓          |
+| CI/CD         | -        | -      | ✓      | ✓       | ✓✓         |
 
 ---
 
@@ -255,4 +273,3 @@ Each skill file includes:
 **Total Agents**: 9  
 **Total Skill Files**: 9  
 **Total Skill Documentation**: 3,000+ lines
-

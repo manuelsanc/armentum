@@ -1,0 +1,60 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/glm-5-free",
+  "permission": {
+    "edit": "ask",
+    "bash": "ask"
+  },
+  "agent": {
+    "orchestrator": {
+      "mode": "primary",
+      "model": "opencode/glm-5-free",
+      "description": "Coordina todos los agentes especializados del proyecto",
+      "permission": {
+        "task": { "*": "allow" },
+        "edit": "ask",
+        "bash": "ask"
+      }
+    },
+    "planning": {
+      "mode": "subagent",
+      "model": "opencode/glm-5-free",
+      "description": "Analiza features, crea planes detallados y GitHub issues"
+    },
+    "architecture": {
+      "mode": "subagent",
+      "model": "opencode/glm-5-free",
+      "description": "Diseña arquitectura de sistema, APIs y esquemas de BD"
+    },
+    "ui-ux": {
+      "mode": "subagent",
+      "model": "opencode/glm-5-free",
+      "description": "Convierte diseños a componentes React con Tailwind"
+    },
+    "frontend": {
+      "mode": "subagent",
+      "model": "opencode/claude-haiku-4-5",
+      "description": "Implementa features React/TypeScript con estado e integraciones"
+    },
+    "python-backend": {
+      "mode": "subagent",
+      "model": "opencode/gpt-5.1-codex-mini",
+      "description": "Desarrolla APIs FastAPI y servicios Python"
+    },
+    "database": {
+      "mode": "subagent",
+      "model": "opencode/glm-5-free",
+      "description": "Diseña esquemas SQL, migraciones y optimiza queries"
+    },
+    "testing": {
+      "mode": "subagent",
+      "model": "opencode/glm-5-free",
+      "description": "Diseña e implementa suites de tests comprehensivas"
+    },
+    "cicd": {
+      "mode": "subagent",
+      "model": "opencode/glm-5-free",
+      "description": "Configura y gestiona pipelines de CI/CD"
+    }
+  }
+}

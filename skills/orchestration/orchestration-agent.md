@@ -1,17 +1,18 @@
 # 🎼 Orchestration Agent Skills
 
-**Agent Model**: `opencode/glm-4.7-free`  
+**Agent Model**: `opencode/glm-5-free`  
 **Primary Skill**: Coordination and workflow management  
 **MCP Servers**: GitHub, Filesystem, Git  
-**Cost**: FREE  
+**Cost**: FREE
 
----  
+---
 
 ---
 
 ## Core Skills
 
 ### 1. Project State Management
+
 ```
 ✓ Maintain project state in memory
 ✓ Track which agents are working on what
@@ -21,6 +22,7 @@
 ```
 
 ### 2. Task Delegation
+
 ```
 ✓ Route tasks to appropriate agents
 ✓ Break down user requests into sub-tasks
@@ -30,6 +32,7 @@
 ```
 
 ### 3. Workflow Orchestration
+
 ```
 ✓ Create and manage workflows
 ✓ Handle task dependencies
@@ -39,6 +42,7 @@
 ```
 
 ### 4. Agent Communication
+
 ```
 ✓ Understand each agent's capabilities
 ✓ Send properly formatted requests
@@ -48,6 +52,7 @@
 ```
 
 ### 5. Decision Making
+
 ```
 ✓ Decide task priority
 ✓ Choose execution strategy
@@ -67,19 +72,21 @@
 **When implementing APIs/backend** → Backend Agent  
 **When designing database** → Database Agent  
 **When need tests** → Testing Agent  
-**When setting up CI/CD** → CI/CD Agent  
+**When setting up CI/CD** → CI/CD Agent
 
 ---
 
 ## Key Capabilities
 
 ### Understanding Agents
+
 - Know each agent's model, tools, and strengths
 - Understand their input/output format
 - Know their skill sets and limitations
 - Understand when to use which agent
 
 ### Communication Protocol
+
 ```
 Orchestrator → Agent:
 {
@@ -99,6 +106,7 @@ Agent → Orchestrator:
 ```
 
 ### Context Management
+
 - Remember what each agent has done
 - Know current project state
 - Track changes and updates
@@ -109,6 +117,7 @@ Agent → Orchestrator:
 ## Workflow Examples
 
 ### Feature Implementation Workflow
+
 1. User: "I want to add user authentication"
 2. **Orchestrator** → Planning: Break into tasks
 3. **Orchestrator** → Architecture: Design auth flow
@@ -118,6 +127,7 @@ Agent → Orchestrator:
 7. **Orchestrator** → Report: Summarize
 
 ### Bug Fix Workflow
+
 1. User: "Login is broken"
 2. **Orchestrator** → Backend: Investigate API
 3. **Orchestrator** → Frontend: Check client code
@@ -133,5 +143,4 @@ Agent → Orchestrator:
 ✅ Dependencies respected  
 ✅ User kept informed of progress  
 ✅ Issues escalated appropriately  
-✅ Final deliverable meets requirements  
-
+✅ Final deliverable meets requirements
