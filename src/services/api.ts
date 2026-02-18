@@ -1,12 +1,9 @@
-/**
- * API Client Service
- * Centralized HTTP client for all API requests
- */
+import type { Tokens } from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 export interface ApiResponse<T> {
-  data: T;
+  data?: T;
   error?: string;
   status: number;
 }
@@ -17,29 +14,92 @@ export interface ApiError {
   status: number;
 }
 
-/**
- * Make an API request
- * @param endpoint - API endpoint path (relative to base URL)
- * @param method - HTTP method (GET, POST, PUT, DELETE)
- * @param body - Optional request body
- * @param headers - Optional custom headers
- * @returns Promise with API response
- */
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value: unknown) => void;
+  reject: (reason: unknown) => void;
+}> = [];
+
+const processQueue = (error: Error | null, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+export function getStoredTokens(): Tokens | null {
+  const accessToken = localStorage.getItem("accessToken");
+  const refreshToken = localStorage.getItem("refreshToken");
+  if (accessToken && refreshToken) {
+    return { accessToken, refreshToken };
+  }
+  return null;
+}
+
+export function setStoredTokens(tokens: Tokens): void {
+  localStorage.setItem("accessToken", tokens.accessToken);
+  localStorage.setItem("refreshToken", tokens.refreshToken);
+}
+
+export function clearStoredTokens(): void {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("user");
+}
+
+export async function refreshAccessToken(): Promise<string | null> {
+  const tokens = getStoredTokens();
+  if (!tokens?.refreshToken) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken: tokens.refreshToken }),
+    });
+
+    if (!response.ok) {
+      clearStoredTokens();
+      return null;
+    }
+
+    const data = await response.json();
+    setStoredTokens({
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+    });
+
+    return data.accessToken;
+  } catch {
+    clearStoredTokens();
+    return null;
+  }
+}
+
 export async function apiCall<T>(
   endpoint: string,
   method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
   body?: unknown,
-  headers?: Record<string, string>
+  headers?: Record<string, string>,
+  skipAuthRefresh = false
 ): Promise<ApiResponse<T>> {
   try {
     const url = `${API_BASE_URL}${endpoint}`;
-    const token = sessionStorage.getItem("authToken");
+    const tokens = getStoredTokens();
 
     const fetchOptions: RequestInit = {
       method,
       headers: {
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(tokens?.accessToken && { Authorization: `Bearer ${tokens.accessToken}` }),
         ...headers,
       },
     };
@@ -49,10 +109,68 @@ export async function apiCall<T>(
     }
 
     const response = await fetch(url, fetchOptions);
+
+    if (response.status === 401 && !skipAuthRefresh) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(async (token) => {
+          const retryResponse = await fetch(url, {
+            ...fetchOptions,
+            headers: {
+              ...fetchOptions.headers,
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const retryData = await retryResponse.json();
+          if (!retryResponse.ok) {
+            return { data: undefined as unknown as T, error: retryData.message || "Unauthorized", status: retryResponse.status };
+          }
+          return { data: retryData as T, status: retryResponse.status };
+        });
+      }
+
+      isRefreshing = true;
+
+      try {
+        const newToken = await refreshAccessToken();
+        
+        if (newToken) {
+          processQueue(null, newToken);
+          
+          const retryResponse = await fetch(url, {
+            ...fetchOptions,
+            headers: {
+              ...fetchOptions.headers,
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+          const retryData = await retryResponse.json();
+          
+          if (!retryResponse.ok) {
+            return { data: undefined as unknown as T, error: retryData.message || "Unauthorized", status: retryResponse.status };
+          }
+          
+          return { data: retryData as T, status: retryResponse.status };
+        } else {
+          processQueue(new Error("Refresh failed"), null);
+          clearStoredTokens();
+          window.location.href = "/login";
+          return { data: undefined as unknown as T, error: "Session expired", status: 401 };
+        }
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
     const data = await response.json() as T;
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`);
+      return {
+        data: undefined as unknown as T,
+        error: (data as { message?: string })?.message || response.statusText,
+        status: response.status,
+      };
     }
 
     return {
@@ -69,30 +187,18 @@ export async function apiCall<T>(
   }
 }
 
-/**
- * Convenience method for GET requests
- */
 export async function apiGet<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, "GET");
 }
 
-/**
- * Convenience method for POST requests
- */
-export async function apiPost<T>(endpoint: string, body: unknown): Promise<ApiResponse<T>> {
+export async function apiPost<T>(endpoint: string, body?: unknown): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, "POST", body);
 }
 
-/**
- * Convenience method for PUT requests
- */
-export async function apiPut<T>(endpoint: string, body: unknown): Promise<ApiResponse<T>> {
+export async function apiPut<T>(endpoint: string, body?: unknown): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, "PUT", body);
 }
 
-/**
- * Convenience method for DELETE requests
- */
 export async function apiDelete<T>(endpoint: string): Promise<ApiResponse<T>> {
   return apiCall<T>(endpoint, "DELETE");
 }

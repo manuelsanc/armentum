@@ -6,6 +6,7 @@ FastAPI application for coral management
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
+from app.routers import auth
 
 app = FastAPI(
     title="Armentum API",
@@ -48,8 +49,7 @@ async def root():
     }
 
 
-# Router includes will be added here
-# app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 # app.include_router(users.router, prefix="/api/users", tags=["users"])
 # app.include_router(events.router, prefix="/api/events", tags=["events"])
 # app.include_router(attendance.router, prefix="/api/attendance", tags=["attendance"])

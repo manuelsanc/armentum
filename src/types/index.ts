@@ -1,16 +1,29 @@
-/**
- * Global Type Definitions
- * Centralized type definitions for the application
- */
-
 export type UserRole = "admin" | "corista" | "public";
 
 export interface User {
   id: string;
   email: string;
+  nombre?: string;
   userType: UserRole;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Tokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface LoginResponse {
+  user: User;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  nombre?: string;
 }
 
 export interface Event {

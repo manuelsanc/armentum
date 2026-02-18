@@ -9,6 +9,7 @@ import { Login } from "./pages/Login";
 import { Coristas } from "./pages/Coristas";
 import { Admin } from "./pages/Admin";
 import { NotFound } from "./pages/NotFound";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -21,8 +22,22 @@ export const router = createBrowserRouter([
       { path: "noticias", Component: Noticias },
       { path: "eventos", Component: Eventos },
       { path: "login", Component: Login },
-      { path: "coristas", Component: Coristas },
-      { path: "admin", Component: Admin },
+      {
+        path: "coristas",
+        element: (
+          <ProtectedRoute requiredRole="corista">
+            <Coristas />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin",
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <Admin />
+          </ProtectedRoute>
+        ),
+      },
       { path: "*", Component: NotFound },
     ],
   },

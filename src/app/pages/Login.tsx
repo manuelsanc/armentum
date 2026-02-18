@@ -1,21 +1,27 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router";
 import { LogIn, User, Shield, AlertCircle } from "lucide-react";
 import logo from "../../assets/isotipo.png";
 import { useAuthStore } from "../../stores/authStore";
-
-const DEMO_CREDENTIALS = {
-  email: "cualquier@email.com",
-  password: "cualquier contraseña",
-};
+import type { User as UserType } from "../../types";
 
 export function Login(): JSX.Element {
   const navigate = useNavigate();
-  const { login, error, isLoading, clearError } = useAuthStore();
+  const location = useLocation();
+  const { login, error, isLoading, clearError, user, isInitializing } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState<"corista" | "admin">("corista");
+
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || null;
+
+  useEffect(() => {
+    if (!isInitializing && user) {
+      const redirectPath = from || (user.userType === "admin" ? "/admin" : "/coristas");
+      navigate(redirectPath, { replace: true });
+    }
+  }, [user, isInitializing, navigate, from]);
 
   useEffect(() => {
     clearError();
@@ -23,32 +29,32 @@ export function Login(): JSX.Element {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-
     const success = await login(email, password, userType);
-
     if (success) {
-      // Redirect based on user type
-      if (userType === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/coristas");
-      }
+      const authUser = useAuthStore.getState().user as UserType;
+      const redirectPath = from || (authUser.userType === "admin" ? "/admin" : "/coristas");
+      navigate(redirectPath, { replace: true });
     }
   };
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
-        {/* Logo and Title */}
         <div className="text-center mb-8">
           <img src={logo} alt="Logo Armentum" className="w-24 h-24 mx-auto mb-4" />
           <h1 className="text-3xl text-gray-900 mb-2">Bienvenido</h1>
           <p className="text-gray-600">Acceso a la zona privada de Estudio Coral Armentum</p>
         </div>
 
-        {/* Login Card */}
         <div className="bg-white rounded-lg shadow-lg p-8">
-          {/* User Type Selector */}
           <div className="flex gap-4 mb-6">
             <button
               type="button"
@@ -80,7 +86,6 @@ export function Login(): JSX.Element {
             </button>
           </div>
 
-          {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-6">
             {error && (
               <div
@@ -148,18 +153,8 @@ export function Login(): JSX.Element {
               <span>{isLoading ? "Iniciando..." : "Iniciar Sesión"}</span>
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs text-gray-600 mb-2">
-              <strong>Credenciales de demostración:</strong>
-            </p>
-            <p className="text-xs text-gray-600">Email: {DEMO_CREDENTIALS.email}</p>
-            <p className="text-xs text-gray-600">Contraseña: {DEMO_CREDENTIALS.password}</p>
-          </div>
         </div>
 
-        {/* Help Text */}
         <div className="mt-6 text-center text-sm text-gray-600">
           <p>
             ¿Necesitas ayuda? Contacta con{" "}

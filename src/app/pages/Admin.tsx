@@ -4,38 +4,29 @@ import {
   Users, 
   Calendar, 
   FileText, 
-  Settings,
   LogOut,
   Plus,
   Edit,
-  Trash2,
-  Mail,
   TrendingUp,
   Music,
   Bell
 } from "lucide-react";
+import { useAuthStore } from "../../stores/authStore";
 
 export function Admin(): JSX.Element {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState("");
+  const { user, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState<"overview" | "members" | "events" | "content">("overview");
 
   useEffect(() => {
-    // Check if user is logged in as admin
-    const userType = sessionStorage.getItem("userType");
-    const userEmail = sessionStorage.getItem("userEmail");
-    
-    if (userType !== "admin") {
-      navigate("/login");
-      return;
+    if (!user || user.userType !== "admin") {
+      navigate("/login", { replace: true });
     }
-    
-    setUserName(userEmail?.split("@")[0] || "Admin");
-  }, [navigate]);
+  }, [user, navigate]);
 
   const handleLogout = () => {
-    sessionStorage.clear();
-    navigate("/login");
+    logout();
+    navigate("/");
   };
 
   const stats = {
@@ -68,13 +59,12 @@ export function Admin(): JSX.Element {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl text-gray-900">Panel de Administración</h1>
-              <p className="text-gray-600">Bienvenido/a, {userName}</p>
+              <p className="text-gray-600">Bienvenido/a, {user?.nombre || user?.email?.split("@")[0] || "Admin"}</p>
             </div>
             <div className="flex items-center gap-4">
               <button className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors relative">
@@ -93,7 +83,6 @@ export function Admin(): JSX.Element {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex gap-8">
@@ -142,10 +131,8 @@ export function Admin(): JSX.Element {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Overview Tab */}
         {activeTab === "overview" && (
           <div className="space-y-8">
-            {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -194,7 +181,6 @@ export function Admin(): JSX.Element {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Recent Members */}
               <div className="bg-white rounded-lg shadow">
                 <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                   <h2 className="text-xl text-gray-900">Miembros Recientes</h2>
@@ -223,7 +209,6 @@ export function Admin(): JSX.Element {
                 </div>
               </div>
 
-              {/* Upcoming Events */}
               <div className="bg-white rounded-lg shadow">
                 <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                   <h2 className="text-xl text-gray-900">Próximos Eventos</h2>
@@ -254,7 +239,6 @@ export function Admin(): JSX.Element {
               </div>
             </div>
 
-            {/* Pending Tasks */}
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-gray-200">
                 <h2 className="text-xl text-gray-900">Tareas Pendientes</h2>
@@ -287,7 +271,6 @@ export function Admin(): JSX.Element {
           </div>
         )}
 
-        {/* Members Tab */}
         {activeTab === "members" && (
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
@@ -305,7 +288,6 @@ export function Admin(): JSX.Element {
           </div>
         )}
 
-        {/* Events Tab */}
         {activeTab === "events" && (
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
@@ -323,7 +305,6 @@ export function Admin(): JSX.Element {
           </div>
         )}
 
-        {/* Content Tab */}
         {activeTab === "content" && (
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">

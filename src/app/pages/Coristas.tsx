@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { 
   Music, 
@@ -11,27 +11,21 @@ import {
   Bell,
   CheckCircle
 } from "lucide-react";
+import { useAuthStore } from "../../stores/authStore";
 
 export function Coristas(): JSX.Element {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState("");
+  const { user, logout } = useAuthStore();
 
   useEffect(() => {
-    // Check if user is logged in
-    const userType = sessionStorage.getItem("userType");
-    const userEmail = sessionStorage.getItem("userEmail");
-    
-    if (userType !== "corista") {
-      navigate("/login");
-      return;
+    if (!user || user.userType !== "corista") {
+      navigate("/login", { replace: true });
     }
-    
-    setUserName(userEmail?.split("@")[0] || "Corista");
-  }, [navigate]);
+  }, [user, navigate]);
 
   const handleLogout = () => {
-    sessionStorage.clear();
-    navigate("/login");
+    logout();
+    navigate("/");
   };
 
   const nextRehearsals = [
@@ -102,13 +96,12 @@ export function Coristas(): JSX.Element {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl text-gray-900">Portal de Coristas</h1>
-              <p className="text-gray-600">Bienvenido/a, {userName}</p>
+              <p className="text-gray-600">Bienvenido/a, {user?.nombre || user?.email?.split("@")[0] || "Corista"}</p>
             </div>
             <button
               onClick={handleLogout}
@@ -122,7 +115,6 @@ export function Coristas(): JSX.Element {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -163,9 +155,7 @@ export function Coristas(): JSX.Element {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Announcements */}
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-gray-200">
                 <h2 className="text-xl text-gray-900 flex items-center gap-2">
@@ -191,7 +181,6 @@ export function Coristas(): JSX.Element {
               </div>
             </div>
 
-            {/* Scores */}
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-gray-200">
                 <h2 className="text-xl text-gray-900 flex items-center gap-2">
@@ -225,9 +214,7 @@ export function Coristas(): JSX.Element {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-8">
-            {/* Next Rehearsals */}
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-gray-200">
                 <h2 className="text-xl text-gray-900 flex items-center gap-2">
@@ -269,7 +256,6 @@ export function Coristas(): JSX.Element {
               </div>
             </div>
 
-            {/* Quick Links */}
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg mb-4 text-gray-900">Enlaces Rápidos</h3>
               <div className="space-y-2">
