@@ -20,6 +20,7 @@ describe("api service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    sessionStorage.clear();
     mockFetch.mockReset();
   });
 
@@ -35,8 +36,8 @@ describe("api service", () => {
     });
 
     it("returns tokens when both are stored", () => {
-      localStorage.setItem("accessToken", "access-token");
-      localStorage.setItem("refreshToken", "refresh-token");
+      sessionStorage.setItem("accessToken", "access-token");
+      sessionStorage.setItem("refreshToken", "refresh-token");
 
       const result = getStoredTokens();
 
@@ -47,7 +48,7 @@ describe("api service", () => {
     });
 
     it("returns null when only access token is stored", () => {
-      localStorage.setItem("accessToken", "access-token");
+      sessionStorage.setItem("accessToken", "access-token");
 
       const result = getStoredTokens();
 
@@ -55,7 +56,7 @@ describe("api service", () => {
     });
 
     it("returns null when only refresh token is stored", () => {
-      localStorage.setItem("refreshToken", "refresh-token");
+      sessionStorage.setItem("refreshToken", "refresh-token");
 
       const result = getStoredTokens();
 
@@ -64,28 +65,28 @@ describe("api service", () => {
   });
 
   describe("setStoredTokens", () => {
-    it("stores both tokens in localStorage", () => {
+    it("stores both tokens in sessionStorage", () => {
       setStoredTokens({
         accessToken: "new-access",
         refreshToken: "new-refresh",
       });
 
-      expect(localStorage.getItem("accessToken")).toBe("new-access");
-      expect(localStorage.getItem("refreshToken")).toBe("new-refresh");
+      expect(sessionStorage.getItem("accessToken")).toBe("new-access");
+      expect(sessionStorage.getItem("refreshToken")).toBe("new-refresh");
     });
   });
 
   describe("clearStoredTokens", () => {
-    it("removes all auth data from localStorage", () => {
-      localStorage.setItem("accessToken", "token");
-      localStorage.setItem("refreshToken", "refresh");
-      localStorage.setItem("user", JSON.stringify({ id: "1" }));
+    it("removes all auth data from sessionStorage", () => {
+      sessionStorage.setItem("accessToken", "token");
+      sessionStorage.setItem("refreshToken", "refresh");
+      sessionStorage.setItem("user", JSON.stringify({ id: "1" }));
 
       clearStoredTokens();
 
-      expect(localStorage.getItem("accessToken")).toBeNull();
-      expect(localStorage.getItem("refreshToken")).toBeNull();
-      expect(localStorage.getItem("user")).toBeNull();
+      expect(sessionStorage.getItem("accessToken")).toBeNull();
+      expect(sessionStorage.getItem("refreshToken")).toBeNull();
+      expect(sessionStorage.getItem("user")).toBeNull();
     });
   });
 
@@ -97,8 +98,8 @@ describe("api service", () => {
     });
 
     it("calls refresh endpoint with refresh token", async () => {
-      localStorage.setItem("accessToken", "old-access");
-      localStorage.setItem("refreshToken", "old-refresh");
+      sessionStorage.setItem("accessToken", "old-access");
+      sessionStorage.setItem("refreshToken", "old-refresh");
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -115,8 +116,8 @@ describe("api service", () => {
     });
 
     it("stores new tokens and returns access token on success", async () => {
-      localStorage.setItem("accessToken", "old-access");
-      localStorage.setItem("refreshToken", "old-refresh");
+      sessionStorage.setItem("accessToken", "old-access");
+      sessionStorage.setItem("refreshToken", "old-refresh");
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -126,13 +127,13 @@ describe("api service", () => {
       const result = await refreshAccessToken();
 
       expect(result).toBe("new-access");
-      expect(localStorage.getItem("accessToken")).toBe("new-access");
-      expect(localStorage.getItem("refreshToken")).toBe("new-refresh");
+      expect(sessionStorage.getItem("accessToken")).toBe("new-access");
+      expect(sessionStorage.getItem("refreshToken")).toBe("new-refresh");
     });
 
     it("clears tokens and returns null on failure", async () => {
-      localStorage.setItem("accessToken", "old-access");
-      localStorage.setItem("refreshToken", "old-refresh");
+      sessionStorage.setItem("accessToken", "old-access");
+      sessionStorage.setItem("refreshToken", "old-refresh");
 
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -142,20 +143,20 @@ describe("api service", () => {
       const result = await refreshAccessToken();
 
       expect(result).toBeNull();
-      expect(localStorage.getItem("accessToken")).toBeNull();
-      expect(localStorage.getItem("refreshToken")).toBeNull();
+      expect(sessionStorage.getItem("accessToken")).toBeNull();
+      expect(sessionStorage.getItem("refreshToken")).toBeNull();
     });
 
     it("clears tokens and returns null on network error", async () => {
-      localStorage.setItem("accessToken", "old-access");
-      localStorage.setItem("refreshToken", "old-refresh");
+      sessionStorage.setItem("accessToken", "old-access");
+      sessionStorage.setItem("refreshToken", "old-refresh");
 
       mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
       const result = await refreshAccessToken();
 
       expect(result).toBeNull();
-      expect(localStorage.getItem("accessToken")).toBeNull();
+      expect(sessionStorage.getItem("accessToken")).toBeNull();
     });
   });
 
@@ -187,11 +188,9 @@ describe("api service", () => {
         json: () => Promise.resolve({ id: "1", created: true }),
       });
 
-      const result = await apiCall<{ id: string; created: boolean }>(
-        "/test",
-        "POST",
-        { name: "Test" }
-      );
+      const result = await apiCall<{ id: string; created: boolean }>("/test", "POST", {
+        name: "Test",
+      });
 
       expect(mockFetch).toHaveBeenCalledWith(
         `${API_BASE_URL}/test`,
@@ -204,8 +203,8 @@ describe("api service", () => {
     });
 
     it("includes authorization header when tokens exist", async () => {
-      localStorage.setItem("accessToken", "my-token");
-      localStorage.setItem("refreshToken", "my-refresh");
+      sessionStorage.setItem("accessToken", "my-token");
+      sessionStorage.setItem("refreshToken", "my-refresh");
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -274,8 +273,8 @@ describe("api service", () => {
 
   describe("401 response and token refresh", () => {
     beforeEach(() => {
-      localStorage.setItem("accessToken", "expired-token");
-      localStorage.setItem("refreshToken", "valid-refresh");
+      sessionStorage.setItem("accessToken", "expired-token");
+      sessionStorage.setItem("refreshToken", "valid-refresh");
     });
 
     it("attempts token refresh on 401 response", async () => {
@@ -299,7 +298,11 @@ describe("api service", () => {
 
       expect(mockFetch).toHaveBeenCalledTimes(3);
       expect(mockFetch).toHaveBeenNthCalledWith(1, `${API_BASE_URL}/protected`, expect.any(Object));
-      expect(mockFetch).toHaveBeenNthCalledWith(2, `${API_BASE_URL}/auth/refresh`, expect.any(Object));
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        `${API_BASE_URL}/auth/refresh`,
+        expect.any(Object)
+      );
       expect(mockFetch).toHaveBeenNthCalledWith(3, `${API_BASE_URL}/protected`, expect.any(Object));
       expect(result.data).toEqual({ id: "1" });
     });
@@ -362,8 +365,8 @@ describe("api service", () => {
 
       await apiCall("/protected");
 
-      expect(localStorage.getItem("accessToken")).toBeNull();
-      expect(localStorage.getItem("refreshToken")).toBeNull();
+      expect(sessionStorage.getItem("accessToken")).toBeNull();
+      expect(sessionStorage.getItem("refreshToken")).toBeNull();
     });
 
     it("skips refresh when skipAuthRefresh is true", async () => {
@@ -383,8 +386,8 @@ describe("api service", () => {
 
   describe("concurrent requests during refresh", () => {
     beforeEach(() => {
-      localStorage.setItem("accessToken", "expired-token");
-      localStorage.setItem("refreshToken", "valid-refresh");
+      sessionStorage.setItem("accessToken", "expired-token");
+      sessionStorage.setItem("refreshToken", "valid-refresh");
     });
 
     it("queues concurrent requests during refresh", async () => {
@@ -399,10 +402,12 @@ describe("api service", () => {
           status: 401,
           json: () => Promise.resolve({ message: "Unauthorized" }),
         })
-        .mockImplementationOnce(() => refreshPromise.then(() => ({
-          ok: true,
-          json: () => Promise.resolve({ accessToken: "new-token", refreshToken: "new-refresh" }),
-        })))
+        .mockImplementationOnce(() =>
+          refreshPromise.then(() => ({
+            ok: true,
+            json: () => Promise.resolve({ accessToken: "new-token", refreshToken: "new-refresh" }),
+          }))
+        )
         .mockResolvedValueOnce({
           ok: true,
           status: 200,
@@ -412,7 +417,10 @@ describe("api service", () => {
       const request1 = apiCall("/protected1");
       const request2 = apiCall("/protected2");
 
-      refreshResolve!({ ok: true, json: () => Promise.resolve({ accessToken: "new-token", refreshToken: "new-refresh" }) });
+      refreshResolve!({
+        ok: true,
+        json: () => Promise.resolve({ accessToken: "new-token", refreshToken: "new-refresh" }),
+      });
 
       const results = await Promise.all([request1, request2]);
 

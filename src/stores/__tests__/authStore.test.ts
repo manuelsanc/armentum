@@ -33,6 +33,7 @@ describe("authStore", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    sessionStorage.clear();
     useAuthStore.setState({
       user: null,
       isLoading: false,
@@ -58,8 +59,8 @@ describe("authStore", () => {
 
   describe("login action", () => {
     it("sets isLoading to true when login starts", async () => {
-      vi.mocked(authService.login).mockImplementation(() =>
-        new Promise((resolve) => setTimeout(() => resolve({ data: mockLoginResponse }), 100))
+      vi.mocked(authService.login).mockImplementation(
+        () => new Promise((resolve) => setTimeout(() => resolve({ data: mockLoginResponse }), 100))
       );
 
       const promise = act(async () => {
@@ -134,8 +135,8 @@ describe("authStore", () => {
 
   describe("register action", () => {
     it("sets isLoading to true when register starts", async () => {
-      vi.mocked(authService.register).mockImplementation(() =>
-        new Promise((resolve) => setTimeout(() => resolve({ data: mockLoginResponse }), 100))
+      vi.mocked(authService.register).mockImplementation(
+        () => new Promise((resolve) => setTimeout(() => resolve({ data: mockLoginResponse }), 100))
       );
 
       const promise = act(async () => {
@@ -181,7 +182,11 @@ describe("authStore", () => {
         await useAuthStore.getState().register("test@example.com", "password123", "Test Name");
       });
 
-      expect(authService.register).toHaveBeenCalledWith("test@example.com", "password123", "Test Name");
+      expect(authService.register).toHaveBeenCalledWith(
+        "test@example.com",
+        "password123",
+        "Test Name"
+      );
     });
 
     it("handles unknown error when no data or error returned", async () => {

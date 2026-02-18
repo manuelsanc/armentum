@@ -32,8 +32,8 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 };
 
 export function getStoredTokens(): Tokens | null {
-  const accessToken = localStorage.getItem("accessToken");
-  const refreshToken = localStorage.getItem("refreshToken");
+  const accessToken = sessionStorage.getItem("accessToken");
+  const refreshToken = sessionStorage.getItem("refreshToken");
   if (accessToken && refreshToken) {
     return { accessToken, refreshToken };
   }
@@ -41,14 +41,14 @@ export function getStoredTokens(): Tokens | null {
 }
 
 export function setStoredTokens(tokens: Tokens): void {
-  localStorage.setItem("accessToken", tokens.accessToken);
-  localStorage.setItem("refreshToken", tokens.refreshToken);
+  sessionStorage.setItem("accessToken", tokens.accessToken);
+  sessionStorage.setItem("refreshToken", tokens.refreshToken);
 }
 
 export function clearStoredTokens(): void {
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("user");
+  sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("refreshToken");
+  sessionStorage.removeItem("user");
 }
 
 export async function refreshAccessToken(): Promise<string | null> {
@@ -124,7 +124,11 @@ export async function apiCall<T>(
           });
           const retryData = await retryResponse.json();
           if (!retryResponse.ok) {
-            return { data: undefined as unknown as T, error: retryData.message || "Unauthorized", status: retryResponse.status };
+            return {
+              data: undefined as unknown as T,
+              error: retryData.message || "Unauthorized",
+              status: retryResponse.status,
+            };
           }
           return { data: retryData as T, status: retryResponse.status };
         });
@@ -134,10 +138,10 @@ export async function apiCall<T>(
 
       try {
         const newToken = await refreshAccessToken();
-        
+
         if (newToken) {
           processQueue(null, newToken);
-          
+
           const retryResponse = await fetch(url, {
             ...fetchOptions,
             headers: {
@@ -146,11 +150,15 @@ export async function apiCall<T>(
             },
           });
           const retryData = await retryResponse.json();
-          
+
           if (!retryResponse.ok) {
-            return { data: undefined as unknown as T, error: retryData.message || "Unauthorized", status: retryResponse.status };
+            return {
+              data: undefined as unknown as T,
+              error: retryData.message || "Unauthorized",
+              status: retryResponse.status,
+            };
           }
-          
+
           return { data: retryData as T, status: retryResponse.status };
         } else {
           processQueue(new Error("Refresh failed"), null);
@@ -163,7 +171,7 @@ export async function apiCall<T>(
       }
     }
 
-    const data = await response.json() as T;
+    const data = (await response.json()) as T;
 
     if (!response.ok) {
       return {

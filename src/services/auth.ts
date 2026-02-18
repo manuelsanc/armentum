@@ -64,7 +64,7 @@ export async function login(
       accessToken: response.data.accessToken,
       refreshToken: response.data.refreshToken,
     });
-    localStorage.setItem("user", JSON.stringify(response.data.user));
+    sessionStorage.setItem("user", JSON.stringify(response.data.user));
   }
 
   return { data: response.data };
@@ -119,7 +119,7 @@ export async function register(
       accessToken: response.data.accessToken,
       refreshToken: response.data.refreshToken,
     });
-    localStorage.setItem("user", JSON.stringify(response.data.user));
+    sessionStorage.setItem("user", JSON.stringify(response.data.user));
   }
 
   return { data: response.data };
@@ -152,7 +152,7 @@ export async function getCurrentUser(): Promise<UserResult> {
   }
 
   if (response.data) {
-    localStorage.setItem("user", JSON.stringify(response.data));
+    sessionStorage.setItem("user", JSON.stringify(response.data));
   }
 
   return { data: response.data };
@@ -170,10 +170,9 @@ export async function refreshToken(): Promise<{ success: boolean; error?: AuthEr
     };
   }
 
-  const response = await apiPost<{ accessToken: string; refreshToken: string }>(
-    "/auth/refresh",
-    { refreshToken: tokens.refreshToken }
-  );
+  const response = await apiPost<{ accessToken: string; refreshToken: string }>("/auth/refresh", {
+    refreshToken: tokens.refreshToken,
+  });
 
   if (response.error || !response.data) {
     clearStoredTokens();
@@ -195,7 +194,7 @@ export async function refreshToken(): Promise<{ success: boolean; error?: AuthEr
 }
 
 export function getStoredUser(): User | null {
-  const userJson = localStorage.getItem("user");
+  const userJson = sessionStorage.getItem("user");
   if (userJson) {
     try {
       return JSON.parse(userJson) as User;

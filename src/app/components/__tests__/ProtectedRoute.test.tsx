@@ -44,7 +44,14 @@ const renderWithRouter = (initialRoute = "/protected", requiredRole?: "admin" | 
             </ProtectedRoute>
           }
         />
-        <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><div>Admin</div></ProtectedRoute>} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <div>Admin</div>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       <LocationDisplay />
     </MemoryRouter>
@@ -55,6 +62,7 @@ describe("ProtectedRoute", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    sessionStorage.clear();
   });
 
   afterEach(() => {
@@ -97,8 +105,6 @@ describe("ProtectedRoute", () => {
     });
 
     it("preserves the original location in navigation state", () => {
-      let capturedState: { from?: { pathname: string } } | undefined;
-
       vi.mocked(useAuthStore).mockImplementation((selector) => {
         const state = {
           user: null,
@@ -111,22 +117,7 @@ describe("ProtectedRoute", () => {
       render(
         <MemoryRouter initialEntries={["/protected"]}>
           <Routes>
-            <Route
-              path="/login"
-              element={
-                <div
-                  data-testid="login-page"
-                  ref={(el) => {
-                    if (el) {
-                      const history = (el.closest("[data-testid]") as HTMLElement & { __reactProps$?.location?.state });
-                      capturedState = history?.__reactProps$?.location?.state;
-                    }
-                  }}
-                >
-                  Login Page
-                </div>
-              }
-            />
+            <Route path="/login" element={<div data-testid="login-page">Login Page</div>} />
             <Route
               path="/protected"
               element={
@@ -143,8 +134,8 @@ describe("ProtectedRoute", () => {
     });
 
     it("redirects to login when user is null but tokens exist", () => {
-      localStorage.setItem("accessToken", "valid-token");
-      localStorage.setItem("refreshToken", "valid-refresh");
+      sessionStorage.setItem("accessToken", "valid-token");
+      sessionStorage.setItem("refreshToken", "valid-refresh");
 
       vi.mocked(useAuthStore).mockImplementation((selector) => {
         const state = {

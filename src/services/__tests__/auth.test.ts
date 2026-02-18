@@ -30,6 +30,7 @@ describe("auth service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    sessionStorage.clear();
   });
 
   afterEach(() => {
@@ -83,7 +84,7 @@ describe("auth service", () => {
         accessToken: "test-access-token",
         refreshToken: "test-refresh-token",
       });
-      expect(localStorage.getItem("user")).toBe(JSON.stringify(mockUser));
+      expect(sessionStorage.getItem("user")).toBe(JSON.stringify(mockUser));
     });
 
     it("returns error with INVALID_CREDENTIALS on 401 response", async () => {
@@ -168,7 +169,7 @@ describe("auth service", () => {
         accessToken: "test-access-token",
         refreshToken: "test-refresh-token",
       });
-      expect(localStorage.getItem("user")).toBe(JSON.stringify(mockUser));
+      expect(sessionStorage.getItem("user")).toBe(JSON.stringify(mockUser));
     });
 
     it("returns SERVER_ERROR on failed register", async () => {
@@ -216,7 +217,7 @@ describe("auth service", () => {
       expect(api.apiGet).toHaveBeenCalledWith("/auth/me");
     });
 
-    it("stores user in localStorage on success", async () => {
+    it("stores user in sessionStorage on success", async () => {
       vi.mocked(api.getStoredTokens).mockReturnValue({
         accessToken: "token",
         refreshToken: "refresh",
@@ -226,7 +227,7 @@ describe("auth service", () => {
       const result = await authService.getCurrentUser();
 
       expect(result.data).toEqual(mockUser);
-      expect(localStorage.getItem("user")).toBe(JSON.stringify(mockUser));
+      expect(sessionStorage.getItem("user")).toBe(JSON.stringify(mockUser));
     });
 
     it("returns UNAUTHORIZED error on 401 response", async () => {
@@ -339,14 +340,14 @@ describe("auth service", () => {
   });
 
   describe("getStoredUser", () => {
-    it("returns null when no user in localStorage", () => {
+    it("returns null when no user in sessionStorage", () => {
       const result = authService.getStoredUser();
 
       expect(result).toBeNull();
     });
 
-    it("returns parsed user from localStorage", () => {
-      localStorage.setItem("user", JSON.stringify(mockUser));
+    it("returns parsed user from sessionStorage", () => {
+      sessionStorage.setItem("user", JSON.stringify(mockUser));
 
       const result = authService.getStoredUser();
 
@@ -354,7 +355,7 @@ describe("auth service", () => {
     });
 
     it("returns null when JSON is invalid", () => {
-      localStorage.setItem("user", "invalid-json");
+      sessionStorage.setItem("user", "invalid-json");
 
       const result = authService.getStoredUser();
 
