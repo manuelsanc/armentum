@@ -81,7 +81,7 @@ def upgrade() -> None:
         sa.Column('tipo', sa.String(50), nullable=False),
         sa.Column('estado', sa.String(50), default='planificado'),
         sa.Column('imagen_url', sa.String(255)),
-        sa.Column('created_by', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('created_by', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='SET NULL'), nullable=True),
         sa.Column('created_at', sa.DateTime(), server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime(), server_default=sa.func.now(), onupdate=sa.func.now()),
     )
@@ -100,7 +100,7 @@ def upgrade() -> None:
         sa.Column('lugar', sa.String(255), nullable=False),
         sa.Column('cuerdas', sa.String(255)),
         sa.Column('descripcion', sa.Text()),
-        sa.Column('created_by', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('created_by', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='SET NULL'), nullable=True),
         sa.Column('created_at', sa.DateTime(), server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime(), server_default=sa.func.now(), onupdate=sa.func.now()),
     )
@@ -115,7 +115,7 @@ def upgrade() -> None:
         sa.Column('ensayo_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('ensayos.id', ondelete='CASCADE'), nullable=False),
         sa.Column('presente', sa.Boolean(), default=True),
         sa.Column('justificacion', sa.Text()),
-        sa.Column('registrado_por', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('registrado_por', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='SET NULL'), nullable=True),
         sa.Column('registrado_en', sa.DateTime(), server_default=sa.func.now()),
     )
     op.create_index('ix_asistencias_miembro_id', 'asistencias', ['miembro_id'])
@@ -134,7 +134,7 @@ def upgrade() -> None:
         sa.Column('fecha_vencimiento', sa.Date(), nullable=False),
         sa.Column('estado', sa.String(50), default='pendiente'),
         sa.Column('fecha_pago', sa.Date()),
-        sa.Column('created_by', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('created_by', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='SET NULL'), nullable=True),
         sa.Column('created_at', sa.DateTime(), server_default=sa.func.now()),
     )
     op.create_index('ix_cuotas_miembro_id', 'cuotas', ['miembro_id'])
@@ -151,7 +151,7 @@ def upgrade() -> None:
         sa.Column('dirigido_a', sa.String(50)),
         sa.Column('grupo_destino', sa.String(255)),
         sa.Column('miembro_destino', postgresql.UUID(as_uuid=True)),
-        sa.Column('enviado_por', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('enviado_por', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='SET NULL'), nullable=True),
         sa.Column('programado_para', sa.DateTime()),
         sa.Column('enviado_en', sa.DateTime()),
         sa.Column('created_at', sa.DateTime(), server_default=sa.func.now()),
@@ -166,11 +166,11 @@ def upgrade() -> None:
         sa.Column('nombre', sa.String(255), nullable=False),
         sa.Column('tipo', sa.String(50), nullable=False),
         sa.Column('voz', sa.String(50)),
-        sa.Column('evento_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('eventos_publicos.id')),
-        sa.Column('ensayo_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('ensayos.id')),
+        sa.Column('evento_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('eventos_publicos.id', ondelete='SET NULL'), nullable=True),
+        sa.Column('ensayo_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('ensayos.id', ondelete='SET NULL'), nullable=True),
         sa.Column('url', sa.String(255), nullable=False),
         sa.Column('privado', sa.Boolean(), default=True),
-        sa.Column('subido_por', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('subido_por', postgresql.UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='SET NULL'), nullable=True),
         sa.Column('created_at', sa.DateTime(), server_default=sa.func.now()),
     )
     op.create_index('ix_archivos_evento_id', 'archivos', ['evento_id'])

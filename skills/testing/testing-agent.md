@@ -1,15 +1,16 @@
 # 🧪 Testing Agent Skills
 
-**Agent Model**: `opencode/glm-4.7-free`  
+**Agent Model**: `opencode/glm-5-free`  
 **Primary Skill**: Test design and implementation  
 **MCP Servers**: Filesystem, Git, GitHub  
-**Cost**: FREE  
+**Cost**: FREE
 
----  
+---
 
 ## Core Skills
 
 ### 1. Test Design
+
 ```
 ✓ Design test strategy
 ✓ Identify test cases
@@ -19,6 +20,7 @@
 ```
 
 ### 2. Unit Tests
+
 ```
 ✓ Vitest for frontend
 ✓ pytest for backend
@@ -28,6 +30,7 @@
 ```
 
 ### 3. Integration Tests
+
 ```
 ✓ Test API endpoints
 ✓ Database integration
@@ -37,6 +40,7 @@
 ```
 
 ### 4. E2E Tests
+
 ```
 ✓ Playwright tests
 ✓ User workflows
@@ -46,6 +50,7 @@
 ```
 
 ### 5. Coverage Analysis
+
 ```
 ✓ Measure coverage
 ✓ Identify gaps
@@ -66,5 +71,4 @@
 ✅ 85%+ backend coverage  
 ✅ E2E critical paths  
 ✅ Tests passing  
-✅ Fast execution  
-
+✅ Fast execution

@@ -7,6 +7,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import auth
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from app.exceptions import ArmentumException
 
 app = FastAPI(
     title="Armentum API",
@@ -24,6 +27,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Global exception handler for custom Armentum exceptions
+@app.exception_handler(ArmentumException)
+async def armentum_exception_handler(request: Request, exc: ArmentumException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message}
+    )
 
 
 # Health Check Endpoint

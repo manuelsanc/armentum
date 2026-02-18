@@ -1,15 +1,16 @@
 # 🏗️ Architecture Agent Skills
 
-**Agent Model**: `opencode/glm-4.7-free`  
+**Agent Model**: `opencode/glm-5-free`  
 **Primary Skill**: System design and technical planning  
 **MCP Servers**: GitHub, Filesystem, Git  
-**Cost**: FREE  
+**Cost**: FREE
 
----  
+---
 
 ## Core Skills
 
 ### 1. System Design
+
 ```
 ✓ Design component architecture
 ✓ Plan module organization
@@ -19,6 +20,7 @@
 ```
 
 ### 2. API Design
+
 ```
 ✓ Design RESTful endpoints
 ✓ Define request/response schemas
@@ -28,6 +30,7 @@
 ```
 
 ### 3. Database Design
+
 ```
 ✓ Design schema
 ✓ Plan relationships
@@ -37,6 +40,7 @@
 ```
 
 ### 4. Architecture Decisions
+
 ```
 ✓ Document ADRs (Architecture Decision Records)
 ✓ Explain trade-offs
@@ -46,6 +50,7 @@
 ```
 
 ### 5. Code Organization
+
 ```
 ✓ Define folder structure
 ✓ Plan module boundaries
@@ -60,5 +65,4 @@
 ✅ Well-documented decisions  
 ✅ Implementable specifications  
 ✅ Considers trade-offs  
-✅ ADRs created  
-
+✅ ADRs created

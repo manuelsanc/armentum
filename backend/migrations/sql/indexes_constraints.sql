@@ -59,10 +59,7 @@ CREATE INDEX IF NOT EXISTS ix_archivos_privado ON archivos (privado);
 -- UNIQUE CONSTRAINTS
 -- ============================================================================
 
--- Ensure a member can only have one attendance record per rehearsal
-ALTER TABLE asistencias 
-    ADD CONSTRAINT uq_asistencias_miembro_ensayo 
-    UNIQUE (miembro_id, ensayo_id);
+-- Note: uq_asistencias_miembro_ensayo is already defined in 001_initial_schema.py
 
 -- Ensure user can only have one role assignment per role
 ALTER TABLE users_roles 

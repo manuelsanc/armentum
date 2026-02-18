@@ -1,15 +1,16 @@
 # 🚀 CI/CD Agent Skills
 
-**Agent Model**: `opencode/glm-4.7-free`  
+**Agent Model**: `opencode/glm-5-free`  
 **Primary Skill**: Deployment and automation  
 **MCP Servers**: GitHub, Filesystem, Git  
-**Cost**: FREE  
+**Cost**: FREE
 
----  
+---
 
 ## Core Skills
 
 ### 1. GitHub Actions
+
 ```
 ✓ Create workflows
 ✓ Trigger conditions
@@ -19,6 +20,7 @@
 ```
 
 ### 2. Code Quality
+
 ```
 ✓ ESLint configuration
 ✓ Prettier formatting
@@ -28,6 +30,7 @@
 ```
 
 ### 3. Testing Automation
+
 ```
 ✓ Run tests on push
 ✓ Coverage reports
@@ -37,6 +40,7 @@
 ```
 
 ### 4. Deployment
+
 ```
 ✓ Vercel deployment
 ✓ Environment config
@@ -46,6 +50,7 @@
 ```
 
 ### 5. Monitoring
+
 ```
 ✓ Build status
 ✓ Deployment logs
@@ -67,5 +72,4 @@
 ✅ Automated deployment  
 ✅ Build consistency  
 ✅ Fast feedback  
-✅ Reliable deployments  
-
+✅ Reliable deployments

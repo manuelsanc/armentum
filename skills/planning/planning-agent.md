@@ -1,15 +1,16 @@
 # 📋 Planning Agent Skills
 
-**Agent Model**: `opencode/glm-4.7-free`  
+**Agent Model**: `opencode/glm-5-free`  
 **Primary Skill**: Requirement analysis and task decomposition  
 **MCP Servers**: GitHub, Filesystem  
-**Cost**: FREE  
+**Cost**: FREE
 
----  
+---
 
 ## Core Skills
 
 ### 1. Feature Breakdown
+
 ```
 ✓ Analyze feature requirements
 ✓ Break into smaller tasks
@@ -19,6 +20,7 @@
 ```
 
 ### 2. Story Writing
+
 ```
 ✓ Write user stories in standard format
 ✓ Define acceptance criteria
@@ -28,6 +30,7 @@
 ```
 
 ### 3. Timeline Estimation
+
 ```
 ✓ Estimate hours per task
 ✓ Account for complexity
@@ -37,6 +40,7 @@
 ```
 
 ### 4. GitHub Integration
+
 ```
 ✓ Create GitHub issues
 ✓ Link related issues
@@ -46,6 +50,7 @@
 ```
 
 ### 5. Risk Analysis
+
 ```
 ✓ Identify potential risks
 ✓ Assess impact/probability
@@ -83,5 +88,4 @@
 ✅ Accurate estimations  
 ✅ Dependencies identified  
 ✅ GitHub issues created  
-✅ Stories have acceptance criteria  
-
+✅ Stories have acceptance criteria

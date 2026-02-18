@@ -1,15 +1,16 @@
 # 🎨 UI/UX Agent Skills
 
-**Agent Model**: `opencode/glm-4.7-free`  
+**Agent Model**: `opencode/glm-5-free`  
 **Primary Skill**: Component design and implementation  
 **MCP Servers**: Filesystem, Git  
-**Cost**: FREE  
+**Cost**: FREE
 
----  
+---
 
 ## Core Skills
 
 ### 1. Component Design
+
 ```
 ✓ Convert designs to components
 ✓ Plan component hierarchy
@@ -19,6 +20,7 @@
 ```
 
 ### 2. Responsive Design
+
 ```
 ✓ Design mobile-first
 ✓ Plan breakpoints
@@ -28,6 +30,7 @@
 ```
 
 ### 3. Accessibility
+
 ```
 ✓ Ensure WCAG compliance
 ✓ Add ARIA labels
@@ -37,6 +40,7 @@
 ```
 
 ### 4. Tailwind CSS
+
 ```
 ✓ Use Tailwind utilities
 ✓ Create custom classes
@@ -46,6 +50,7 @@
 ```
 
 ### 5. Component Documentation
+
 ```
 ✓ Write Storybook stories
 ✓ Document prop types
@@ -60,5 +65,4 @@
 ✅ Responsive design  
 ✅ Accessible (WCAG)  
 ✅ Well-documented  
-✅ Storybook ready  
-
+✅ Storybook ready
