@@ -2,6 +2,20 @@
 
 ## Contenido
 
+### BRANCHING_STRATEGY.md (300+ líneas)
+**Estrategia de Git y workflow** - Cómo manejar branches, PRs y releases con GitHub Flow.
+
+**Incluye**:
+- ✅ GitHub Flow explicado (main + feature branches)
+- ✅ Convenciones de nombrado de branches (feat/, fix/, docs/, etc)
+- ✅ Proceso de PR y code review
+- ✅ Reglas de protección en main
+- ✅ Workflows de features, hotfixes, documentación
+- ✅ Gestión local de branches
+- ✅ Estrategia de releases y tags
+- ✅ Solución de problemas comunes
+- ✅ Timeline para MVP de 8 semanas
+
 ### DEVELOPERS.md (183 líneas)
 **Guía de desarrollo y code style** - Cómo codificar de forma consistente en Armentum.
 
@@ -165,6 +179,7 @@ npm run format:check     # Check formatting
 ## 🔗 Enlaces relacionados
 
 - [README.md](../README.md) - Guía general
+- [BRANCHING_STRATEGY.md](./BRANCHING_STRATEGY.md) - Git workflow y branches
 - [TECHNICAL_SETUP.md](../technical/TECHNICAL_SETUP.md) - Architecture
 - [API_SPECIFICATION.md](../technical/API_SPECIFICATION.md) - Endpoints
 - [SETUP_CHECKLIST.md](../setup/SETUP_CHECKLIST.md) - Setup

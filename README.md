@@ -164,13 +164,53 @@ Sistema de agentes | `docs/development/AGENTS.md`
 
 ---
 
+## 🤝 Git Workflow
+
+**Estrategia**: GitHub Flow (simple, PR-based, ideal para MVP)
+
+```bash
+# 1. Update main
+git checkout main
+git pull origin main
+
+# 2. Create feature branch
+git checkout -b feat/feature-name
+# o fix/bug-name, docs/document-name, etc.
+
+# 3. Make changes with clear commits
+git commit -m "feat: add user authentication service"
+git commit -m "feat: integrate auth into login page"
+
+# 4. Push and create PR
+git push -u origin feat/feature-name
+gh pr create --title "Add user authentication"
+
+# 5. After review/approval - merge to main
+gh pr merge feat/feature-name --squash
+
+# 6. Cleanup
+git checkout main && git pull
+git branch -d feat/feature-name
+```
+
+**Complete Guide**: [`docs/development/BRANCHING_STRATEGY.md`](./docs/development/BRANCHING_STRATEGY.md)
+- Branch naming conventions
+- PR template and review process
+- Protected main branch rules
+- Hotfix workflows
+- Timeline for MVP releases
+
+---
+
 ## 🤝 Contribuyendo
 
 1. Lee `docs/development/DEVELOPERS.md` para code style
-2. Sigue naming conventions y patterns
-3. Crea branches: `feat/`, `fix/`, `docs/`
-4. Commits descriptivos
-5. Push y crea PR
+2. Lee `docs/development/BRANCHING_STRATEGY.md` para git workflow
+3. Sigue naming conventions y patterns
+4. Crea branches: `feat/`, `fix/`, `docs/`, `refactor/`
+5. Commits descriptivos: `feat:`, `fix:`, `docs:`, etc.
+6. Push y crea PR a `main`
+7. Main branch protegido - requiere review y checks CI/CD
 
 ---
 
