@@ -63,8 +63,8 @@ INSERT INTO roles (id, nombre, descripcion, permisos, created_at) VALUES
 INSERT INTO users (id, email, password_hash, nombre, is_active, email_verified, created_at, updated_at) VALUES
     (
         '00000000-0000-0000-0000-000000000010'::uuid,
-        'admin@armentum.local',
-        '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.qVv.1qMZqJTYGO',
+        'admin@armentum.dev',
+        '$2b$12$Ueh4xJjR0VCi5Ynfl0qw2er6WC5RZpVbBvgZSqEqUTXAhZWL6t4nO',
         'Administrador',
         true,
         true,
@@ -118,8 +118,8 @@ INSERT INTO users_roles (id, user_id, role_id) VALUES
 -- ============================================================================
 
 -- Default admin credentials:
--- Email: admin@armentum.local
+-- Email: admin@armentum.dev
 -- Password: Admin123!
 -- 
 -- IMPORTANT: Change this password immediately after first deployment!
--- Run: UPDATE users SET password_hash = '<new_hash>' WHERE email = 'admin@armentum.local';
+-- Run: UPDATE users SET password_hash = '<new_hash>' WHERE email = 'admin@armentum.dev';
