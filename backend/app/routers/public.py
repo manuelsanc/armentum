@@ -18,13 +18,16 @@ def list_public_events(
     db: Session = Depends(get_db),
 ):
     """List public events with optional state filter.
-    Default: only 'planificado' or 'en_curso'."""
+    Default: only 'planificado' or 'en_curso', ordered by date ascending (upcoming first)."""
+    from datetime import date
     query = db.query(EventoPublico)
     if estado:
         query = query.filter(EventoPublico.estado == estado)
     else:
         query = query.filter(EventoPublico.estado.in_(['planificado', 'en_curso']))
-    events = query.order_by(EventoPublico.fecha.desc()).offset(offset).limit(limit).all()
+    # Only show future events and order by date ascending (upcoming first)
+    query = query.filter(EventoPublico.fecha >= date.today())
+    events = query.order_by(EventoPublico.fecha.asc()).offset(offset).limit(limit).all()
     return events
 
 @router.get("/events/{event_id}", response_model=EventoPublicoResponse)
