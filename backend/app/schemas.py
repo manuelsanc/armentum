@@ -6,6 +6,7 @@ Based on API_SPECIFICATION.md
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 from datetime import datetime, date
+from decimal import Decimal
 from uuid import UUID
 
 
@@ -102,6 +103,51 @@ class MiembroUpdate(BaseModel):
     estado: Optional[str] = Field(None, pattern="^(activo|inactivo|suspendido)$")
     telefono: Optional[str] = Field(None, max_length=20)
 
+
+# ============================================================
+# MEMBER PROFILE, REHEARSAL, ATTENDANCE SCHEMAS
+# ============================================================
+
+class MemberProfileResponse(BaseModel):
+    id: UUID
+    email: str
+    nombre: str
+    voz: str
+    fecha_ingreso: date
+    estado: str
+    telefono: Optional[str]
+    saldo_actual: Decimal
+
+class MemberProfileUpdate(BaseModel):
+    telefono: Optional[str] = None
+    voz: Optional[str] = None
+
+class RehearsalResponse(BaseModel):
+    id: UUID
+    nombre: str
+    fecha: date
+    hora: str
+    lugar: str
+    tipo: str
+    descripcion: Optional[str]
+
+class RehearsalDetailResponse(RehearsalResponse):
+    asistencia: Optional[dict] = None
+
+class AttendanceResponse(BaseModel):
+    id: UUID
+    ensayo_id: UUID
+    ensayo_nombre: str
+    ensayo_fecha: date
+    presente: bool
+    justificacion: Optional[str]
+    registrado_en: datetime
+
+class AttendanceStatsResponse(BaseModel):
+    total_ensayos: int
+    asistencias: int
+    inasistencias: int
+    porcentaje: float
 
 # ============================================================
 # EVENT (EVENTO PUBLICO) SCHEMAS

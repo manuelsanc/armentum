@@ -63,3 +63,93 @@ export interface ApiErrorResponse {
   code: string;
   status: number;
 }
+
+export interface ApiResponse<T> {
+  data?: T;
+  error?: string;
+  status: number;
+}
+
+// ============ Corista Zone Types ============
+
+// Rehearsals (Ensayos)
+export interface Rehearsal {
+  id: string;
+  titulo: string;
+  descripcion?: string;
+  fecha: string; // ISO date
+  horaInicio: string;
+  horaFin?: string;
+  lugar: string;
+  estado: "scheduled" | "completed" | "cancelled";
+  asistentes?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Attendance (Asistencias)
+export interface Attendance {
+  id: string;
+  userId: string;
+  rehearsalId: string;
+  presente: boolean;
+  justificacion?: string;
+  rehearsal?: Rehearsal;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AttendanceStats {
+  totalRehearsals: number;
+  attended: number;
+  absent: number;
+  justified: number;
+  percentage: number; // Porcentaje de asistencia
+}
+
+// Finance (Finanzas)
+export interface Cuota {
+  id: string;
+  userId: string;
+  monto: number;
+  descripcion: string;
+  vencimiento: string; // ISO date
+  estado: "pendiente" | "pagada" | "vencida";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FinanceHistory {
+  id: string;
+  userId: string;
+  cuotaId: string;
+  monto: number;
+  fechaPago: string; // ISO date
+  metodoPago: string;
+  referencia?: string;
+  cuota?: Cuota;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FinanceSummary {
+  totalPendiente: number;
+  totalPagado: number;
+  totalVencido: number;
+  cuotasPendientes: Cuota[];
+  historialPagos: FinanceHistory[];
+}
+
+// Member Profile (Perfil de Corista)
+export interface MemberProfile extends User {
+  numeroAfiliacion?: string;
+  telefonoContacto?: string;
+  direccion?: string;
+  ciudad?: string;
+  provincia?: string;
+  codigoPostal?: string;
+  voz?: string; // soprano, mezzosoprano, contralto, tenor, barítono, bajo, etc.
+  fechaIngreso?: string;
+  fotoPerfil?: string;
+  activo: boolean;
+}

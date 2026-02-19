@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import auth
 from app.routers import public
+from app.routers import members
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from app.exceptions import ArmentumException
@@ -63,6 +64,7 @@ async def root():
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(public.router, prefix="/api", tags=["public"])
+app.include_router(members.router, prefix="/api", tags=["members"])
 # app.include_router(users.router, prefix="/api/users", tags=["users"])
 # app.include_router(events.router, prefix="/api/events", tags=["events"])
 # app.include_router(attendance.router, prefix="/api/attendance", tags=["attendance"])

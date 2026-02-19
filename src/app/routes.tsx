@@ -10,6 +10,10 @@ import { Coristas } from "./pages/Coristas";
 import { Admin } from "./pages/Admin";
 import { NotFound } from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Calendario } from "./pages/Calendario";
+import { MisAsistencias } from "./pages/MisAsistencias";
+import { Finanzas } from "./pages/Finanzas";
+import { Descargas } from "./pages/Descargas";
 
 export const router = createBrowserRouter([
   {
@@ -35,6 +39,39 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredRole="admin">
             <Admin />
+          </ProtectedRoute>
+        ),
+      },
+      // Corista routes
+      {
+        path: "calendario",
+        element: (
+          <ProtectedRoute requiredRole="corista">
+            <Calendario />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "mis-asistencias",
+        element: (
+          <ProtectedRoute requiredRole="corista">
+            <MisAsistencias />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "finanzas",
+        element: (
+          <ProtectedRoute requiredRole="corista">
+            <Finanzas />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "descargas",
+        element: (
+          <ProtectedRoute requiredRole="corista">
+            <Descargas />
           </ProtectedRoute>
         ),
       },
