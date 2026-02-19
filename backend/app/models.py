@@ -24,6 +24,18 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    def __init__(self, **kwargs):
+        # Ensure default values on instantiation
+        if 'id' not in kwargs:
+            kwargs['id'] = uuid.uuid4()
+        if 'is_active' not in kwargs:
+            kwargs['is_active'] = True
+        if 'email_verified' not in kwargs:
+            kwargs['email_verified'] = False
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.utcnow()
+        super().__init__(**kwargs)
+
     roles = relationship("UserRole", back_populates="user")
     miembro = relationship("Miembro", back_populates="user", uselist=False)
 
@@ -36,6 +48,16 @@ class Role(Base):
     descripcion = Column(Text)
     permisos = Column(JSON, default={})
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    def __init__(self, **kwargs):
+        # Ensure default values on instantiation
+        if 'id' not in kwargs:
+            kwargs['id'] = uuid.uuid4()
+        if 'permisos' not in kwargs:
+            kwargs['permisos'] = {}
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.utcnow()
+        super().__init__(**kwargs)
 
     users = relationship("UserRole", back_populates="role")
 
@@ -64,6 +86,18 @@ class Miembro(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    def __init__(self, **kwargs):
+        # Ensure default values on instantiation
+        if 'id' not in kwargs:
+            kwargs['id'] = uuid.uuid4()
+        if 'estado' not in kwargs:
+            kwargs['estado'] = 'activo'
+        if 'saldo_actual' not in kwargs:
+            kwargs['saldo_actual'] = 0
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.utcnow()
+        super().__init__(**kwargs)
+
     user = relationship("User", back_populates="miembro")
     asistencias = relationship("Asistencia", back_populates="miembro")
     cuotas = relationship("Cuota", back_populates="miembro")
@@ -84,6 +118,16 @@ class EventoPublico(Base):
     created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __init__(self, **kwargs):
+        # Ensure default values on instantiation
+        if 'id' not in kwargs:
+            kwargs['id'] = uuid.uuid4()
+        if 'estado' not in kwargs:
+            kwargs['estado'] = 'planificado'
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.utcnow()
+        super().__init__(**kwargs)
 
 
 class Ensayo(Base):
@@ -115,6 +159,16 @@ class Asistencia(Base):
     registrado_por = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     registrado_en = Column(DateTime, default=datetime.utcnow)
 
+    def __init__(self, **kwargs):
+        # Ensure default values on instantiation
+        if 'id' not in kwargs:
+            kwargs['id'] = uuid.uuid4()
+        if 'presente' not in kwargs:
+            kwargs['presente'] = True
+        if 'registrado_en' not in kwargs:
+            kwargs['registrado_en'] = datetime.utcnow()
+        super().__init__(**kwargs)
+
     miembro = relationship("Miembro", back_populates="asistencias")
     ensayo = relationship("Ensayo", back_populates="asistencias")
 
@@ -132,6 +186,18 @@ class Cuota(Base):
     fecha_pago = Column(Date)
     created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    def __init__(self, **kwargs):
+        # Ensure default values on instantiation
+        if 'id' not in kwargs:
+            kwargs['id'] = uuid.uuid4()
+        if 'tipo' not in kwargs:
+            kwargs['tipo'] = 'regular'
+        if 'estado' not in kwargs:
+            kwargs['estado'] = 'pendiente'
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.utcnow()
+        super().__init__(**kwargs)
 
     miembro = relationship("Miembro", back_populates="cuotas")
 
@@ -163,4 +229,15 @@ class Archivo(Base):
     url = Column(String(255), nullable=False)
     privado = Column(Boolean, default=True)
     subido_por = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    def __init__(self, **kwargs):
+        # Ensure default values on instantiation
+        if 'id' not in kwargs:
+            kwargs['id'] = uuid.uuid4()
+        if 'privado' not in kwargs:
+            kwargs['privado'] = True
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.utcnow()
+        super().__init__(**kwargs)

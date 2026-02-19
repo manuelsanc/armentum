@@ -7,6 +7,7 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from uuid import UUID
 
 from app.database import get_db
 from app.models import User, UserRole, Role
@@ -47,7 +48,12 @@ def get_current_user(
     except (InvalidTokenError, Exception):
         raise credentials_exception
     
-    user = db.query(User).filter(User.id == token_data.user_id).first()
+    # Convert token user_id string to UUID for querying
+    try:
+        token_user_id = UUID(token_data.user_id)
+    except (ValueError, TypeError):
+        raise AuthenticationError("Invalid token")
+    user = db.query(User).filter(User.id == token_user_id).first()
     
     if user is None:
         raise UserNotFoundError("User not found")
@@ -145,7 +151,11 @@ def get_optional_user(
     
     try:
         token_data = verify_token(token, token_type="access")
-        user = db.query(User).filter(User.id == token_data.user_id).first()
+        try:
+            token_user_id = UUID(token_data.user_id)
+        except (ValueError, TypeError):
+            return None
+        user = db.query(User).filter(User.id == token_user_id).first()
         return user
     except Exception:
         return None
