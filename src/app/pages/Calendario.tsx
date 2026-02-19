@@ -87,7 +87,7 @@ export function Calendario() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {upcomingFirst.map((rehearsal) => {
-                    const { label, color } = getRehearsalStatus(rehearsal.fecha);
+                    const { color } = getRehearsalStatus(rehearsal.fecha);
                     const isSelected = selectedRehearsalId === rehearsal.id;
 
                     return (
@@ -101,12 +101,27 @@ export function Calendario() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-gray-900">{rehearsal.titulo}</h3>
-                              <span className="text-xs font-medium px-2 py-1 bg-white rounded-full text-gray-700">
-                                {label}
+                              <h3 className="font-semibold text-gray-900">
+                                {rehearsal.titulo || rehearsal.nombre}
+                              </h3>
+                              <span
+                                className={`text-xs font-medium px-2 py-1 rounded-full ${
+                                  rehearsal.tipo === "general"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : rehearsal.tipo === "seccional"
+                                      ? "bg-purple-100 text-purple-800"
+                                      : "bg-gray-100 text-gray-700"
+                                }`}
+                              >
+                                {rehearsal.tipo === "general"
+                                  ? "General"
+                                  : rehearsal.tipo === "seccional"
+                                    ? "Seccional"
+                                    : rehearsal.tipo === "otra_actividad"
+                                      ? "Otra Actividad"
+                                      : rehearsal.tipo}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-600 mb-2">{rehearsal.descripcion}</p>
                             <div className="flex flex-col gap-1 text-sm text-gray-600">
                               <div className="flex items-center gap-2">
                                 <Clock className="w-4 h-4" />
@@ -117,7 +132,7 @@ export function Calendario() {
                                     { locale: es }
                                   )}
                                   {" a las "}
-                                  {rehearsal.horaInicio}
+                                  {rehearsal.horaInicio || rehearsal.hora}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
@@ -144,7 +159,32 @@ export function Calendario() {
                   <CardContent className="pt-6 space-y-4">
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase">Título</p>
-                      <p className="text-gray-900 font-semibold">{selectedRehearsal.titulo}</p>
+                      <p className="text-gray-900 font-semibold">
+                        {selectedRehearsal.titulo || selectedRehearsal.nombre}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase">Tipo</p>
+                      <p className="text-gray-900">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            selectedRehearsal.tipo === "general"
+                              ? "bg-blue-100 text-blue-800"
+                              : selectedRehearsal.tipo === "seccional"
+                                ? "bg-purple-100 text-purple-800"
+                                : "bg-gray-100 text-gray-700"
+                          }`}
+                        >
+                          {selectedRehearsal.tipo === "general"
+                            ? "General"
+                            : selectedRehearsal.tipo === "seccional"
+                              ? "Seccional"
+                              : selectedRehearsal.tipo === "otra_actividad"
+                                ? "Otra Actividad"
+                                : selectedRehearsal.tipo}
+                        </span>
+                      </p>
                     </div>
 
                     <div>
@@ -155,7 +195,10 @@ export function Calendario() {
                         })}
                       </p>
                       <p className="text-gray-700">
-                        Hora: <span className="font-semibold">{selectedRehearsal.horaInicio}</span>
+                        Hora:{" "}
+                        <span className="font-semibold">
+                          {selectedRehearsal.horaInicio || selectedRehearsal.hora}
+                        </span>
                         {selectedRehearsal.horaFin && (
                           <>
                             {" - "}
@@ -186,13 +229,6 @@ export function Calendario() {
                         </p>
                       </div>
                     )}
-
-                    <div className="pt-4 border-t border-gray-200">
-                      <p className="text-xs font-semibold text-gray-500 uppercase">Estado</p>
-                      <p className="text-gray-900 font-semibold capitalize">
-                        {getRehearsalStatus(selectedRehearsal.fecha).label}
-                      </p>
-                    </div>
                   </CardContent>
                 </Card>
               ) : (

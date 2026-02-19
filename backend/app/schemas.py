@@ -133,8 +133,10 @@ class MemberProfileUpdate(BaseModel):
 class RehearsalResponse(BaseModel):
     id: UUID
     nombre: str
+    titulo: Optional[str] = None  # Backward compatibility
     fecha: date
     hora: str
+    horaInicio: Optional[str] = None  # Backward compatibility
     lugar: str
     tipo: str
     descripcion: Optional[str]

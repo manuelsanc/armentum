@@ -379,6 +379,8 @@ def delete_rehearsal(
     rehearsal = db.query(Ensayo).filter(Ensayo.id == rehearsal_id).first()
     if not rehearsal:
         raise HTTPException(status_code=404, detail="Rehearsal not found")
+    # Delete related attendances first to avoid FK constraint violation
+    db.query(Asistencia).filter(Asistencia.ensayo_id == rehearsal_id).delete()
     db.delete(rehearsal)
     db.commit()
     return Message(message="Rehearsal deleted")

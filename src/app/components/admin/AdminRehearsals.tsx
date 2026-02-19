@@ -32,16 +32,24 @@ import {
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import type { Rehearsal } from "../../../types";
 
 interface RehearsalFormState {
-  titulo: string;
+  nombre: string;
+  tipo: string;
   descripcion: string;
   fecha: string;
-  horaInicio: string;
-  horaFin: string;
+  hora: string;
   lugar: string;
+  cuerdas: string;
 }
+
+const REHEARSAL_TYPES = [
+  { value: "general", label: "General" },
+  { value: "seccional", label: "Seccional" },
+  { value: "otra_actividad", label: "Otra Actividad" },
+];
 
 export function AdminRehearsals(): JSX.Element {
   const {
@@ -61,12 +69,13 @@ export function AdminRehearsals(): JSX.Element {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [rehearsalToDelete, setRehearsalToDelete] = useState<string | null>(null);
   const [formState, setFormState] = useState<RehearsalFormState>({
-    titulo: "",
+    nombre: "",
+    tipo: "general",
     descripcion: "",
     fecha: "",
-    horaInicio: "",
-    horaFin: "",
+    hora: "",
     lugar: "",
+    cuerdas: "",
   });
 
   useEffect(() => {
@@ -77,22 +86,24 @@ export function AdminRehearsals(): JSX.Element {
     if (rehearsal) {
       setEditingId(rehearsal.id);
       setFormState({
-        titulo: rehearsal.titulo,
+        nombre: rehearsal.titulo || rehearsal.nombre || "",
+        tipo: rehearsal.tipo || "general",
         descripcion: rehearsal.descripcion || "",
         fecha: rehearsal.fecha,
-        horaInicio: rehearsal.horaInicio,
-        horaFin: rehearsal.horaFin || "",
+        hora: rehearsal.horaInicio || rehearsal.hora || "",
         lugar: rehearsal.lugar,
+        cuerdas: rehearsal.cuerdas || "",
       });
     } else {
       setEditingId(null);
       setFormState({
-        titulo: "",
+        nombre: "",
+        tipo: "general",
         descripcion: "",
         fecha: "",
-        horaInicio: "",
-        horaFin: "",
+        hora: "",
         lugar: "",
+        cuerdas: "",
       });
     }
     setIsDialogOpen(true);
@@ -163,14 +174,34 @@ export function AdminRehearsals(): JSX.Element {
                 <DialogDescription>Completa los datos del ensayo</DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="titulo">Título</Label>
-                  <Input
-                    id="titulo"
-                    value={formState.titulo}
-                    onChange={(e) => setFormState({ ...formState, titulo: e.target.value })}
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nombre">Nombre/Título</Label>
+                    <Input
+                      id="nombre"
+                      value={formState.nombre}
+                      onChange={(e) => setFormState({ ...formState, nombre: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="tipo">Tipo de Ensayo</Label>
+                    <Select
+                      value={formState.tipo}
+                      onValueChange={(value) => setFormState({ ...formState, tipo: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {REHEARSAL_TYPES.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="descripcion">Descripción</Label>
@@ -197,37 +228,37 @@ export function AdminRehearsals(): JSX.Element {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="horaInicio">Hora Inicio</Label>
+                    <Label htmlFor="hora">Hora</Label>
                     <Input
-                      id="horaInicio"
+                      id="hora"
                       type="time"
-                      value={formState.horaInicio}
+                      value={formState.hora}
                       onChange={(e) =>
                         setFormState({
                           ...formState,
-                          horaInicio: e.target.value,
+                          hora: e.target.value,
                         })
                       }
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="horaFin">Hora Fin</Label>
+                    <Label htmlFor="lugar">Lugar</Label>
                     <Input
-                      id="horaFin"
-                      type="time"
-                      value={formState.horaFin}
-                      onChange={(e) => setFormState({ ...formState, horaFin: e.target.value })}
+                      id="lugar"
+                      value={formState.lugar}
+                      onChange={(e) => setFormState({ ...formState, lugar: e.target.value })}
+                      required
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lugar">Lugar</Label>
+                  <Label htmlFor="cuerdas">Cuerdas (opcional)</Label>
                   <Input
-                    id="lugar"
-                    value={formState.lugar}
-                    onChange={(e) => setFormState({ ...formState, lugar: e.target.value })}
-                    required
+                    id="cuerdas"
+                    value={formState.cuerdas}
+                    onChange={(e) => setFormState({ ...formState, cuerdas: e.target.value })}
+                    placeholder="Ej: Soprano, Alto, Tenor, Bajo"
                   />
                 </div>
                 <div className="flex justify-end gap-2">
@@ -255,34 +286,36 @@ export function AdminRehearsals(): JSX.Element {
                       <TableHead>Fecha</TableHead>
                       <TableHead>Hora</TableHead>
                       <TableHead>Lugar</TableHead>
-                      <TableHead>Estado</TableHead>
+                      <TableHead>Tipo</TableHead>
                       <TableHead>Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {rehearsals.map((rehearsal) => (
                       <TableRow key={rehearsal.id}>
-                        <TableCell className="font-medium">{rehearsal.titulo}</TableCell>
-                        <TableCell>{formatDate(rehearsal.fecha)}</TableCell>
-                        <TableCell>
-                          {rehearsal.horaInicio} {rehearsal.horaFin && `- ${rehearsal.horaFin}`}
+                        <TableCell className="font-medium">
+                          {rehearsal.titulo || rehearsal.nombre}
                         </TableCell>
+                        <TableCell>{formatDate(rehearsal.fecha)}</TableCell>
+                        <TableCell>{rehearsal.horaInicio || rehearsal.hora}</TableCell>
                         <TableCell>{rehearsal.lugar}</TableCell>
                         <TableCell>
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${
-                              rehearsal.estado === "scheduled"
+                              rehearsal.tipo === "general"
                                 ? "bg-blue-100 text-blue-800"
-                                : rehearsal.estado === "completed"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-red-100 text-red-800"
+                                : rehearsal.tipo === "seccional"
+                                  ? "bg-purple-100 text-purple-800"
+                                  : "bg-gray-100 text-gray-800"
                             }`}
                           >
-                            {rehearsal.estado === "scheduled"
-                              ? "Programado"
-                              : rehearsal.estado === "completed"
-                                ? "Completado"
-                                : "Cancelado"}
+                            {rehearsal.tipo === "general"
+                              ? "General"
+                              : rehearsal.tipo === "seccional"
+                                ? "Seccional"
+                                : rehearsal.tipo === "otra_actividad"
+                                  ? "Otra Actividad"
+                                  : rehearsal.tipo}
                           </span>
                         </TableCell>
                         <TableCell className="flex gap-2">
