@@ -75,16 +75,20 @@ export interface ApiResponse<T> {
 // Rehearsals (Ensayos)
 export interface Rehearsal {
   id: string;
-  titulo: string;
+  titulo?: string;
+  nombre?: string;
   descripcion?: string;
   fecha: string; // ISO date
-  horaInicio: string;
+  horaInicio?: string;
+  hora?: string;
   horaFin?: string;
   lugar: string;
-  estado: "scheduled" | "completed" | "cancelled";
+  tipo?: string;
+  cuerdas?: string;
+  estado?: "scheduled" | "completed" | "cancelled";
   asistentes?: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Attendance (Asistencias)
