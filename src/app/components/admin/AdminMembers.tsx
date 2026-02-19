@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useAdminMembers } from "../../../hooks/useAdminMembers";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -38,9 +39,11 @@ interface MemberFormState {
   email: string;
   nombre: string;
   voz: string;
-  direccion: string;
-  telefonoContacto: string;
+  telefono?: string;
+  fecha_ingreso?: string;
   estado: string;
+  password?: string;
+  saldo_actual?: number;
 }
 
 export function AdminMembers(): JSX.Element {
@@ -49,7 +52,6 @@ export function AdminMembers(): JSX.Element {
     total,
     isLoading,
     currentPage,
-    search,
     status,
     fetchMembers,
     createMember,
@@ -69,9 +71,8 @@ export function AdminMembers(): JSX.Element {
     email: "",
     nombre: "",
     voz: "",
-    direccion: "",
-    telefonoContacto: "",
-    estado: "activo",
+    telefono: "",
+    estado: "active",
   });
 
   useEffect(() => {
@@ -94,9 +95,8 @@ export function AdminMembers(): JSX.Element {
         email: member.email,
         nombre: member.nombre || "",
         voz: member.voz || "",
-        direccion: member.direccion || "",
-        telefonoContacto: member.telefonoContacto || "",
-        estado: member.activo ? "activo" : "inactivo",
+        telefono: member.telefonoContacto || "",
+        estado: member.activo ? "active" : "inactive",
       });
     } else {
       setEditingId(null);
@@ -104,9 +104,9 @@ export function AdminMembers(): JSX.Element {
         email: "",
         nombre: "",
         voz: "",
-        direccion: "",
-        telefonoContacto: "",
-        estado: "activo",
+        telefono: "",
+        estado: "active",
+        password: "",
       });
     }
     setIsDialogOpen(true);
@@ -115,16 +115,53 @@ export function AdminMembers(): JSX.Element {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setEditingId(null);
+    setFormState({
+      email: "",
+      nombre: "",
+      voz: "",
+      telefono: "",
+      estado: "active",
+      password: "",
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validation
+    if (!formState.email || !formState.nombre) {
+      toast.error("Email y Nombre son requeridos");
+      return;
+    }
+
+    if (!editingId && !formState.password) {
+      toast.error("Contraseña es requerida para nuevos miembros");
+      return;
+    }
+
     try {
+      const payload = editingId
+        ? // For update: only include updateable fields
+          {
+            voz: formState.voz || undefined,
+            estado: formState.estado,
+            telefono: formState.telefono || undefined,
+            saldo_actual: formState.saldo_actual,
+          }
+        : // For create: include all required fields
+          {
+            email: formState.email,
+            nombre: formState.nombre,
+            password: formState.password,
+            voz: formState.voz || undefined,
+            fecha_ingreso: formState.fecha_ingreso || undefined,
+            telefono: formState.telefono || undefined,
+          };
+
       if (editingId) {
-        await updateMember(editingId, formState);
+        await updateMember(editingId, payload);
       } else {
-        await createMember(formState);
+        await createMember(payload);
       }
       handleCloseDialog();
     } catch {
@@ -211,38 +248,41 @@ export function AdminMembers(): JSX.Element {
                   <Label htmlFor="telefono">Teléfono</Label>
                   <Input
                     id="telefono"
-                    value={formState.telefonoContacto}
+                    value={formState.telefono || ""}
                     onChange={(e) =>
                       setFormState({
                         ...formState,
-                        telefonoContacto: e.target.value,
+                        telefono: e.target.value,
                       })
                     }
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="direccion">Dirección</Label>
-                  <Input
-                    id="direccion"
-                    value={formState.direccion}
-                    onChange={(e) => setFormState({ ...formState, direccion: e.target.value })}
-                  />
+                  <Label htmlFor="estado">Estado</Label>
+                  <Select
+                    value={formState.estado}
+                    onValueChange={(value) => setFormState({ ...formState, estado: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Activo</SelectItem>
+                      <SelectItem value="inactive">Inactivo</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                {editingId && (
+                {!editingId && (
                   <div className="space-y-2">
-                    <Label htmlFor="estado">Estado</Label>
-                    <Select
-                      value={formState.estado}
-                      onValueChange={(value) => setFormState({ ...formState, estado: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona estado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="activo">Activo</SelectItem>
-                        <SelectItem value="inactivo">Inactivo</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="password">Contraseña</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={formState.password || ""}
+                      onChange={(e) => setFormState({ ...formState, password: e.target.value })}
+                      placeholder="Mínimo 6 caracteres"
+                      required={!editingId}
+                    />
                   </div>
                 )}
                 <div className="flex justify-end gap-2">
