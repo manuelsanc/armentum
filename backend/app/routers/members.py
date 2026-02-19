@@ -112,8 +112,10 @@ def list_rehearsals(
         {
             "id": r.id,
             "nombre": r.nombre,
+            "titulo": r.nombre,  # Backward compatibility
             "fecha": r.fecha,
             "hora": r.hora,
+            "horaInicio": r.hora,  # Backward compatibility
             "lugar": r.lugar,
             "tipo": r.tipo,
             "descripcion": r.descripcion,
@@ -149,8 +151,10 @@ def get_rehearsal_detail(
     return {
         "id": rehearsal.id,
         "nombre": rehearsal.nombre,
+        "titulo": rehearsal.nombre,  # Backward compatibility
         "fecha": rehearsal.fecha,
         "hora": rehearsal.hora,
+        "horaInicio": rehearsal.hora,  # Backward compatibility
         "lugar": rehearsal.lugar,
         "tipo": rehearsal.tipo,
         "descripcion": rehearsal.descripcion,

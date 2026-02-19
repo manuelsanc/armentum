@@ -101,7 +101,9 @@ export function Calendario() {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-gray-900">{rehearsal.titulo}</h3>
+                              <h3 className="font-semibold text-gray-900">
+                                {rehearsal.titulo || rehearsal.nombre}
+                              </h3>
                               <span className="text-xs font-medium px-2 py-1 bg-white rounded-full text-gray-700">
                                 {label}
                               </span>
@@ -117,7 +119,7 @@ export function Calendario() {
                                     { locale: es }
                                   )}
                                   {" a las "}
-                                  {rehearsal.horaInicio}
+                                  {rehearsal.horaInicio || rehearsal.hora}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
@@ -144,7 +146,9 @@ export function Calendario() {
                   <CardContent className="pt-6 space-y-4">
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase">Título</p>
-                      <p className="text-gray-900 font-semibold">{selectedRehearsal.titulo}</p>
+                      <p className="text-gray-900 font-semibold">
+                        {selectedRehearsal.titulo || selectedRehearsal.nombre}
+                      </p>
                     </div>
 
                     <div>
@@ -155,7 +159,10 @@ export function Calendario() {
                         })}
                       </p>
                       <p className="text-gray-700">
-                        Hora: <span className="font-semibold">{selectedRehearsal.horaInicio}</span>
+                        Hora:{" "}
+                        <span className="font-semibold">
+                          {selectedRehearsal.horaInicio || selectedRehearsal.hora}
+                        </span>
                         {selectedRehearsal.horaFin && (
                           <>
                             {" - "}
