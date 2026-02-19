@@ -127,8 +127,11 @@ def require_roles(required_roles: list[str]):
             )
         
         return current_user
-    
+
     return role_checker
+
+
+require_admin = require_roles(["admin"])
 
 
 def get_optional_user(

@@ -2,7 +2,7 @@ import { useAttendance } from "../../hooks/useAttendance";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Progress } from "../components/ui/progress";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { AlertCircle, Loader, CheckCircle, XCircle, HelpCircle } from "lucide-react";
+import { AlertCircle, Loader, CheckCircle, XCircle } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -39,7 +39,7 @@ export function MisAsistencias() {
 
         {/* Statistics */}
         {stats && (
-          <div className="grid md:grid-cols-4 gap-4 mb-8">
+          <div className="grid md:grid-cols-3 gap-4 mb-8">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-gray-600">
@@ -47,7 +47,9 @@ export function MisAsistencias() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalRehearsals}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.total_ensayos ?? stats.totalRehearsals ?? 0}
+                </p>
               </CardContent>
             </Card>
 
@@ -59,7 +61,9 @@ export function MisAsistencias() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold text-green-700">{stats.attended}</p>
+                <p className="text-2xl font-bold text-green-700">
+                  {stats.asistencias ?? stats.attended ?? 0}
+                </p>
               </CardContent>
             </Card>
 
@@ -71,19 +75,9 @@ export function MisAsistencias() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold text-red-700">{stats.absent}</p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-yellow-200 bg-yellow-50">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-yellow-700 flex items-center gap-2">
-                  <HelpCircle className="w-4 h-4" />
-                  Justificadas
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold text-yellow-700">{stats.justified}</p>
+                <p className="text-2xl font-bold text-red-700">
+                  {stats.inasistencias ?? stats.absent ?? 0}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -101,13 +95,14 @@ export function MisAsistencias() {
                 <div className="flex items-end justify-between mb-2">
                   <span className="text-sm font-medium text-gray-700">Tasa de Asistencia</span>
                   <span className="text-3xl font-bold text-red-600">
-                    {stats.percentage.toFixed(1)}%
+                    {(stats.porcentaje ?? stats.percentage ?? 0).toFixed(1)}%
                   </span>
                 </div>
-                <Progress value={stats.percentage} className="h-3" />
+                <Progress value={stats.porcentaje ?? stats.percentage ?? 0} className="h-3" />
               </div>
               <p className="text-sm text-gray-600">
-                Has asistido a {stats.attended} de {stats.totalRehearsals} ensayos
+                Has asistido a {stats.asistencias ?? stats.attended ?? 0} de{" "}
+                {stats.total_ensayos ?? stats.totalRehearsals ?? 0} ensayos
               </p>
             </CardContent>
           </Card>
@@ -148,18 +143,22 @@ export function MisAsistencias() {
                         } transition-colors`}
                       >
                         <td className="px-4 py-4">
-                          {format(
-                            parseISO(record.rehearsal?.fecha || ""),
-                            "d 'de' MMMM 'de' yyyy",
-                            { locale: es }
-                          )}
+                          {record.ensayo_fecha || record.rehearsal?.fecha
+                            ? format(
+                                parseISO(record.ensayo_fecha || record.rehearsal?.fecha || ""),
+                                "d 'de' MMMM 'de' yyyy",
+                                { locale: es }
+                              )
+                            : "-"}
                         </td>
                         <td className="px-4 py-4">
                           <div>
                             <p className="font-semibold text-gray-900">
-                              {record.rehearsal?.titulo || "Ensayo"}
+                              {record.ensayo_nombre || record.rehearsal?.titulo || "Ensayo"}
                             </p>
-                            <p className="text-xs text-gray-600">{record.rehearsal?.lugar}</p>
+                            {record.rehearsal?.lugar && (
+                              <p className="text-xs text-gray-600">{record.rehearsal?.lugar}</p>
+                            )}
                           </div>
                         </td>
                         <td className="px-4 py-4">

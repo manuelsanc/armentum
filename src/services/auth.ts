@@ -25,10 +25,11 @@ interface BackendLoginResponse {
 function mapBackendUserToUser(backendUser: BackendUser): User {
   // Determine userType from roles array
   let userType: "admin" | "corista" | "public" = "public";
-  if (backendUser.roles && backendUser.roles.length > 0) {
-    if (backendUser.roles.includes("admin") || backendUser.roles.includes("director")) {
+  const roles = backendUser.roles?.map((role) => role.toLowerCase()) ?? [];
+  if (roles.length > 0) {
+    if (roles.includes("admin") || roles.includes("director")) {
       userType = "admin";
-    } else if (backendUser.roles.includes("corista")) {
+    } else if (roles.includes("corista")) {
       userType = "corista";
     }
   }

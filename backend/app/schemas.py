@@ -11,6 +11,14 @@ from uuid import UUID
 
 
 # ============================================================
+# CONSTANTS
+# ============================================================
+
+# Valid voice types for choir members
+VOZ_PATTERN = "^(soprano1|soprano2|contralto1|contralto2|tenor1|tenor2|bajo1|bajo2|director|pianista)$"
+
+
+# ============================================================
 # USER SCHEMAS
 # ============================================================
 
@@ -77,7 +85,7 @@ class RefreshTokenRequest(BaseModel):
 # ============================================================
 
 class MiembroBase(BaseModel):
-    voz: str = Field(..., pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    voz: str = Field(..., pattern=VOZ_PATTERN)
     fecha_ingreso: date
     telefono: Optional[str] = Field(None, max_length=20)
 
@@ -99,7 +107,7 @@ class MiembroResponse(MiembroBase):
 
 
 class MiembroUpdate(BaseModel):
-    voz: Optional[str] = Field(None, pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    voz: Optional[str] = Field(None, pattern=VOZ_PATTERN)
     estado: Optional[str] = Field(None, pattern="^(activo|inactivo|suspendido)$")
     telefono: Optional[str] = Field(None, max_length=20)
 
@@ -274,10 +282,17 @@ class CuotaResponse(CuotaBase):
     miembro_id: UUID
     estado: str
     fecha_pago: Optional[date] = None
-    created_by: UUID
+    created_by: Optional[UUID] = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class FinanceSummaryResponse(BaseModel):
+    """Summary of member's financial status"""
+    totalIngresos: float = Field(..., description="Total amount paid")
+    totalPendiente: float = Field(..., description="Total pending amount")
+    totalVencido: float = Field(..., description="Total overdue amount")
 
 
 class CuotaUpdate(BaseModel):
@@ -287,6 +302,73 @@ class CuotaUpdate(BaseModel):
     fecha_vencimiento: Optional[date] = None
     estado: Optional[str] = Field(None, pattern="^(pendiente|pagado|atrasado)$")
     fecha_pago: Optional[date] = None
+
+
+class AdminMemberCreate(BaseModel):
+    email: EmailStr
+    nombre: str = Field(..., min_length=2, max_length=255)
+    password: str = Field(..., min_length=8, max_length=100)
+    voz: str = Field(..., pattern=VOZ_PATTERN)
+    fecha_ingreso: date
+    telefono: Optional[str] = Field(None, max_length=20)
+
+
+class AdminMemberUpdate(BaseModel):
+    voz: Optional[str] = Field(None, pattern=VOZ_PATTERN)
+    estado: Optional[str] = Field(None, pattern="^(activo|inactivo|suspendido)$")
+    telefono: Optional[str] = Field(None, max_length=20)
+    saldo_actual: Optional[Decimal] = Field(None, ge=0)
+
+
+class AdminMemberResponse(BaseModel):
+    id: UUID
+    nombre: str
+    email: EmailStr
+    voz: str
+    estado: str
+    fecha_ingreso: date
+    telefono: Optional[str]
+    saldo_actual: Decimal
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AdminMemberListResponse(BaseModel):
+    total: int
+    limit: int
+    offset: int
+    members: list[AdminMemberResponse]
+
+
+class AdminAttendanceReportRecord(BaseModel):
+    id: UUID
+    miembro_id: UUID
+    miembro_nombre: str
+    ensayo_id: UUID
+    ensayo_nombre: str
+    presente: bool
+    justificacion: Optional[str]
+    registrado_en: datetime
+
+
+class AdminAttendanceReportResponse(BaseModel):
+    total: int
+    presentes: int
+    ausentes: int
+    porcentaje_presencia: float
+    records: list[AdminAttendanceReportRecord]
+
+
+class AdminFinancePaymentRequest(BaseModel):
+    cuota_id: UUID
+    fecha_pago: date
+
+
+class AdminFinanceReportResponse(BaseModel):
+    total_ingresos: float
+    total_pendiente: float
+    total_vencido: float
+    cuotas: list[CuotaResponse]
 
 
 # ============================================================
@@ -322,7 +404,7 @@ class ComunicadoResponse(ComunicadoBase):
 class ArchivoBase(BaseModel):
     nombre: str = Field(..., min_length=1, max_length=255)
     tipo: str = Field(..., pattern="^(partitura|grabacion|otro)$")
-    voz: Optional[str] = Field(None, pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    voz: Optional[str] = Field(None, pattern=VOZ_PATTERN)
     evento_id: Optional[UUID] = None
     ensayo_id: Optional[UUID] = None
     privado: bool = True

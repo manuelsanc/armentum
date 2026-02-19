@@ -19,6 +19,7 @@ from app.schemas import (
     AttendanceResponse,
     AttendanceStatsResponse,
     CuotaResponse,
+    FinanceSummaryResponse,
 )
 
 router = APIRouter()
@@ -256,3 +257,44 @@ def payment_history(
         .all()
     )
     return paid
+
+
+@router.get("/finance/me/summary", response_model=FinanceSummaryResponse)
+def get_finance_summary(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get financial summary for the authenticated member.
+    """
+    from sqlalchemy import func
+    from decimal import Decimal
+    
+    member = db.query(Miembro).filter(Miembro.user_id == current_user.id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member profile not found")
+    
+    # Calculate totals by status
+    total_pagado = db.query(func.sum(Cuota.monto)).filter(
+        Cuota.miembro_id == member.id,
+        Cuota.estado == "pagada"
+    ).scalar() or Decimal(0)
+    
+    total_pendiente = db.query(func.sum(Cuota.monto)).filter(
+        Cuota.miembro_id == member.id,
+        Cuota.estado == "pendiente"
+    ).scalar() or Decimal(0)
+    
+    # Vencidas are pendientes with fecha_vencimiento < today
+    from datetime import date as today_date
+    total_vencido = db.query(func.sum(Cuota.monto)).filter(
+        Cuota.miembro_id == member.id,
+        Cuota.estado == "pendiente",
+        Cuota.fecha_vencimiento < today_date.today()
+    ).scalar() or Decimal(0)
+    
+    return {
+        "totalIngresos": float(total_pagado),
+        "totalPendiente": float(total_pendiente),
+        "totalVencido": float(total_vencido),
+    }

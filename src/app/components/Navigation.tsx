@@ -1,11 +1,24 @@
 import { Link, useLocation, useNavigate } from "react-router";
-import { Menu, X, LogIn, LogOut, User, Shield } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogIn,
+  LogOut,
+  User,
+  Shield,
+  ChevronDown,
+  Calendar,
+  Download,
+  CheckCircle,
+  CreditCard,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import logo from "../../assets/isotipo.png";
 import { useAuthStore } from "../../stores/authStore";
 
 export function Navigation(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPortalMenuOpen, setIsPortalMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout, hydrate, isInitializing } = useAuthStore();
@@ -14,6 +27,10 @@ export function Navigation(): JSX.Element {
   useEffect(() => {
     hydrate();
   }, [hydrate]);
+
+  useEffect(() => {
+    setIsPortalMenuOpen(false);
+  }, [location.pathname]);
 
   const navLinks = [
     { path: "/", label: "Inicio" },
@@ -40,6 +57,14 @@ export function Navigation(): JSX.Element {
     if (!user) return "/login";
     return user.userType === "admin" ? "/admin" : "/coristas";
   };
+
+  const coristaMenuLinks = [
+    { path: "/coristas", label: "Portal Corista", icon: User },
+    { path: "/calendario", label: "Calendario de Ensayos", icon: Calendar },
+    { path: "/mis-asistencias", label: "Mis Asistencias", icon: CheckCircle },
+    { path: "/finanzas", label: "Mis Finanzas", icon: CreditCard },
+    { path: "/descargas", label: "Centro de Descargas", icon: Download },
+  ];
 
   if (isInitializing) {
     return (
@@ -89,17 +114,49 @@ export function Navigation(): JSX.Element {
             <div className="flex items-center gap-2 ml-4 border-l border-gray-300 pl-4">
               {isAuth && user ? (
                 <>
-                  <Link
-                    to={getDashboardPath()}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                  >
-                    {user.userType === "admin" ? (
+                  {user.userType === "admin" ? (
+                    <Link
+                      to={getDashboardPath()}
+                      className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                    >
                       <Shield className="w-4 h-4" />
-                    ) : (
-                      <User className="w-4 h-4" />
-                    )}
-                    <span className="text-sm">{user.userType === "admin" ? "Admin" : "Portal"}</span>
-                  </Link>
+                      <span className="text-sm">Admin</span>
+                    </Link>
+                  ) : (
+                    <div className="relative">
+                      <button
+                        onClick={() => setIsPortalMenuOpen((prev) => !prev)}
+                        className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        <span className="text-sm">Portal</span>
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform ${
+                            isPortalMenuOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+                      <div
+                        className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 transition-all duration-150 ${
+                          isPortalMenuOpen
+                            ? "opacity-100 translate-y-0 pointer-events-auto"
+                            : "opacity-0 -translate-y-2 pointer-events-none"
+                        }`}
+                      >
+                        {coristaMenuLinks.map(({ path, label, icon: Icon }) => (
+                          <Link
+                            key={path}
+                            to={path}
+                            onClick={() => setIsPortalMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+                          >
+                            <Icon className="w-4 h-4" />
+                            <span>{label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
@@ -145,17 +202,36 @@ export function Navigation(): JSX.Element {
                   {link.label}
                 </Link>
               ))}
-              
+
               {isAuth && user ? (
                 <>
-                  <Link
-                    to={getDashboardPath()}
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 mt-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors border-t border-gray-200 pt-4"
-                  >
-                    {user.userType === "admin" ? <Shield className="w-4 h-4" /> : <User className="w-4 h-4" />}
-                    <span>{user.userType === "admin" ? "Panel Admin" : "Portal Coristas"}</span>
-                  </Link>
+                  {user.userType === "admin" ? (
+                    <Link
+                      to={getDashboardPath()}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 mt-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors border-t border-gray-200 pt-4"
+                    >
+                      <Shield className="w-4 h-4" />
+                      <span>Panel Admin</span>
+                    </Link>
+                  ) : (
+                    <div className="pt-4 border-t border-gray-200 flex flex-col gap-2">
+                      {coristaMenuLinks.map(({ path, label, icon: Icon }) => (
+                        <Link
+                          key={path}
+                          to={path}
+                          onClick={() => {
+                            setIsOpen(false);
+                            setIsPortalMenuOpen(false);
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
