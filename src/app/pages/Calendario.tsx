@@ -122,7 +122,6 @@ export function Calendario() {
                                       : rehearsal.tipo}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-600 mb-2">{rehearsal.descripcion}</p>
                             <div className="flex flex-col gap-1 text-sm text-gray-600">
                               <div className="flex items-center gap-2">
                                 <Clock className="w-4 h-4" />
