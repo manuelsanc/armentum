@@ -1,15 +1,15 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import { 
-  Music, 
-  Calendar, 
-  FileText, 
-  Download, 
-  Clock, 
-  MapPin, 
+import { useNavigate, Link } from "react-router";
+import {
+  Music,
+  Calendar,
+  FileText,
+  Download,
+  Clock,
+  MapPin,
   LogOut,
   Bell,
-  CheckCircle
+  CheckCircle,
 } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
 
@@ -34,22 +34,22 @@ export function Coristas(): JSX.Element {
       time: "19:00 - 21:30",
       location: "Sala de Ensayos Armentum",
       repertoire: "Réquiem de Mozart - Movimientos 1-3",
-      notes: "Traer partitura marcada"
+      notes: "Traer partitura marcada",
     },
     {
       date: "2026-02-24",
       time: "19:00 - 21:30",
       location: "Sala de Ensayos Armentum",
       repertoire: "Réquiem de Mozart - Movimientos 4-6",
-      notes: "Ensayo sectorial primeros 30 minutos"
+      notes: "Ensayo sectorial primeros 30 minutos",
     },
     {
       date: "2026-02-27",
       time: "19:00 - 21:30",
       location: "Sala de Ensayos Armentum",
       repertoire: "Obra completa con orquesta",
-      notes: "IMPORTANTE: Ensayo conjunto con orquesta"
-    }
+      notes: "IMPORTANTE: Ensayo conjunto con orquesta",
+    },
   ];
 
   const scores = [
@@ -58,7 +58,7 @@ export function Coristas(): JSX.Element {
     { id: 3, title: "Réquiem - Mozart (Tenor)", format: "PDF", size: "2.2 MB" },
     { id: 4, title: "Réquiem - Mozart (Bajo)", format: "PDF", size: "2.0 MB" },
     { id: 5, title: "Ave Verum Corpus - Mozart", format: "PDF", size: "450 KB" },
-    { id: 6, title: "Lux Aeterna - Whitacre", format: "PDF", size: "890 KB" }
+    { id: 6, title: "Lux Aeterna - Whitacre", format: "PDF", size: "890 KB" },
   ];
 
   const announcements = [
@@ -67,30 +67,35 @@ export function Coristas(): JSX.Element {
       title: "Cambio de Horario - Ensayo del 24 de Febrero",
       date: "2026-02-15",
       message: "El ensayo sectorial empezará 30 minutos antes. Por favor lleguen a las 18:30.",
-      priority: "high"
+      priority: "high",
     },
     {
       id: 2,
       title: "Confirmación de Asistencia - Concierto 22 de Marzo",
       date: "2026-02-12",
       message: "Por favor confirmen su asistencia al concierto antes del 20 de febrero.",
-      priority: "medium"
+      priority: "medium",
     },
     {
       id: 3,
       title: "Nueva Partitura Disponible",
       date: "2026-02-10",
-      message: "Ya está disponible la partitura de 'Lux Aeterna' de Whitacre en la sección de partituras.",
-      priority: "low"
-    }
+      message:
+        "Ya está disponible la partitura de 'Lux Aeterna' de Whitacre en la sección de partituras.",
+      priority: "low",
+    },
   ];
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "high": return "border-red-500 bg-red-50";
-      case "medium": return "border-orange-500 bg-orange-50";
-      case "low": return "border-blue-500 bg-blue-50";
-      default: return "border-gray-500 bg-gray-50";
+      case "high":
+        return "border-red-500 bg-red-50";
+      case "medium":
+        return "border-orange-500 bg-orange-50";
+      case "low":
+        return "border-blue-500 bg-blue-50";
+      default:
+        return "border-gray-500 bg-gray-50";
     }
   };
 
@@ -101,7 +106,9 @@ export function Coristas(): JSX.Element {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl text-gray-900">Portal de Coristas</h1>
-              <p className="text-gray-600">Bienvenido/a, {user?.nombre || user?.email?.split("@")[0] || "Corista"}</p>
+              <p className="text-gray-600">
+                Bienvenido/a, {user?.nombre || user?.email?.split("@")[0] || "Corista"}
+              </p>
             </div>
             <button
               onClick={handleLogout}
@@ -172,7 +179,7 @@ export function Coristas(): JSX.Element {
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="text-gray-900">{announcement.title}</h3>
                       <span className="text-xs text-gray-600">
-                        {new Date(announcement.date).toLocaleDateString('es-ES')}
+                        {new Date(announcement.date).toLocaleDateString("es-ES")}
                       </span>
                     </div>
                     <p className="text-sm text-gray-700">{announcement.message}</p>
@@ -226,10 +233,10 @@ export function Coristas(): JSX.Element {
                 {nextRehearsals.map((rehearsal, index) => (
                   <div key={index} className="border-l-4 border-red-600 pl-4 py-2">
                     <p className="text-gray-900 mb-2">
-                      {new Date(rehearsal.date).toLocaleDateString('es-ES', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long'
+                      {new Date(rehearsal.date).toLocaleDateString("es-ES", {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "long",
                       })}
                     </p>
                     <div className="space-y-1 text-sm text-gray-600">
@@ -259,18 +266,34 @@ export function Coristas(): JSX.Element {
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg mb-4 text-gray-900">Enlaces Rápidos</h3>
               <div className="space-y-2">
-                <a href="#" className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-700">
-                  Mi Perfil
-                </a>
-                <a href="#" className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-700">
-                  Historial de Asistencia
-                </a>
-                <a href="#" className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-700">
-                  Grabaciones de Ensayos
-                </a>
-                <a href="#" className="block p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-700">
-                  Contactar al Director
-                </a>
+                <Link
+                  to="/calendario"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
+                >
+                  <span>Calendario de Ensayos</span>
+                  <Calendar className="w-4 h-4 text-red-600" />
+                </Link>
+                <Link
+                  to="/mis-asistencias"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
+                >
+                  <span>Mis Asistencias</span>
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                </Link>
+                <Link
+                  to="/finanzas"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
+                >
+                  <span>Mis Finanzas</span>
+                  <FileText className="w-4 h-4 text-orange-600" />
+                </Link>
+                <Link
+                  to="/descargas"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-700"
+                >
+                  <span>Centro de Descargas</span>
+                  <Download className="w-4 h-4 text-blue-600" />
+                </Link>
               </div>
             </div>
           </div>
