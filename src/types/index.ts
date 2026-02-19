@@ -28,20 +28,34 @@ export interface RegisterRequest {
 
 export interface Event {
   id: string;
-  title: string;
-  description: string;
-  date: string;
-  location: string;
-  capacity: number;
+  nombre: string;
+  descripcion: string;
+  fecha: string;
+  hora: string;
+  lugar: string;
+  tipo: string;
+  estado: string;
+  imagen_url?: string;
+  // Campos alternativos por compatibilidad
+  title?: string;
+  description?: string;
+  date?: string;
+  location?: string;
+  capacity?: number;
 }
 
 export interface News {
   id: string;
-  title: string;
-  content: string;
-  author: string;
-  createdAt: string;
-  updatedAt: string;
+  titulo: string;
+  contenido: string;
+  created_at: string;
+  autor?: string;
+  // Campos alternativos por compatibilidad
+  title?: string;
+  content?: string;
+  author?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ApiErrorResponse {
