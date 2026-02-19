@@ -274,7 +274,7 @@ class CuotaResponse(CuotaBase):
     miembro_id: UUID
     estado: str
     fecha_pago: Optional[date] = None
-    created_by: UUID
+    created_by: Optional[UUID] = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

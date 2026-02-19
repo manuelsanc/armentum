@@ -90,21 +90,29 @@ export interface Rehearsal {
 // Attendance (Asistencias)
 export interface Attendance {
   id: string;
-  userId: string;
-  rehearsalId: string;
+  miembro_id?: string;
+  ensayo_id?: string;
+  rehearsalId?: string;
   presente: boolean;
   justificacion?: string;
+  ensayo_nombre?: string;
+  ensayo_fecha?: string;
   rehearsal?: Rehearsal;
-  createdAt: string;
-  updatedAt: string;
+  registrado_en?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AttendanceStats {
-  totalRehearsals: number;
-  attended: number;
-  absent: number;
-  justified: number;
-  percentage: number; // Porcentaje de asistencia
+  total_ensayos?: number;
+  totalRehearsals?: number;
+  asistencias?: number;
+  attended?: number;
+  inasistencias?: number;
+  absent?: number;
+  justified?: number;
+  porcentaje?: number;
+  percentage?: number; // Porcentaje de asistencia
 }
 
 // Finance (Finanzas)
