@@ -1,19 +1,9 @@
 """
-Vercel serverless function - ultra simple version for debugging
+Vercel/Railway serverless function entry point for FastAPI.
+Uses Mangum as ASGI adapter for serverless environments.
 """
+from mangum import Mangum
+from app.main import app
 
-def handler(event, context):
-    """Minimal handler"""
-    import json
-    
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps({
-            "status": "ok",
-            "message": "Hello from Armentum API",
-            "path": event.get("path", "unknown")
-        })
-    }
+# Handler for serverless environments
+handler = Mangum(app, lifespan="off")
