@@ -148,8 +148,12 @@ export interface MemberProfile extends User {
   ciudad?: string;
   provincia?: string;
   codigoPostal?: string;
-  voz?: string; // soprano, mezzosoprano, contralto, tenor, barítono, bajo, etc.
+  voz?: string; // Soprano, Alto, Tenor, Bajo
   fechaIngreso?: string;
+  fecha_ingreso?: string;
   fotoPerfil?: string;
-  activo: boolean;
+  estado?: string;
+  activo?: boolean;
+  telefono?: string;
+  saldo_actual?: number;
 }

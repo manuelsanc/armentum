@@ -40,11 +40,45 @@ interface MemberFormState {
   nombre: string;
   voz: string;
   telefono?: string;
-  fecha_ingreso?: string;
+  fecha_ingreso: string;
   estado: string;
   password?: string;
-  saldo_actual?: number;
 }
+
+const VOICE_OPTIONS = ["Soprano", "Alto", "Tenor", "Bajo"] as const;
+
+const STATUS_OPTIONS = [
+  { value: "activo", label: "Activo" },
+  { value: "inactivo", label: "Inactivo" },
+  { value: "suspendido", label: "Suspendido" },
+];
+
+const formatDate = (input?: string): string => {
+  if (!input) return new Date().toISOString().slice(0, 10);
+  const date = new Date(input);
+  if (Number.isNaN(date.getTime())) return new Date().toISOString().slice(0, 10);
+  return date.toISOString().slice(0, 10);
+};
+
+const resolveVoice = (voice?: string | null): string => {
+  if (!voice) return VOICE_OPTIONS[0];
+  const normalized = voice.trim();
+  const match = VOICE_OPTIONS.find((option) => option.toLowerCase() === normalized.toLowerCase());
+  return match ?? VOICE_OPTIONS[0];
+};
+
+const resolveStatus = (estado?: string, activo?: boolean): string => {
+  if (estado) return estado;
+  if (typeof activo === "boolean") {
+    return activo ? "activo" : "inactivo";
+  }
+  return "activo";
+};
+
+const getStatusLabel = (estado: string): string => {
+  const match = STATUS_OPTIONS.find((option) => option.value === estado);
+  return match ? match.label : estado;
+};
 
 export function AdminMembers(): JSX.Element {
   const {
@@ -70,9 +104,11 @@ export function AdminMembers(): JSX.Element {
   const [formState, setFormState] = useState<MemberFormState>({
     email: "",
     nombre: "",
-    voz: "",
+    voz: "Soprano",
     telefono: "",
-    estado: "active",
+    fecha_ingreso: new Date().toISOString().slice(0, 10),
+    estado: "activo",
+    password: "",
   });
 
   useEffect(() => {
@@ -88,24 +124,32 @@ export function AdminMembers(): JSX.Element {
     filterByStatus(value === "all" ? "" : value);
   };
 
+  const statusFilterValue = status || "all";
+
+  const resolveMemberStatus = (member: MemberProfile): string =>
+    resolveStatus(member.estado, member.activo);
+
   const handleOpenDialog = (member?: MemberProfile) => {
     if (member) {
       setEditingId(member.id);
       setFormState({
         email: member.email,
         nombre: member.nombre || "",
-        voz: member.voz || "",
-        telefono: member.telefonoContacto || "",
-        estado: member.activo ? "active" : "inactive",
+        voz: resolveVoice(member.voz),
+        telefono: member.telefonoContacto || member.telefono || "",
+        fecha_ingreso: formatDate(member.fechaIngreso || member.fecha_ingreso),
+        estado: resolveStatus(member.estado, member.activo),
+        password: "",
       });
     } else {
       setEditingId(null);
       setFormState({
         email: "",
         nombre: "",
-        voz: "",
+        voz: VOICE_OPTIONS[0],
         telefono: "",
-        estado: "active",
+        fecha_ingreso: new Date().toISOString().slice(0, 10),
+        estado: "activo",
         password: "",
       });
     }
@@ -118,9 +162,10 @@ export function AdminMembers(): JSX.Element {
     setFormState({
       email: "",
       nombre: "",
-      voz: "",
+      voz: VOICE_OPTIONS[0],
       telefono: "",
-      estado: "active",
+      fecha_ingreso: new Date().toISOString().slice(0, 10),
+      estado: "activo",
       password: "",
     });
   };
@@ -141,27 +186,27 @@ export function AdminMembers(): JSX.Element {
 
     try {
       const payload = editingId
-        ? // For update: only include updateable fields
-          {
+        ? {
             voz: formState.voz || undefined,
             estado: formState.estado,
             telefono: formState.telefono || undefined,
-            saldo_actual: formState.saldo_actual,
           }
-        : // For create: include all required fields
-          {
+        : {
             email: formState.email,
             nombre: formState.nombre,
             password: formState.password,
-            voz: formState.voz || undefined,
-            fecha_ingreso: formState.fecha_ingreso || undefined,
+            voz: formState.voz,
+            fecha_ingreso: formState.fecha_ingreso,
             telefono: formState.telefono || undefined,
           };
 
       if (editingId) {
         await updateMember(editingId, payload);
       } else {
-        await createMember(payload);
+        const created = await createMember(payload);
+        if (created && formState.estado !== "activo") {
+          await updateMember(created.id, { estado: formState.estado });
+        }
       }
       handleCloseDialog();
     } catch {
@@ -235,12 +280,11 @@ export function AdminMembers(): JSX.Element {
                       <SelectValue placeholder="Selecciona voz" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="soprano">Soprano</SelectItem>
-                      <SelectItem value="mezzosoprano">Mezzosoprano</SelectItem>
-                      <SelectItem value="contralto">Contralto</SelectItem>
-                      <SelectItem value="tenor">Tenor</SelectItem>
-                      <SelectItem value="barítono">Barítono</SelectItem>
-                      <SelectItem value="bajo">Bajo</SelectItem>
+                      {VOICE_OPTIONS.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -258,6 +302,22 @@ export function AdminMembers(): JSX.Element {
                   />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="fecha_ingreso">Fecha de ingreso</Label>
+                  <Input
+                    id="fecha_ingreso"
+                    type="date"
+                    value={formState.fecha_ingreso}
+                    onChange={(e) =>
+                      setFormState({
+                        ...formState,
+                        fecha_ingreso: e.target.value,
+                      })
+                    }
+                    required
+                    disabled={Boolean(editingId)}
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="estado">Estado</Label>
                   <Select
                     value={formState.estado}
@@ -267,8 +327,11 @@ export function AdminMembers(): JSX.Element {
                       <SelectValue placeholder="Selecciona estado" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">Activo</SelectItem>
-                      <SelectItem value="inactive">Inactivo</SelectItem>
+                      {STATUS_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -306,14 +369,17 @@ export function AdminMembers(): JSX.Element {
                 className="pl-10"
               />
             </div>
-            <Select value={status || "all"} onValueChange={handleStatusChange}>
+            <Select value={statusFilterValue} onValueChange={handleStatusChange}>
               <SelectTrigger className="w-full sm:w-[200px]">
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="active">Activos</SelectItem>
-                <SelectItem value="inactive">Inactivos</SelectItem>
+                {STATUS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -344,12 +410,12 @@ export function AdminMembers(): JSX.Element {
                         <TableCell>
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${
-                              member.activo
+                              resolveMemberStatus(member) === "activo"
                                 ? "bg-green-100 text-green-800"
                                 : "bg-red-100 text-red-800"
                             }`}
                           >
-                            {member.activo ? "Activo" : "Inactivo"}
+                            {getStatusLabel(resolveMemberStatus(member))}
                           </span>
                         </TableCell>
                         <TableCell className="flex gap-2">

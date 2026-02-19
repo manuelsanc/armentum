@@ -42,9 +42,7 @@ export async function updateMember(
 }
 
 export async function deactivateMember(id: string): Promise<ApiResponse<MemberProfile>> {
-  return apiCall<MemberProfile>(`/admin/members/${id}/deactivate`, "PUT", {
-    activo: false,
-  });
+  return apiCall<MemberProfile>(`/admin/members/${id}`, "DELETE");
 }
 
 export async function getMemberById(id: string): Promise<ApiResponse<MemberProfile>> {
