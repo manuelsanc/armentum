@@ -107,9 +107,11 @@ export async function getRehearsalById(id: string): Promise<ApiResponse<Rehearsa
 // ============ ATTENDANCE ============
 
 export async function getRehearsalAttendance(
-  rehearsalId: string
+  rehearsalId: string,
+  voz?: string
 ): Promise<ApiResponse<Attendance[]>> {
-  return apiCall<Attendance[]>(`/admin/rehearsals/${rehearsalId}/attendance`);
+  const params = voz ? `?voz=${voz}` : "";
+  return apiCall<Attendance[]>(`/admin/rehearsals/${rehearsalId}/attendance${params}`);
 }
 
 export async function createAttendance(
@@ -122,7 +124,7 @@ export async function createAttendance(
 export async function updateAttendance(
   rehearsalId: string,
   attendanceId: string,
-  data: Partial<Attendance>
+  data: { presente: boolean; justificacion?: string }
 ): Promise<ApiResponse<Attendance>> {
   return apiCall<Attendance>(
     `/admin/rehearsals/${rehearsalId}/attendance/${attendanceId}`,

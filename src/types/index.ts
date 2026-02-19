@@ -101,6 +101,10 @@ export interface Attendance {
   registrado_en?: string;
   createdAt?: string;
   updatedAt?: string;
+  // Admin attendance fields
+  userId?: string;
+  nombre?: string;
+  voz?: string;
 }
 
 export interface AttendanceStats {

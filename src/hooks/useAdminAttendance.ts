@@ -9,6 +9,7 @@ interface UseAdminAttendanceState {
   selectedRehearsal: Rehearsal | null;
   isLoading: boolean;
   error: string | null;
+  voiceFilter: string;
 }
 
 export function useAdminAttendance() {
@@ -18,6 +19,7 @@ export function useAdminAttendance() {
     selectedRehearsal: null,
     isLoading: false,
     error: null,
+    voiceFilter: "",
   });
 
   const fetchRehearsals = useCallback(async () => {
@@ -27,7 +29,7 @@ export function useAdminAttendance() {
       if (response.data) {
         setState((prev) => ({
           ...prev,
-          rehearsals: response.data.rehearsals,
+          rehearsals: response.data?.rehearsals || [],
           isLoading: false,
         }));
       } else {
@@ -40,16 +42,17 @@ export function useAdminAttendance() {
     }
   }, []);
 
-  const fetchAttendance = useCallback(async (rehearsalId: string) => {
+  const fetchAttendance = useCallback(async (rehearsalId: string, voz?: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
-      const response = await adminService.getRehearsalAttendance(rehearsalId);
+      const response = await adminService.getRehearsalAttendance(rehearsalId, voz);
       if (response.data) {
         const rehearsalResponse = await adminService.getRehearsalById(rehearsalId);
         setState((prev) => ({
           ...prev,
-          attendances: response.data,
+          attendances: response.data || [],
           selectedRehearsal: rehearsalResponse.data || null,
+          voiceFilter: voz || "",
           isLoading: false,
         }));
       } else {
@@ -63,13 +66,21 @@ export function useAdminAttendance() {
   }, []);
 
   const updateAttendance = useCallback(
-    async (rehearsalId: string, attendanceId: string, data: Partial<Attendance>) => {
+    async (
+      rehearsalId: string,
+      attendanceId: string,
+      presente: boolean,
+      justificacion?: string
+    ) => {
       try {
-        const response = await adminService.updateAttendance(rehearsalId, attendanceId, data);
+        const response = await adminService.updateAttendance(rehearsalId, attendanceId, {
+          presente,
+          justificacion,
+        });
         if (response.data) {
-          toast.success("Asistencia actualizada exitosamente");
+          toast.success(presente ? "Marcado como presente" : "Marcado como ausente");
           if (state.selectedRehearsal) {
-            await fetchAttendance(state.selectedRehearsal.id);
+            await fetchAttendance(state.selectedRehearsal.id, state.voiceFilter || undefined);
           }
           return response.data;
         } else {
@@ -81,22 +92,19 @@ export function useAdminAttendance() {
         throw error;
       }
     },
-    [state.selectedRehearsal, fetchAttendance]
+    [state.selectedRehearsal, state.voiceFilter, fetchAttendance]
   );
 
   const markPresent = useCallback(
     async (rehearsalId: string, attendanceId: string) => {
-      return updateAttendance(rehearsalId, attendanceId, { presente: true });
+      return updateAttendance(rehearsalId, attendanceId, true);
     },
     [updateAttendance]
   );
 
   const markAbsent = useCallback(
     async (rehearsalId: string, attendanceId: string, justificacion?: string) => {
-      return updateAttendance(rehearsalId, attendanceId, {
-        presente: false,
-        justificacion,
-      });
+      return updateAttendance(rehearsalId, attendanceId, false, justificacion);
     },
     [updateAttendance]
   );
@@ -116,6 +124,15 @@ export function useAdminAttendance() {
     }
   }, []);
 
+  const filterByVoice = useCallback(
+    async (voz: string) => {
+      if (state.selectedRehearsal) {
+        await fetchAttendance(state.selectedRehearsal.id, voz || undefined);
+      }
+    },
+    [state.selectedRehearsal, fetchAttendance]
+  );
+
   return {
     ...state,
     fetchRehearsals,
@@ -124,5 +141,6 @@ export function useAdminAttendance() {
     markPresent,
     markAbsent,
     getReport,
+    filterByVoice,
   };
 }

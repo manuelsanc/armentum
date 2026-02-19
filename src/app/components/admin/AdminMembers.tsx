@@ -45,7 +45,16 @@ interface MemberFormState {
   password?: string;
 }
 
-const VOICE_OPTIONS = ["Soprano", "Alto", "Tenor", "Bajo"] as const;
+const VOICE_OPTIONS = [
+  { value: "soprano1", label: "Soprano 1" },
+  { value: "soprano2", label: "Soprano 2" },
+  { value: "contralto1", label: "Contralto 1" },
+  { value: "contralto2", label: "Contralto 2" },
+  { value: "tenor1", label: "Tenor 1" },
+  { value: "tenor2", label: "Tenor 2" },
+  { value: "bajo1", label: "Bajo 1" },
+  { value: "bajo2", label: "Bajo 2" },
+] as const;
 
 const STATUS_OPTIONS = [
   { value: "activo", label: "Activo" },
@@ -61,10 +70,24 @@ const formatDate = (input?: string): string => {
 };
 
 const resolveVoice = (voice?: string | null): string => {
-  if (!voice) return VOICE_OPTIONS[0];
-  const normalized = voice.trim();
-  const match = VOICE_OPTIONS.find((option) => option.toLowerCase() === normalized.toLowerCase());
-  return match ?? VOICE_OPTIONS[0];
+  if (!voice) return VOICE_OPTIONS[0].value;
+  const normalized = voice.trim().toLowerCase();
+  const match = VOICE_OPTIONS.find((option) => option.value.toLowerCase() === normalized);
+  if (match) return match.value;
+  // Handle legacy values
+  const legacyMap: Record<string, string> = {
+    soprano: "soprano1",
+    alto: "contralto1",
+    tenor: "tenor1",
+    bajo: "bajo1",
+  };
+  return legacyMap[normalized] || VOICE_OPTIONS[0].value;
+};
+
+const getVoiceLabel = (voz?: string): string => {
+  if (!voz) return "-";
+  const match = VOICE_OPTIONS.find((option) => option.value === voz.toLowerCase());
+  return match ? match.label : voz;
 };
 
 const resolveStatus = (estado?: string, activo?: boolean): string => {
@@ -104,7 +127,7 @@ export function AdminMembers(): JSX.Element {
   const [formState, setFormState] = useState<MemberFormState>({
     email: "",
     nombre: "",
-    voz: "Soprano",
+    voz: VOICE_OPTIONS[0].value,
     telefono: "",
     fecha_ingreso: new Date().toISOString().slice(0, 10),
     estado: "activo",
@@ -146,7 +169,7 @@ export function AdminMembers(): JSX.Element {
       setFormState({
         email: "",
         nombre: "",
-        voz: VOICE_OPTIONS[0],
+        voz: VOICE_OPTIONS[0].value,
         telefono: "",
         fecha_ingreso: new Date().toISOString().slice(0, 10),
         estado: "activo",
@@ -162,7 +185,7 @@ export function AdminMembers(): JSX.Element {
     setFormState({
       email: "",
       nombre: "",
-      voz: VOICE_OPTIONS[0],
+      voz: VOICE_OPTIONS[0].value,
       telefono: "",
       fecha_ingreso: new Date().toISOString().slice(0, 10),
       estado: "activo",
@@ -281,8 +304,8 @@ export function AdminMembers(): JSX.Element {
                     </SelectTrigger>
                     <SelectContent>
                       {VOICE_OPTIONS.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -406,7 +429,7 @@ export function AdminMembers(): JSX.Element {
                       <TableRow key={member.id}>
                         <TableCell className="font-medium">{member.nombre}</TableCell>
                         <TableCell>{member.email}</TableCell>
-                        <TableCell>{member.voz || "-"}</TableCell>
+                        <TableCell>{getVoiceLabel(member.voz)}</TableCell>
                         <TableCell>
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${

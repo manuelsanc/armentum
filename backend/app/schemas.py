@@ -11,6 +11,14 @@ from uuid import UUID
 
 
 # ============================================================
+# CONSTANTS
+# ============================================================
+
+# Valid voice types for choir members
+VOZ_PATTERN = "^(soprano1|soprano2|contralto1|contralto2|tenor1|tenor2|bajo1|bajo2|director|pianista)$"
+
+
+# ============================================================
 # USER SCHEMAS
 # ============================================================
 
@@ -77,7 +85,7 @@ class RefreshTokenRequest(BaseModel):
 # ============================================================
 
 class MiembroBase(BaseModel):
-    voz: str = Field(..., pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    voz: str = Field(..., pattern=VOZ_PATTERN)
     fecha_ingreso: date
     telefono: Optional[str] = Field(None, max_length=20)
 
@@ -99,7 +107,7 @@ class MiembroResponse(MiembroBase):
 
 
 class MiembroUpdate(BaseModel):
-    voz: Optional[str] = Field(None, pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    voz: Optional[str] = Field(None, pattern=VOZ_PATTERN)
     estado: Optional[str] = Field(None, pattern="^(activo|inactivo|suspendido)$")
     telefono: Optional[str] = Field(None, max_length=20)
 
@@ -300,13 +308,13 @@ class AdminMemberCreate(BaseModel):
     email: EmailStr
     nombre: str = Field(..., min_length=2, max_length=255)
     password: str = Field(..., min_length=8, max_length=100)
-    voz: str = Field(..., pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    voz: str = Field(..., pattern=VOZ_PATTERN)
     fecha_ingreso: date
     telefono: Optional[str] = Field(None, max_length=20)
 
 
 class AdminMemberUpdate(BaseModel):
-    voz: Optional[str] = Field(None, pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    voz: Optional[str] = Field(None, pattern=VOZ_PATTERN)
     estado: Optional[str] = Field(None, pattern="^(activo|inactivo|suspendido)$")
     telefono: Optional[str] = Field(None, max_length=20)
     saldo_actual: Optional[Decimal] = Field(None, ge=0)
@@ -396,7 +404,7 @@ class ComunicadoResponse(ComunicadoBase):
 class ArchivoBase(BaseModel):
     nombre: str = Field(..., min_length=1, max_length=255)
     tipo: str = Field(..., pattern="^(partitura|grabacion|otro)$")
-    voz: Optional[str] = Field(None, pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    voz: Optional[str] = Field(None, pattern=VOZ_PATTERN)
     evento_id: Optional[UUID] = None
     ensayo_id: Optional[UUID] = None
     privado: bool = True

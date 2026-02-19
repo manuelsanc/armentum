@@ -100,6 +100,81 @@ def list_members(
     )
 
 
+@router.get("/events", response_model=dict)
+def list_events(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """List all public events with pagination."""
+    offset = (page - 1) * limit
+    total = db.query(EventoPublico).count()
+    events = (
+        db.query(EventoPublico)
+        .order_by(EventoPublico.fecha.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+    return {
+        "events": [
+            {
+                "id": str(e.id),
+                "nombre": e.nombre,
+                "descripcion": e.descripcion,
+                "fecha": str(e.fecha),
+                "hora": e.hora,
+                "lugar": e.lugar,
+                "tipo": e.tipo,
+                "estado": e.estado,
+                "imagen_url": e.imagen_url,
+                "created_at": e.created_at.isoformat() if e.created_at else None,
+            }
+            for e in events
+        ],
+        "total": total,
+    }
+
+
+@router.get("/rehearsals", response_model=dict)
+def list_rehearsals(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """List all rehearsals with pagination."""
+    offset = (page - 1) * limit
+    total = db.query(Ensayo).count()
+    rehearsals = (
+        db.query(Ensayo)
+        .order_by(Ensayo.fecha.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+    return {
+        "rehearsals": [
+            {
+                "id": str(r.id),
+                "titulo": r.nombre,
+                "descripcion": r.descripcion,
+                "fecha": str(r.fecha),
+                "horaInicio": r.hora,
+                "horaFin": None,
+                "lugar": r.lugar,
+                "estado": "scheduled",
+                "tipo": r.tipo,
+                "cuerdas": r.cuerdas,
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            }
+            for r in rehearsals
+        ],
+        "total": total,
+    }
+
+
 @router.post(
     "/members",
     response_model=AdminMemberResponse,
@@ -206,6 +281,30 @@ def create_event(
     return event
 
 
+@router.get("/events/{event_id}", response_model=dict)
+def get_event(
+    event_id: UUID,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Get a specific event by ID."""
+    event = db.query(EventoPublico).filter(EventoPublico.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {
+        "id": str(event.id),
+        "nombre": event.nombre,
+        "descripcion": event.descripcion,
+        "fecha": str(event.fecha),
+        "hora": event.hora,
+        "lugar": event.lugar,
+        "tipo": event.tipo,
+        "estado": event.estado,
+        "imagen_url": event.imagen_url,
+        "created_at": event.created_at.isoformat() if event.created_at else None,
+    }
+
+
 @router.put("/events/{event_id}", response_model=EventoPublicoResponse)
 def update_event(
     event_id: UUID,
@@ -283,6 +382,136 @@ def delete_rehearsal(
     db.delete(rehearsal)
     db.commit()
     return Message(message="Rehearsal deleted")
+
+
+@router.get("/rehearsals/{rehearsal_id}", response_model=dict)
+def get_rehearsal(
+    rehearsal_id: UUID,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Get a specific rehearsal by ID."""
+    rehearsal = db.query(Ensayo).filter(Ensayo.id == rehearsal_id).first()
+    if not rehearsal:
+        raise HTTPException(status_code=404, detail="Rehearsal not found")
+    return {
+        "id": str(rehearsal.id),
+        "titulo": rehearsal.nombre,
+        "descripcion": rehearsal.descripcion,
+        "fecha": str(rehearsal.fecha),
+        "horaInicio": rehearsal.hora,
+        "horaFin": None,
+        "lugar": rehearsal.lugar,
+        "estado": "scheduled",
+        "tipo": rehearsal.tipo,
+        "cuerdas": rehearsal.cuerdas,
+        "created_at": rehearsal.created_at.isoformat() if rehearsal.created_at else None,
+    }
+
+
+@router.get("/rehearsals/{rehearsal_id}/attendance", response_model=list)
+def get_rehearsal_attendance(
+    rehearsal_id: UUID,
+    voz: Optional[str] = Query(None, description="Filtrar por tipo de voz"),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Get all attendance records for a specific rehearsal, optionally filtered by voice."""
+    rehearsal = db.query(Ensayo).filter(Ensayo.id == rehearsal_id).first()
+    if not rehearsal:
+        raise HTTPException(status_code=404, detail="Rehearsal not found")
+    
+    # Get all members with their attendance for this rehearsal
+    query = db.query(Miembro).join(User).filter(Miembro.estado == "activo")
+    if voz:
+        query = query.filter(Miembro.voz == voz)
+    members = query.all()
+    
+    attendances = db.query(Asistencia).filter(Asistencia.ensayo_id == rehearsal_id).all()
+    attendance_map = {str(a.miembro_id): a for a in attendances}
+    
+    result = []
+    for member in members:
+        attendance = attendance_map.get(str(member.id))
+        result.append({
+            "id": str(attendance.id) if attendance else str(member.id),
+            "userId": member.user.nombre,
+            "nombre": member.user.nombre,
+            "voz": member.voz,
+            "miembro_id": str(member.id),
+            "ensayo_id": str(rehearsal_id),
+            "presente": attendance.presente if attendance else False,
+            "justificacion": attendance.justificacion if attendance else None,
+            "registrado_en": attendance.registrado_en.isoformat() if attendance and attendance.registrado_en else None,
+        })
+    return result
+
+
+# Request body for attendance update
+from pydantic import BaseModel
+
+
+class AttendanceUpdateRequest(BaseModel):
+    presente: bool = True
+    justificacion: Optional[str] = None
+
+
+@router.put("/rehearsals/{rehearsal_id}/attendance/{attendance_id}", response_model=dict)
+def update_rehearsal_attendance(
+    rehearsal_id: UUID,
+    attendance_id: UUID,
+    payload: AttendanceUpdateRequest,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    """Update attendance for a specific member in a rehearsal."""
+    # Verify rehearsal exists
+    rehearsal = db.query(Ensayo).filter(Ensayo.id == rehearsal_id).first()
+    if not rehearsal:
+        raise HTTPException(status_code=404, detail="Rehearsal not found")
+    
+    # Verify member exists
+    member = db.query(Miembro).filter(Miembro.id == attendance_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    
+    # Try to find existing attendance record
+    attendance = db.query(Asistencia).filter(
+        Asistencia.ensayo_id == rehearsal_id,
+        Asistencia.miembro_id == attendance_id,
+    ).first()
+    
+    if attendance:
+        attendance.presente = payload.presente
+        attendance.justificacion = payload.justificacion
+        attendance.registrado_por = current_admin.id
+        attendance.registrado_en = datetime.utcnow()
+    else:
+        # Create new attendance record
+        attendance = Asistencia(
+            miembro_id=attendance_id,
+            ensayo_id=rehearsal_id,
+            presente=payload.presente,
+            justificacion=payload.justificacion,
+            registrado_por=current_admin.id,
+        )
+        db.add(attendance)
+    
+    db.commit()
+    db.refresh(attendance)
+    return {
+        "id": str(attendance.id),
+        "presente": attendance.presente,
+        "justificacion": attendance.justificacion,
+    }
+    
+    db.commit()
+    db.refresh(attendance)
+    return {
+        "id": str(attendance.id),
+        "presente": attendance.presente,
+        "justificacion": attendance.justificacion,
+    }
 
 
 @router.post(
@@ -398,6 +627,78 @@ def create_due(
     db.commit()
     db.refresh(cuota)
     return cuota
+
+
+@router.get("/finance/cuotas", response_model=dict)
+def list_cuotas(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    status: Optional[str] = Query(None, pattern="^(pendiente|pagada|vencida)$"),
+    memberId: Optional[UUID] = Query(None),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """List all cuotas with pagination and filters."""
+    offset = (page - 1) * limit
+    query = db.query(Cuota)
+    if status:
+        query = query.filter(Cuota.estado == status)
+    if memberId:
+        query = query.filter(Cuota.miembro_id == memberId)
+    total = query.count()
+    cuotas = (
+        query
+        .order_by(Cuota.fecha_vencimiento.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+    return {
+        "cuotas": [
+            {
+                "id": str(c.id),
+                "userId": str(c.miembro_id),
+                "miembro_id": str(c.miembro_id),
+                "monto": float(c.monto),
+                "descripcion": c.descripcion,
+                "tipo": c.tipo,
+                "vencimiento": str(c.fecha_vencimiento),
+                "fecha_vencimiento": str(c.fecha_vencimiento),
+                "estado": c.estado,
+                "fecha_pago": str(c.fecha_pago) if c.fecha_pago else None,
+                "created_at": c.created_at.isoformat() if c.created_at else None,
+            }
+            for c in cuotas
+        ],
+        "total": total,
+    }
+
+
+@router.get("/finance/summary", response_model=dict)
+def get_finance_summary(
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Get financial summary for admin dashboard."""
+    total_pagado = db.query(func.sum(Cuota.monto)).filter(
+        Cuota.estado == "pagada"
+    ).scalar() or Decimal(0)
+    
+    total_pendiente = db.query(func.sum(Cuota.monto)).filter(
+        Cuota.estado == "pendiente"
+    ).scalar() or Decimal(0)
+    
+    # Vencidas are pendientes with fecha_vencimiento < today
+    total_vencido = db.query(func.sum(Cuota.monto)).filter(
+        Cuota.estado == "pendiente",
+        Cuota.fecha_vencimiento < date.today()
+    ).scalar() or Decimal(0)
+    
+    return {
+        "totalIngresos": float(total_pagado),
+        "totalPendiente": float(total_pendiente),
+        "totalVencido": float(total_vencido),
+    }
 
 
 @router.put(
