@@ -230,13 +230,6 @@ export function Calendario() {
                         </p>
                       </div>
                     )}
-
-                    <div className="pt-4 border-t border-gray-200">
-                      <p className="text-xs font-semibold text-gray-500 uppercase">Estado</p>
-                      <p className="text-gray-900 font-semibold capitalize">
-                        {getRehearsalStatus(selectedRehearsal.fecha).label}
-                      </p>
-                    </div>
                   </CardContent>
                 </Card>
               ) : (
