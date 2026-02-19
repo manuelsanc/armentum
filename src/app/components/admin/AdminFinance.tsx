@@ -113,9 +113,11 @@ export function AdminFinance(): JSX.Element {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-ES", {
+    return new Intl.NumberFormat("es-CR", {
       style: "currency",
-      currency: "EUR",
+      currency: "CRC",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -286,7 +288,9 @@ export function AdminFinance(): JSX.Element {
                   <TableBody>
                     {cuotas.map((cuota) => (
                       <TableRow key={cuota.id}>
-                        <TableCell className="font-medium">{cuota.userId}</TableCell>
+                        <TableCell className="font-medium">
+                          {cuota.miembro_nombre || cuota.userId}
+                        </TableCell>
                         <TableCell>{cuota.descripcion}</TableCell>
                         <TableCell>{formatCurrency(cuota.monto)}</TableCell>
                         <TableCell>{formatDate(cuota.vencimiento)}</TableCell>

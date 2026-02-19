@@ -123,6 +123,7 @@ export interface AttendanceStats {
 export interface Cuota {
   id: string;
   miembro_id: string;
+  miembro_nombre?: string;
   monto: number;
   descripcion: string;
   tipo: string;

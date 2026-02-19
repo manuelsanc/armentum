@@ -6,7 +6,7 @@ from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, or_
+from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import require_admin
@@ -640,7 +640,7 @@ def list_cuotas(
 ):
     """List all cuotas with pagination and filters."""
     offset = (page - 1) * limit
-    query = db.query(Cuota)
+    query = db.query(Cuota).join(Miembro).join(User, Miembro.user_id == User.id)
     if status:
         query = query.filter(Cuota.estado == status)
     if memberId:
@@ -659,6 +659,7 @@ def list_cuotas(
                 "id": str(c.id),
                 "userId": str(c.miembro_id),
                 "miembro_id": str(c.miembro_id),
+                "miembro_nombre": c.miembro.user.nombre if c.miembro and c.miembro.user else "Desconocido",
                 "monto": float(c.monto),
                 "descripcion": c.descripcion,
                 "tipo": c.tipo,
@@ -684,20 +685,48 @@ def get_finance_summary(
         Cuota.estado == "pagada"
     ).scalar() or Decimal(0)
     
+    # Pendientes: solo las que no han vencido
     total_pendiente = db.query(func.sum(Cuota.monto)).filter(
-        Cuota.estado == "pendiente"
+        Cuota.estado == "pendiente",
+        Cuota.fecha_vencimiento >= date.today()
     ).scalar() or Decimal(0)
     
-    # Vencidas are pendientes with fecha_vencimiento < today
+    # Vencidas: las que tienen estado "vencida" o pendientes con fecha pasada
     total_vencido = db.query(func.sum(Cuota.monto)).filter(
-        Cuota.estado == "pendiente",
-        Cuota.fecha_vencimiento < date.today()
+        or_(
+            Cuota.estado == "vencida",
+            and_(Cuota.estado == "pendiente", Cuota.fecha_vencimiento < date.today())
+        )
     ).scalar() or Decimal(0)
     
     return {
         "totalIngresos": float(total_pagado),
         "totalPendiente": float(total_pendiente),
         "totalVencido": float(total_vencido),
+    }
+
+
+@router.post(
+    "/finance/cuotas/{cuota_id}/pay",
+    response_model=dict,
+)
+def mark_cuota_as_paid(
+    cuota_id: UUID,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Mark a cuota as paid."""
+    cuota = db.query(Cuota).filter(Cuota.id == cuota_id).first()
+    if not cuota:
+        raise HTTPException(status_code=404, detail="Cuota not found")
+    cuota.estado = "pagada"
+    cuota.fecha_pago = date.today()
+    db.commit()
+    db.refresh(cuota)
+    return {
+        "id": str(cuota.id),
+        "estado": cuota.estado,
+        "fecha_pago": str(cuota.fecha_pago),
     }
 
 

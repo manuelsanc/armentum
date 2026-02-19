@@ -34,6 +34,15 @@ export function Finanzas() {
     }
   };
 
+  const formatCRC = (amount: number) => {
+    return new Intl.NumberFormat("es-CR", {
+      style: "currency",
+      currency: "CRC",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   const getEstadoLabel = (estado: string) => {
     switch (estado) {
       case "pagada":
@@ -87,11 +96,7 @@ export function Finanzas() {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold text-red-600">
-                  $
-                  {(summary.totalPendiente ?? 0).toLocaleString("es-ES", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatCRC(summary.totalPendiente ?? 0)}
                 </p>
               </CardContent>
             </Card>
@@ -105,11 +110,7 @@ export function Finanzas() {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold text-orange-600">
-                  $
-                  {(summary.totalVencido ?? 0).toLocaleString("es-ES", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatCRC(summary.totalVencido ?? 0)}
                 </p>
               </CardContent>
             </Card>
@@ -123,11 +124,7 @@ export function Finanzas() {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold text-green-600">
-                  $
-                  {(summary.totalIngresos ?? 0).toLocaleString("es-ES", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatCRC(summary.totalIngresos ?? 0)}
                 </p>
               </CardContent>
             </Card>
@@ -165,13 +162,7 @@ export function Finanzas() {
                         )} transition-colors hover:bg-opacity-50`}
                       >
                         <td className="px-4 py-4">{cuota.descripcion}</td>
-                        <td className="px-4 py-4 font-semibold">
-                          $
-                          {(cuota.monto ?? 0).toLocaleString("es-ES", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </td>
+                        <td className="px-4 py-4 font-semibold">{formatCRC(cuota.monto ?? 0)}</td>
                         <td className="px-4 py-4">
                           {cuota.fecha_vencimiento
                             ? format(parseISO(cuota.fecha_vencimiento), "d 'de' MMMM 'de' yyyy", {
@@ -218,11 +209,7 @@ export function Finanzas() {
                   >
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">
-                        {pago.descripcion ?? "Cuota"} - $
-                        {(pago.monto ?? 0).toLocaleString("es-ES", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
+                        {pago.descripcion ?? "Cuota"} - {formatCRC(pago.monto ?? 0)}
                       </p>
                       <p className="text-sm text-gray-600">
                         {pago.fecha_pago
