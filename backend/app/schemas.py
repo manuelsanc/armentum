@@ -289,6 +289,73 @@ class CuotaUpdate(BaseModel):
     fecha_pago: Optional[date] = None
 
 
+class AdminMemberCreate(BaseModel):
+    email: EmailStr
+    nombre: str = Field(..., min_length=2, max_length=255)
+    password: str = Field(..., min_length=8, max_length=100)
+    voz: str = Field(..., pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    fecha_ingreso: date
+    telefono: Optional[str] = Field(None, max_length=20)
+
+
+class AdminMemberUpdate(BaseModel):
+    voz: Optional[str] = Field(None, pattern="^(Soprano|Alto|Tenor|Bajo)$")
+    estado: Optional[str] = Field(None, pattern="^(activo|inactivo|suspendido)$")
+    telefono: Optional[str] = Field(None, max_length=20)
+    saldo_actual: Optional[Decimal] = Field(None, ge=0)
+
+
+class AdminMemberResponse(BaseModel):
+    id: UUID
+    nombre: str
+    email: EmailStr
+    voz: str
+    estado: str
+    fecha_ingreso: date
+    telefono: Optional[str]
+    saldo_actual: Decimal
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AdminMemberListResponse(BaseModel):
+    total: int
+    limit: int
+    offset: int
+    members: list[AdminMemberResponse]
+
+
+class AdminAttendanceReportRecord(BaseModel):
+    id: UUID
+    miembro_id: UUID
+    miembro_nombre: str
+    ensayo_id: UUID
+    ensayo_nombre: str
+    presente: bool
+    justificacion: Optional[str]
+    registrado_en: datetime
+
+
+class AdminAttendanceReportResponse(BaseModel):
+    total: int
+    presentes: int
+    ausentes: int
+    porcentaje_presencia: float
+    records: list[AdminAttendanceReportRecord]
+
+
+class AdminFinancePaymentRequest(BaseModel):
+    cuota_id: UUID
+    fecha_pago: date
+
+
+class AdminFinanceReportResponse(BaseModel):
+    total_ingresos: float
+    total_pendiente: float
+    total_vencido: float
+    cuotas: list[CuotaResponse]
+
+
 # ============================================================
 # COMMUNICATION (COMUNICADO) SCHEMAS
 # ============================================================

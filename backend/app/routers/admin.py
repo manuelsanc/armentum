@@ -1,0 +1,446 @@
+"""Admin only APIs for members, events, rehearsals, attendance, and finance."""
+
+from datetime import date, datetime
+from decimal import Decimal
+from typing import Optional
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, or_
+from sqlalchemy.orm import Session
+
+from app.auth.dependencies import require_admin
+from app.auth.jwt import get_password_hash
+from app.database import get_db
+from app.models import (
+    Asistencia,
+    Cuota,
+    Ensayo,
+    EventoPublico,
+    Miembro,
+    Role,
+    User,
+    UserRole,
+)
+from app.schemas import (
+    AdminAttendanceReportResponse,
+    AdminAttendanceReportRecord,
+    AdminFinancePaymentRequest,
+    AdminFinanceReportResponse,
+    AdminMemberCreate,
+    AdminMemberListResponse,
+    AdminMemberResponse,
+    AdminMemberUpdate,
+    AsistenciaCreate,
+    AsistenciaResponse,
+    CuotaCreate,
+    CuotaResponse,
+    EventoPublicoCreate,
+    EventoPublicoResponse,
+    EventoPublicoUpdate,
+    EnsayoCreate,
+    EnsayoResponse,
+    EnsayoUpdate,
+    Message,
+)
+
+
+router = APIRouter()
+
+
+def _member_to_response(member: Miembro) -> AdminMemberResponse:
+    user = member.user
+    return AdminMemberResponse(
+        id=member.id,
+        nombre=user.nombre,
+        email=user.email,
+        voz=member.voz,
+        estado=member.estado,
+        fecha_ingreso=member.fecha_ingreso,
+        telefono=member.telefono,
+        saldo_actual=member.saldo_actual,
+    )
+
+
+@router.get("/members", response_model=AdminMemberListResponse)
+def list_members(
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    search: Optional[str] = Query(None, min_length=1),
+    estado: Optional[str] = Query(
+        None,
+        pattern="^(activo|inactivo|suspendido)$",
+    ),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    query = db.query(Miembro).join(User)
+    if estado:
+        query = query.filter(Miembro.estado == estado)
+    if search:
+        term = f"%{search.lower()}%"
+        query = query.filter(
+            or_(
+                func.lower(User.nombre).like(term),
+                func.lower(User.email).like(term),
+            )
+        )
+    total = query.count()
+    members = (
+        query.order_by(Miembro.fecha_ingreso.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+    return AdminMemberListResponse(
+        total=total,
+        limit=limit,
+        offset=offset,
+        members=[_member_to_response(member) for member in members],
+    )
+
+
+@router.post(
+    "/members",
+    response_model=AdminMemberResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_member(
+    payload: AdminMemberCreate,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    existing_user = db.query(User).filter(User.email == payload.email).first()
+    if existing_user and existing_user.miembro:
+        raise HTTPException(status_code=400, detail="Member already exists")
+
+    if not existing_user:
+        user = User(
+            email=payload.email,
+            password_hash=get_password_hash(payload.password),
+            nombre=payload.nombre,
+            is_active=True,
+        )
+        db.add(user)
+        db.flush()
+    else:
+        user = existing_user
+        user.nombre = payload.nombre
+
+    corista_role = db.query(Role).filter(Role.nombre == "corista").first()
+    if not corista_role:
+        corista_role = Role(nombre="corista", descripcion="Rol corista")
+        db.add(corista_role)
+        db.flush()
+
+    has_role = db.query(UserRole).filter(
+        UserRole.user_id == user.id,
+        UserRole.role_id == corista_role.id,
+    ).first()
+    if not has_role:
+        db.add(UserRole(user_id=user.id, role_id=corista_role.id))
+
+    miembro = Miembro(
+        user_id=user.id,
+        voz=payload.voz,
+        fecha_ingreso=payload.fecha_ingreso,
+        telefono=payload.telefono,
+    )
+    db.add(miembro)
+    db.commit()
+    db.refresh(miembro)
+    return _member_to_response(miembro)
+
+
+@router.put("/members/{member_id}", response_model=AdminMemberResponse)
+def update_member(
+    member_id: UUID,
+    payload: AdminMemberUpdate,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    member = db.query(Miembro).filter(Miembro.id == member_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    if payload.voz is not None:
+        member.voz = payload.voz
+    if payload.estado is not None:
+        member.estado = payload.estado
+    if payload.telefono is not None:
+        member.telefono = payload.telefono
+    if payload.saldo_actual is not None:
+        member.saldo_actual = payload.saldo_actual
+    db.commit()
+    db.refresh(member)
+    return _member_to_response(member)
+
+
+@router.delete("/members/{member_id}", response_model=Message)
+def delete_member(
+    member_id: UUID,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    member = db.query(Miembro).filter(Miembro.id == member_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    member.estado = "inactivo"
+    db.commit()
+    return Message(message="Member marked as inactive")
+
+
+@router.post(
+    "/events",
+    response_model=EventoPublicoResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_event(
+    payload: EventoPublicoCreate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    event = EventoPublico(**payload.model_dump(), created_by=current_admin.id)
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+    return event
+
+
+@router.put("/events/{event_id}", response_model=EventoPublicoResponse)
+def update_event(
+    event_id: UUID,
+    payload: EventoPublicoUpdate,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    event = db.query(EventoPublico).filter(EventoPublico.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(event, field, value)
+    db.commit()
+    db.refresh(event)
+    return event
+
+
+@router.delete("/events/{event_id}", response_model=Message)
+def delete_event(
+    event_id: UUID,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    event = db.query(EventoPublico).filter(EventoPublico.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    db.delete(event)
+    db.commit()
+    return Message(message="Event deleted")
+
+
+@router.post(
+    "/rehearsals",
+    response_model=EnsayoResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_rehearsal(
+    payload: EnsayoCreate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    rehearsal = Ensayo(**payload.model_dump(), created_by=current_admin.id)
+    db.add(rehearsal)
+    db.commit()
+    db.refresh(rehearsal)
+    return rehearsal
+
+
+@router.put("/rehearsals/{rehearsal_id}", response_model=EnsayoResponse)
+def update_rehearsal(
+    rehearsal_id: UUID,
+    payload: EnsayoUpdate,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    rehearsal = db.query(Ensayo).filter(Ensayo.id == rehearsal_id).first()
+    if not rehearsal:
+        raise HTTPException(status_code=404, detail="Rehearsal not found")
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(rehearsal, field, value)
+    db.commit()
+    db.refresh(rehearsal)
+    return rehearsal
+
+
+@router.delete("/rehearsals/{rehearsal_id}", response_model=Message)
+def delete_rehearsal(
+    rehearsal_id: UUID,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    rehearsal = db.query(Ensayo).filter(Ensayo.id == rehearsal_id).first()
+    if not rehearsal:
+        raise HTTPException(status_code=404, detail="Rehearsal not found")
+    db.delete(rehearsal)
+    db.commit()
+    return Message(message="Rehearsal deleted")
+
+
+@router.post(
+    "/attendance",
+    response_model=AsistenciaResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def register_attendance(
+    payload: AsistenciaCreate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    member = db.query(Miembro).filter(Miembro.id == payload.miembro_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    rehearsal = db.query(Ensayo).filter(Ensayo.id == payload.ensayo_id).first()
+    if not rehearsal:
+        raise HTTPException(status_code=404, detail="Rehearsal not found")
+    attendance = (
+        db.query(Asistencia)
+        .filter(
+            Asistencia.miembro_id == payload.miembro_id,
+            Asistencia.ensayo_id == payload.ensayo_id,
+        )
+        .first()
+    )
+    if attendance:
+        attendance.presente = payload.presente
+        attendance.justificacion = payload.justificacion
+        attendance.registrado_por = current_admin.id
+        attendance.registrado_en = datetime.utcnow()
+    else:
+        attendance = Asistencia(
+            miembro_id=payload.miembro_id,
+            ensayo_id=payload.ensayo_id,
+            presente=payload.presente,
+            justificacion=payload.justificacion,
+            registrado_por=current_admin.id,
+        )
+        db.add(attendance)
+    db.commit()
+    db.refresh(attendance)
+    return attendance
+
+
+@router.get(
+    "/attendance/reports",
+    response_model=AdminAttendanceReportResponse,
+)
+def attendance_reports(
+    ensayo_id: Optional[UUID] = Query(None),
+    miembro_id: Optional[UUID] = Query(None),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    query = db.query(Asistencia).join(Miembro).join(Ensayo)
+    if ensayo_id:
+        query = query.filter(Asistencia.ensayo_id == ensayo_id)
+    if miembro_id:
+        query = query.filter(Asistencia.miembro_id == miembro_id)
+    records = query.order_by(Asistencia.registrado_en.desc()).all()
+    total = len(records)
+    present_count = sum(1 for record in records if record.presente)
+    absent_count = total - present_count
+    porcentaje = float((present_count / total) * 100) if total else 0.0
+    structured = []
+    for record in records:
+        structured.append(
+            AdminAttendanceReportRecord(
+                id=record.id,
+                miembro_id=record.miembro_id,
+                miembro_nombre=record.miembro.user.nombre,
+                ensayo_id=record.ensayo_id,
+                ensayo_nombre=record.ensayo.nombre,
+                presente=record.presente,
+                justificacion=record.justificacion,
+                registrado_en=record.registrado_en,
+            )
+        )
+    return AdminAttendanceReportResponse(
+        total=total,
+        presentes=present_count,
+        ausentes=absent_count,
+        porcentaje_presencia=porcentaje,
+        records=structured,
+    )
+
+
+@router.post(
+    "/finance/dues",
+    response_model=CuotaResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_due(
+    payload: CuotaCreate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    member = db.query(Miembro).filter(Miembro.id == payload.miembro_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
+    cuota = Cuota(
+        miembro_id=payload.miembro_id,
+        monto=payload.monto,
+        descripcion=payload.descripcion,
+        tipo=payload.tipo,
+        fecha_vencimiento=payload.fecha_vencimiento,
+        estado="pendiente",
+        created_by=current_admin.id,
+        fecha_pago=None,
+    )
+    db.add(cuota)
+    db.commit()
+    db.refresh(cuota)
+    return cuota
+
+
+@router.put(
+    "/finance/payments",
+    response_model=CuotaResponse,
+)
+def register_payment(
+    payload: AdminFinancePaymentRequest,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    cuota = db.query(Cuota).filter(Cuota.id == payload.cuota_id).first()
+    if not cuota:
+        raise HTTPException(status_code=404, detail="Cuota not found")
+    cuota.estado = "pagada"
+    cuota.fecha_pago = payload.fecha_pago
+    db.commit()
+    db.refresh(cuota)
+    return cuota
+
+
+@router.get(
+    "/finance/reports",
+    response_model=AdminFinanceReportResponse,
+)
+def finance_reports(
+    desde: Optional[date] = Query(None),
+    hasta: Optional[date] = Query(None),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    query = db.query(Cuota)
+    if desde:
+        query = query.filter(Cuota.fecha_vencimiento >= desde)
+    if hasta:
+        query = query.filter(Cuota.fecha_vencimiento <= hasta)
+    cuotas = query.order_by(Cuota.fecha_vencimiento.asc()).all()
+    def _sum_estado(estado: str) -> float:
+        total = sum((cuota.monto for cuota in cuotas if cuota.estado == estado), Decimal(0))
+        return float(total)
+    return AdminFinanceReportResponse(
+        total_ingresos=_sum_estado("pagada"),
+        total_pendiente=_sum_estado("pendiente"),
+        total_vencido=_sum_estado("vencida"),
+        cuotas=cuotas,
+    )
