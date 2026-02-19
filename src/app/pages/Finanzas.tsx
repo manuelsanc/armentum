@@ -88,7 +88,7 @@ export function Finanzas() {
               <CardContent>
                 <p className="text-2xl font-bold text-red-600">
                   $
-                  {summary.totalPendiente.toLocaleString("es-ES", {
+                  {(summary.totalPendiente ?? 0).toLocaleString("es-ES", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -106,7 +106,7 @@ export function Finanzas() {
               <CardContent>
                 <p className="text-2xl font-bold text-orange-600">
                   $
-                  {summary.totalVencido.toLocaleString("es-ES", {
+                  {(summary.totalVencido ?? 0).toLocaleString("es-ES", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -124,7 +124,7 @@ export function Finanzas() {
               <CardContent>
                 <p className="text-2xl font-bold text-green-600">
                   $
-                  {summary.totalPagado.toLocaleString("es-ES", {
+                  {(summary.totalIngresos ?? 0).toLocaleString("es-ES", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -167,15 +167,21 @@ export function Finanzas() {
                         <td className="px-4 py-4">{cuota.descripcion}</td>
                         <td className="px-4 py-4 font-semibold">
                           $
-                          {cuota.monto.toLocaleString("es-ES", {
+                          {(cuota.monto ?? 0).toLocaleString("es-ES", {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
                         </td>
                         <td className="px-4 py-4">
-                          {format(parseISO(cuota.vencimiento), "d 'de' MMMM 'de' yyyy", {
-                            locale: es,
-                          })}
+                          {cuota.fecha_vencimiento
+                            ? format(parseISO(cuota.fecha_vencimiento), "d 'de' MMMM 'de' yyyy", {
+                                locale: es,
+                              })
+                            : cuota.vencimiento
+                              ? format(parseISO(cuota.vencimiento), "d 'de' MMMM 'de' yyyy", {
+                                  locale: es,
+                                })
+                              : "-"}
                         </td>
                         <td className="px-4 py-4">
                           <span className="flex items-center gap-2">
@@ -212,21 +218,23 @@ export function Finanzas() {
                   >
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">
-                        Pago de $
-                        {pago.monto.toLocaleString("es-ES", {
+                        {pago.descripcion ?? "Cuota"} - $
+                        {(pago.monto ?? 0).toLocaleString("es-ES", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}
                       </p>
                       <p className="text-sm text-gray-600">
-                        {format(parseISO(pago.fechaPago), "d 'de' MMMM 'de' yyyy", {
-                          locale: es,
-                        })}{" "}
-                        • Método: <span className="font-medium">{pago.metodoPago}</span>
+                        {pago.fecha_pago
+                          ? format(parseISO(pago.fecha_pago), "d 'de' MMMM 'de' yyyy", {
+                              locale: es,
+                            })
+                          : pago.fechaPago
+                            ? format(parseISO(pago.fechaPago), "d 'de' MMMM 'de' yyyy", {
+                                locale: es,
+                              })
+                            : "Fecha no disponible"}
                       </p>
-                      {pago.referencia && (
-                        <p className="text-xs text-gray-500 mt-1">Referencia: {pago.referencia}</p>
-                      )}
                     </div>
                     <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 ml-4" />
                   </div>

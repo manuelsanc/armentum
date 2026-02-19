@@ -87,7 +87,7 @@ export function Calendario() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {upcomingFirst.map((rehearsal) => {
-                    const { status, label, color } = getRehearsalStatus(rehearsal.fecha);
+                    const { label, color } = getRehearsalStatus(rehearsal.fecha);
                     const isSelected = selectedRehearsalId === rehearsal.id;
 
                     return (
@@ -137,8 +137,8 @@ export function Calendario() {
             {/* Detail Panel */}
             <div>
               {selectedRehearsal ? (
-                <Card className="sticky top-4 border-red-600 shadow-lg">
-                  <CardHeader className="bg-red-50">
+                <Card className="sticky top-4 border-2 border-red-600 shadow-lg overflow-hidden">
+                  <CardHeader className="bg-red-50 border-b border-red-100 rounded-t-xl -m-[1px] mb-0 p-4 px-6">
                     <CardTitle className="text-lg text-red-900">Detalles del Ensayo</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-6 space-y-4">

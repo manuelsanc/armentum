@@ -280,6 +280,13 @@ class CuotaResponse(CuotaBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class FinanceSummaryResponse(BaseModel):
+    """Summary of member's financial status"""
+    totalIngresos: float = Field(..., description="Total amount paid")
+    totalPendiente: float = Field(..., description="Total pending amount")
+    totalVencido: float = Field(..., description="Total overdue amount")
+
+
 class CuotaUpdate(BaseModel):
     monto: Optional[float] = Field(None, gt=0)
     descripcion: Optional[str] = Field(None, max_length=255)

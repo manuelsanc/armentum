@@ -118,34 +118,45 @@ export interface AttendanceStats {
 // Finance (Finanzas)
 export interface Cuota {
   id: string;
-  userId: string;
+  miembro_id: string;
   monto: number;
   descripcion: string;
-  vencimiento: string; // ISO date
+  tipo: string;
+  fecha_vencimiento: string; // ISO date from API
+  vencimiento?: string; // ISO date (alternative)
   estado: "pendiente" | "pagada" | "vencida";
-  createdAt: string;
-  updatedAt: string;
+  fecha_pago?: string | null;
+  created_at?: string;
+  // Legacy fields for compatibility
+  userId?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface FinanceHistory {
   id: string;
-  userId: string;
-  cuotaId: string;
+  miembro_id: string;
   monto: number;
-  fechaPago: string; // ISO date
-  metodoPago: string;
+  descripcion?: string;
+  tipo?: string;
+  fecha_vencimiento?: string;
+  fecha_pago?: string;
+  estado?: string;
+  // Legacy fields
+  userId?: string;
+  cuotaId?: string;
+  fechaPago?: string;
+  metodoPago?: string;
   referencia?: string;
   cuota?: Cuota;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface FinanceSummary {
+  totalIngresos: number;
   totalPendiente: number;
-  totalPagado: number;
   totalVencido: number;
-  cuotasPendientes: Cuota[];
-  historialPagos: FinanceHistory[];
 }
 
 // Member Profile (Perfil de Corista)

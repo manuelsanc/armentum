@@ -1,13 +1,7 @@
 import { useState, useCallback } from "react";
 import * as adminService from "../services/admin";
-import type { Cuota, FinanceHistory } from "../types";
+import type { Cuota, FinanceHistory, FinanceSummary } from "../types";
 import { toast } from "sonner";
-
-interface FinanceSummary {
-  totalIngresos: number;
-  totalPendiente: number;
-  totalVencido: number;
-}
 
 interface UseAdminFinanceState {
   cuotas: Cuota[];
@@ -37,9 +31,7 @@ export function useAdminFinance(pageSize = 10) {
   const fetchSummary = useCallback(async () => {
     try {
       const response = await adminService.getFinanceSummary();
-      if (response.data) {
-        setState((prev) => ({ ...prev, summary: response.data }));
-      }
+      setState((prev) => ({ ...prev, summary: response.data ?? null }));
     } catch (error) {
       const message = error instanceof Error ? error.message : "Error desconocido";
       toast.error(message);
@@ -56,20 +48,17 @@ export function useAdminFinance(pageSize = 10) {
           page,
           pageSize
         );
-        if (response.data) {
-          setState((prev) => ({
-            ...prev,
-            cuotas: response.data.cuotas,
-            total: response.data.total,
-            currentPage: page,
-            statusFilter,
-            memberIdFilter,
-            isLoading: false,
-          }));
-          await fetchSummary();
-        } else {
-          throw new Error(response.error || "Error al cargar cuotas");
-        }
+        if (!response.data) throw new Error(response.error || "Error al cargar cuotas");
+        setState((prev) => ({
+          ...prev,
+          cuotas: response.data?.cuotas ?? [],
+          total: response.data?.total ?? 0,
+          currentPage: page,
+          statusFilter,
+          memberIdFilter,
+          isLoading: false,
+        }));
+        await fetchSummary();
       } catch (error) {
         const message = error instanceof Error ? error.message : "Error desconocido";
         setState((prev) => ({ ...prev, error: message, isLoading: false }));
@@ -83,13 +72,10 @@ export function useAdminFinance(pageSize = 10) {
     async (data: Partial<Cuota>) => {
       try {
         const response = await adminService.createCuota(data);
-        if (response.data) {
-          toast.success("Cuota creada exitosamente");
-          await fetchCuotas(state.currentPage, state.statusFilter, state.memberIdFilter);
-          return response.data;
-        } else {
-          throw new Error(response.error || "Error al crear cuota");
-        }
+        if (!response.data) throw new Error(response.error || "Error al crear cuota");
+        toast.success("Cuota creada exitosamente");
+        await fetchCuotas(state.currentPage, state.statusFilter, state.memberIdFilter);
+        return response.data;
       } catch (error) {
         const message = error instanceof Error ? error.message : "Error desconocido";
         toast.error(message);
@@ -103,13 +89,10 @@ export function useAdminFinance(pageSize = 10) {
     async (id: string, data: Partial<Cuota>) => {
       try {
         const response = await adminService.updateCuota(id, data);
-        if (response.data) {
-          toast.success("Cuota actualizada exitosamente");
-          await fetchCuotas(state.currentPage, state.statusFilter, state.memberIdFilter);
-          return response.data;
-        } else {
-          throw new Error(response.error || "Error al actualizar cuota");
-        }
+        if (!response.data) throw new Error(response.error || "Error al actualizar cuota");
+        toast.success("Cuota actualizada exitosamente");
+        await fetchCuotas(state.currentPage, state.statusFilter, state.memberIdFilter);
+        return response.data;
       } catch (error) {
         const message = error instanceof Error ? error.message : "Error desconocido";
         toast.error(message);
@@ -123,13 +106,10 @@ export function useAdminFinance(pageSize = 10) {
     async (cuotaId: string, paymentData: Partial<FinanceHistory>) => {
       try {
         const response = await adminService.markCuotaAsPaid(cuotaId, paymentData);
-        if (response.data) {
-          toast.success("Pago registrado exitosamente");
-          await fetchCuotas(state.currentPage, state.statusFilter, state.memberIdFilter);
-          return response.data;
-        } else {
-          throw new Error(response.error || "Error al registrar pago");
-        }
+        if (!response.data) throw new Error(response.error || "Error al registrar pago");
+        toast.success("Pago registrado exitosamente");
+        await fetchCuotas(state.currentPage, state.statusFilter, state.memberIdFilter);
+        return response.data;
       } catch (error) {
         const message = error instanceof Error ? error.message : "Error desconocido";
         toast.error(message);
