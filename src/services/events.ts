@@ -21,7 +21,7 @@ export async function getEvents(
     if (estado) params.append("estado", estado);
 
     const queryString = params.toString();
-    const endpoint = `/events/public${queryString ? `?${queryString}` : ""}`;
+    const endpoint = `/events${queryString ? `?${queryString}` : ""}`;
 
     const response = await apiGet<Event[]>(endpoint);
 
@@ -72,7 +72,7 @@ export async function getNews(limit?: number, offset?: number): Promise<News[]> 
     if (offset) params.append("offset", offset.toString());
 
     const queryString = params.toString();
-    const endpoint = `/news/public${queryString ? `?${queryString}` : ""}`;
+    const endpoint = `/news${queryString ? `?${queryString}` : ""}`;
 
     const response = await apiGet<News[]>(endpoint);
 
