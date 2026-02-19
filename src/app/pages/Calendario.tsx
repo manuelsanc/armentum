@@ -87,7 +87,7 @@ export function Calendario() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {upcomingFirst.map((rehearsal) => {
-                    const { label, color } = getRehearsalStatus(rehearsal.fecha);
+                    const { color } = getRehearsalStatus(rehearsal.fecha);
                     const isSelected = selectedRehearsalId === rehearsal.id;
 
                     return (
@@ -104,8 +104,22 @@ export function Calendario() {
                               <h3 className="font-semibold text-gray-900">
                                 {rehearsal.titulo || rehearsal.nombre}
                               </h3>
-                              <span className="text-xs font-medium px-2 py-1 bg-white rounded-full text-gray-700">
-                                {label}
+                              <span
+                                className={`text-xs font-medium px-2 py-1 rounded-full ${
+                                  rehearsal.tipo === "general"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : rehearsal.tipo === "seccional"
+                                      ? "bg-purple-100 text-purple-800"
+                                      : "bg-gray-100 text-gray-700"
+                                }`}
+                              >
+                                {rehearsal.tipo === "general"
+                                  ? "General"
+                                  : rehearsal.tipo === "seccional"
+                                    ? "Seccional"
+                                    : rehearsal.tipo === "otra_actividad"
+                                      ? "Otra Actividad"
+                                      : rehearsal.tipo}
                               </span>
                             </div>
                             <p className="text-sm text-gray-600 mb-2">{rehearsal.descripcion}</p>
@@ -148,6 +162,29 @@ export function Calendario() {
                       <p className="text-xs font-semibold text-gray-500 uppercase">Título</p>
                       <p className="text-gray-900 font-semibold">
                         {selectedRehearsal.titulo || selectedRehearsal.nombre}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase">Tipo</p>
+                      <p className="text-gray-900">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            selectedRehearsal.tipo === "general"
+                              ? "bg-blue-100 text-blue-800"
+                              : selectedRehearsal.tipo === "seccional"
+                                ? "bg-purple-100 text-purple-800"
+                                : "bg-gray-100 text-gray-700"
+                          }`}
+                        >
+                          {selectedRehearsal.tipo === "general"
+                            ? "General"
+                            : selectedRehearsal.tipo === "seccional"
+                              ? "Seccional"
+                              : selectedRehearsal.tipo === "otra_actividad"
+                                ? "Otra Actividad"
+                                : selectedRehearsal.tipo}
+                        </span>
                       </p>
                     </div>
 

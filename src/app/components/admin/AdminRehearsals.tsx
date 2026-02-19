@@ -286,34 +286,36 @@ export function AdminRehearsals(): JSX.Element {
                       <TableHead>Fecha</TableHead>
                       <TableHead>Hora</TableHead>
                       <TableHead>Lugar</TableHead>
-                      <TableHead>Estado</TableHead>
+                      <TableHead>Tipo</TableHead>
                       <TableHead>Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {rehearsals.map((rehearsal) => (
                       <TableRow key={rehearsal.id}>
-                        <TableCell className="font-medium">{rehearsal.titulo}</TableCell>
-                        <TableCell>{formatDate(rehearsal.fecha)}</TableCell>
-                        <TableCell>
-                          {rehearsal.horaInicio} {rehearsal.horaFin && `- ${rehearsal.horaFin}`}
+                        <TableCell className="font-medium">
+                          {rehearsal.titulo || rehearsal.nombre}
                         </TableCell>
+                        <TableCell>{formatDate(rehearsal.fecha)}</TableCell>
+                        <TableCell>{rehearsal.horaInicio || rehearsal.hora}</TableCell>
                         <TableCell>{rehearsal.lugar}</TableCell>
                         <TableCell>
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${
-                              rehearsal.estado === "scheduled"
+                              rehearsal.tipo === "general"
                                 ? "bg-blue-100 text-blue-800"
-                                : rehearsal.estado === "completed"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-red-100 text-red-800"
+                                : rehearsal.tipo === "seccional"
+                                  ? "bg-purple-100 text-purple-800"
+                                  : "bg-gray-100 text-gray-800"
                             }`}
                           >
-                            {rehearsal.estado === "scheduled"
-                              ? "Programado"
-                              : rehearsal.estado === "completed"
-                                ? "Completado"
-                                : "Cancelado"}
+                            {rehearsal.tipo === "general"
+                              ? "General"
+                              : rehearsal.tipo === "seccional"
+                                ? "Seccional"
+                                : rehearsal.tipo === "otra_actividad"
+                                  ? "Otra Actividad"
+                                  : rehearsal.tipo}
                           </span>
                         </TableCell>
                         <TableCell className="flex gap-2">
