@@ -199,7 +199,12 @@ def refresh_token(request: RefreshTokenRequest, db: Session = Depends(get_db)):
     except InvalidTokenError:
         raise AuthenticationError("Invalid refresh token")
     
-    user = db.query(User).filter(User.id == token_data.user_id).first()
+    # Convert token user_id string to UUID for querying
+    try:
+        token_user_id = UUID(token_data.user_id)
+    except (ValueError, TypeError):
+        raise AuthenticationError("Invalid user id in token")
+    user = db.query(User).filter(User.id == token_user_id).first()
     
     if not user:
         raise AuthenticationError("User not found")

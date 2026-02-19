@@ -114,7 +114,7 @@ class EventoPublicoBase(BaseModel):
     hora: str = Field(..., pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$")
     lugar: str = Field(..., min_length=2, max_length=255)
     tipo: str = Field("concierto", pattern="^(concierto|actividad|otro)$")
-    estado: str = Field("planificado", pattern="^(planificado|confirmado|cancelado)$")
+    estado: str = Field("planificado", pattern="^(planificado|en_curso|finalizado|cancelado)$")
     imagen_url: Optional[str] = None
 
 
@@ -138,7 +138,7 @@ class EventoPublicoUpdate(BaseModel):
     hora: Optional[str] = Field(None, pattern="^([01]?[0-9]|2[0-3]):[0-5][0-9]$")
     lugar: Optional[str] = Field(None, min_length=2, max_length=255)
     tipo: Optional[str] = Field(None, pattern="^(concierto|actividad|otro)$")
-    estado: Optional[str] = Field(None, pattern="^(planificado|confirmado|cancelado)$")
+    estado: Optional[str] = Field(None, pattern="^(planificado|en_curso|finalizado|cancelado)$")
     imagen_url: Optional[str] = None
 
 
@@ -329,3 +329,11 @@ class PaginatedResponse(BaseModel):
     page: int
     per_page: int
     has_next: bool
+ 
+# ============================================================
+# PUBLIC PAGES (PÁGINAS) SCHEMAS
+# ============================================================
+class PageResponse(BaseModel):
+    slug: str
+    title: str
+    content: str
