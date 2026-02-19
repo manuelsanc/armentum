@@ -10,10 +10,209 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.auth.dependencies import get_current_user
-from app.models import Miembro, Cuota
-from app.schemas import CuotaResponse
+from app.models import Miembro, Cuota, Ensayo, Asistencia
+from app.schemas import (
+    MemberProfileResponse,
+    MemberProfileUpdate,
+    RehearsalResponse,
+    RehearsalDetailResponse,
+    AttendanceResponse,
+    AttendanceStatsResponse,
+    CuotaResponse,
+)
 
 router = APIRouter()
+
+# ==========================================
+# Members: Profile endpoints (T037-T038)
+# ==========================================
+
+@router.get("/members/me", response_model=MemberProfileResponse)
+def get_my_profile(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Retrieve profile of the authenticated member.
+    """
+    member = db.query(Miembro).filter(Miembro.user_id == current_user.id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member profile not found")
+    user = member.user
+    return {
+        "id": member.id,
+        "email": user.email,
+        "nombre": user.nombre,
+        "voz": member.voz,
+        "fecha_ingreso": member.fecha_ingreso,
+        "estado": member.estado,
+        "telefono": member.telefono,
+        "saldo_actual": member.saldo_actual,
+    }
+
+@router.put("/members/me", response_model=MemberProfileResponse)
+def update_my_profile(
+    profile_update: MemberProfileUpdate,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Update phone and voice of the authenticated member.
+    """
+    member = db.query(Miembro).filter(Miembro.user_id == current_user.id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member profile not found")
+    if profile_update.telefono is not None:
+        member.telefono = profile_update.telefono
+    if profile_update.voz is not None:
+        member.voz = profile_update.voz
+    db.commit()
+    db.refresh(member)
+    user = member.user
+    return {
+        "id": member.id,
+        "email": user.email,
+        "nombre": user.nombre,
+        "voz": member.voz,
+        "fecha_ingreso": member.fecha_ingreso,
+        "estado": member.estado,
+        "telefono": member.telefono,
+        "saldo_actual": member.saldo_actual,
+    }
+
+# ==========================================
+# Rehearsals endpoints (T039-T040)
+# ==========================================
+
+@router.get("/rehearsals", response_model=List[RehearsalResponse])
+def list_rehearsals(
+    desde: Optional[date] = Query(None),
+    hasta: Optional[date] = Query(None),
+    limit: Optional[int] = Query(None, ge=1),
+    offset: int = Query(0, ge=0),
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List upcoming rehearsals within optional date range.
+    """
+    query = db.query(Ensayo).filter(Ensayo.fecha >= date.today())
+    if desde:
+        query = query.filter(Ensayo.fecha >= desde)
+    if hasta:
+        query = query.filter(Ensayo.fecha <= hasta)
+    query = query.order_by(Ensayo.fecha.asc())
+    if offset:
+        query = query.offset(offset)
+    if limit:
+        query = query.limit(limit)
+    rehearsals = query.all()
+    return [
+        {
+            "id": r.id,
+            "nombre": r.nombre,
+            "fecha": r.fecha,
+            "hora": r.hora,
+            "lugar": r.lugar,
+            "tipo": r.tipo,
+            "descripcion": r.descripcion,
+        }
+        for r in rehearsals
+    ]
+
+@router.get("/rehearsals/{rehearsal_id}", response_model=RehearsalDetailResponse)
+def get_rehearsal_detail(
+    rehearsal_id: UUID,
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get details for a specific rehearsal including attendance.
+    """
+    rehearsal = db.query(Ensayo).filter(Ensayo.id == rehearsal_id).first()
+    if not rehearsal:
+        raise HTTPException(status_code=404, detail="Rehearsal not found")
+    member = db.query(Miembro).filter(Miembro.user_id == current_user.id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member profile not found")
+    attendance = (
+        db.query(Asistencia)
+        .filter(Asistencia.ensayo_id == rehearsal_id, Asistencia.miembro_id == member.id)
+        .first()
+    )
+    asistencia = (
+        {"presente": attendance.presente, "justificacion": attendance.justificacion}
+        if attendance
+        else None
+    )
+    return {
+        "id": rehearsal.id,
+        "nombre": rehearsal.nombre,
+        "fecha": rehearsal.fecha,
+        "hora": rehearsal.hora,
+        "lugar": rehearsal.lugar,
+        "tipo": rehearsal.tipo,
+        "descripcion": rehearsal.descripcion,
+        "asistencia": asistencia,
+    }
+
+# ==========================================
+# Attendance endpoints (T041-T042)
+# ==========================================
+
+@router.get("/attendance/me", response_model=List[AttendanceResponse])
+def list_my_attendance(
+    limit: Optional[int] = Query(None, ge=1),
+    offset: int = Query(0, ge=0),
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List attendance records for the authenticated member.
+    """
+    member = db.query(Miembro).filter(Miembro.user_id == current_user.id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member profile not found")
+    query = db.query(Asistencia).filter(Asistencia.miembro_id == member.id).order_by(Asistencia.registrado_en.desc())
+    if offset:
+        query = query.offset(offset)
+    if limit:
+        query = query.limit(limit)
+    records = query.all()
+    return [
+        {
+            "id": r.id,
+            "ensayo_id": r.ensayo_id,
+            "ensayo_nombre": r.ensayo.nombre,
+            "ensayo_fecha": r.ensayo.fecha,
+            "presente": r.presente,
+            "justificacion": r.justificacion,
+            "registrado_en": r.registrado_en,
+        }
+        for r in records
+    ]
+
+@router.get("/attendance/me/stats", response_model=AttendanceStatsResponse)
+def get_my_attendance_stats(
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get attendance statistics for the authenticated member.
+    """
+    member = db.query(Miembro).filter(Miembro.user_id == current_user.id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Member profile not found")
+    total = db.query(Asistencia).filter(Asistencia.miembro_id == member.id).count()
+    asistencias = db.query(Asistencia).filter(Asistencia.miembro_id == member.id, Asistencia.presente.is_(True)).count()
+    inasistencias = db.query(Asistencia).filter(Asistencia.miembro_id == member.id, Asistencia.presente.is_(False)).count()
+    porcentaje = float((asistencias / total) * 100) if total > 0 else 0.0
+    return {
+        "total_ensayos": total,
+        "asistencias": asistencias,
+        "inasistencias": inasistencias,
+        "porcentaje": porcentaje,
+    }
 
 
 @router.get("/finance/me", response_model=List[CuotaResponse])
