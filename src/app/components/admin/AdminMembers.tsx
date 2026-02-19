@@ -40,6 +40,7 @@ interface MemberFormState {
   voz: string;
   direccion: string;
   telefonoContacto: string;
+  estado: string;
 }
 
 export function AdminMembers(): JSX.Element {
@@ -70,6 +71,7 @@ export function AdminMembers(): JSX.Element {
     voz: "",
     direccion: "",
     telefonoContacto: "",
+    estado: "activo",
   });
 
   useEffect(() => {
@@ -94,6 +96,7 @@ export function AdminMembers(): JSX.Element {
         voz: member.voz || "",
         direccion: member.direccion || "",
         telefonoContacto: member.telefonoContacto || "",
+        estado: member.activo ? "activo" : "inactivo",
       });
     } else {
       setEditingId(null);
@@ -103,6 +106,7 @@ export function AdminMembers(): JSX.Element {
         voz: "",
         direccion: "",
         telefonoContacto: "",
+        estado: "activo",
       });
     }
     setIsDialogOpen(true);
@@ -224,6 +228,23 @@ export function AdminMembers(): JSX.Element {
                     onChange={(e) => setFormState({ ...formState, direccion: e.target.value })}
                   />
                 </div>
+                {editingId && (
+                  <div className="space-y-2">
+                    <Label htmlFor="estado">Estado</Label>
+                    <Select
+                      value={formState.estado}
+                      onValueChange={(value) => setFormState({ ...formState, estado: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="activo">Activo</SelectItem>
+                        <SelectItem value="inactivo">Inactivo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={handleCloseDialog}>
                     Cancelar
