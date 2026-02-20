@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { Calendar, Music, Users, Award } from "lucide-react";
+import { Calendar, Music, Users, Globe } from "lucide-react";
 import logo from "../../assets/isotipo_transparent.png";
 import { FeatureCard } from "../components/FeatureCard";
 import { StatItem } from "../components/StatItem";
@@ -13,41 +13,42 @@ const FEATURES = [
     icon: <Music className="w-8 h-8" />,
     title: "Excelencia Musical",
     description:
-      "Repertorio diverso que abarca desde la música clásica hasta obras contemporáneas.",
+      "Repertorio diverso que incluye música sacra, contemporánea, folclórica latina y costarricense.",
     iconBackgroundColor: "bg-red-100",
     iconColor: "text-red-600",
   },
   {
     id: 2,
     icon: <Users className="w-8 h-8" />,
-    title: "Comunidad",
-    description: "Más que un coro, somos una familia unida por la pasión por la música.",
+    title: "Comunidad Diversa",
+    description:
+      "40 coristas de diversas edades, profesiones y orígenes unidos por la pasión por el canto.",
     iconBackgroundColor: "bg-orange-100",
     iconColor: "text-orange-600",
   },
   {
     id: 3,
     icon: <Calendar className="w-8 h-8" />,
-    title: "Eventos Regulares",
-    description: "Conciertos, talleres y presentaciones durante todo el año.",
+    title: "Trayectoria",
+    description: "Más de 150 presentaciones en escenarios de Costa Rica, Panamá, México y España.",
     iconBackgroundColor: "bg-red-100",
     iconColor: "text-red-600",
   },
   {
     id: 4,
-    icon: <Award className="w-8 h-8" />,
-    title: "Trayectoria",
-    description: "Más de 20 años de experiencia en la escena coral nacional e internacional.",
+    icon: <Globe className="w-8 h-8" />,
+    title: "Proyección Internacional",
+    description: "Representando a Costa Rica en competencias y festivales internacionales.",
     iconBackgroundColor: "bg-orange-100",
     iconColor: "text-orange-600",
   },
 ];
 
 const STATS = [
-  { value: "50+", label: "Coristas activos" },
-  { value: "100+", label: "Conciertos realizados" },
-  { value: "20+", label: "Años de trayectoria" },
-  { value: "15+", label: "Países visitados" },
+  { value: "~40", label: "Coristas activos" },
+  { value: "150+", label: "Conciertos realizados" },
+  { value: "2011", label: "Año de fundación" },
+  { value: "4", label: "Países visitados" },
 ];
 
 const getTypeColor = (type: string) => {
@@ -89,8 +90,8 @@ export function Home(): JSX.Element {
                 <span className="text-red-600">Estudio Coral Armentum</span>
               </h1>
               <p className="text-xl text-gray-700 mb-8">
-                Una agrupación coral comprometida con la excelencia musical y la difusión de la
-                cultura coral.
+                Un coro costarricense aficionado con sede en San José, comprometido con la
+                excelencia musical y la difusión de la cultura coral desde 2011.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
@@ -140,15 +141,16 @@ export function Home(): JSX.Element {
             <div>
               <h2 className="text-3xl mb-6 text-gray-900">Sobre Nosotros</h2>
               <p className="text-gray-700 mb-4">
-                Estudio Coral Armentum nace en 2003 con la visión de crear un espacio donde la
-                música coral pudiera florecer y desarrollarse con la más alta calidad artística.
-                Nuestro nombre, inspirado en el latín "armentum" (rebaño), representa la unión de
-                voces individuales que se convierten en una sola armonía.
+                El Estudio Coral Armentum es un coro costarricense aficionado con sede en San José,
+                fundado en 2011 y formalizado como Asociación Cultural Armentum en 2022. Actualmente
+                cuenta con alrededor de 40 integrantes de diversas edades, profesiones y orígenes,
+                dirigidos por Albin Delgado.
               </p>
               <p className="text-gray-700 mb-6">
-                A lo largo de los años, hemos crecido hasta convertirnos en una de las agrupaciones
-                corales más reconocidas de la región, manteniendo siempre nuestro compromiso con la
-                excelencia y la pasión por la música.
+                Nuestra misión es ofrecer un espacio sociocultural para personas con aptitudes para
+                el canto, fomentando herramientas sociales, artísticas y culturales. Promovemos la
+                diversidad musical, representando a Costa Rica en eventos internacionales con
+                énfasis en la biodiversidad y tradiciones locales.
               </p>
               <Link
                 to="/historia"
@@ -268,12 +270,24 @@ export function Home(): JSX.Element {
             Siempre estamos abiertos a nuevos talentos que compartan nuestra pasión por la música
             coral.
           </p>
-          <a
-            href="mailto:info@armentum.org"
-            className="inline-block px-8 py-3 bg-white text-red-600 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            Contáctanos
-          </a>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a
+              href="https://facebook.com/estudiocoralarmentum"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-8 py-3 bg-white text-red-600 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Facebook
+            </a>
+            <a
+              href="https://instagram.com/armentum.estudio.coral"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-8 py-3 bg-white text-red-600 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Instagram
+            </a>
+          </div>
         </div>
       </section>
     </div>
