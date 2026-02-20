@@ -12,6 +12,8 @@ import {
   CheckCircle,
   Loader2,
 } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 import { useAuthStore } from "../../stores/authStore";
 import { useCoristaDashboard } from "../../hooks/useCoristaDashboard";
 
@@ -32,20 +34,19 @@ export function Coristas(): JSX.Element {
   };
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("es-ES", {
-      weekday: "long",
-      day: "numeric",
-      month: "short",
-    });
+    try {
+      return format(parseISO(dateStr), "EEEE, d 'de' MMMM", { locale: es });
+    } catch {
+      return dateStr;
+    }
   };
 
   const formatShortDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("es-ES", {
-      day: "numeric",
-      month: "short",
-    });
+    try {
+      return format(parseISO(dateStr), "d 'de' MMMM", { locale: es });
+    } catch {
+      return dateStr;
+    }
   };
 
   // Placeholder data for scores and announcements (these would need separate endpoints)
@@ -176,7 +177,9 @@ export function Coristas(): JSX.Element {
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="text-gray-900">{announcement.title}</h3>
                       <span className="text-xs text-gray-600">
-                        {new Date(announcement.date).toLocaleDateString("es-ES")}
+                        {format(parseISO(announcement.date), "d 'de' MMMM 'de' yyyy", {
+                          locale: es,
+                        })}
                       </span>
                     </div>
                     <p className="text-sm text-gray-700">{announcement.message}</p>
