@@ -30,8 +30,11 @@ import {
   PaginationPrevious,
 } from "../ui/pagination";
 import { Plus, Edit, Trash2 } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import type { Event } from "../../../types";
 
 interface EventFormState {
@@ -42,6 +45,12 @@ interface EventFormState {
   lugar: string;
   tipo: string;
 }
+
+const EVENT_TYPES = [
+  { value: "concierto", label: "Concierto" },
+  { value: "actividad", label: "Actividad" },
+  { value: "otro", label: "Otro" },
+];
 
 export function AdminEvents(): JSX.Element {
   const {
@@ -139,7 +148,7 @@ export function AdminEvents(): JSX.Element {
 
   const formatDate = (dateStr: string) => {
     try {
-      return new Date(dateStr).toLocaleDateString("es-ES");
+      return format(parseISO(dateStr), "d 'de' MMMM 'de' yyyy", { locale: es });
     } catch {
       return dateStr;
     }
@@ -175,11 +184,21 @@ export function AdminEvents(): JSX.Element {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="tipo">Tipo</Label>
-                    <Input
-                      id="tipo"
+                    <Select
                       value={formState.tipo}
-                      onChange={(e) => setFormState({ ...formState, tipo: e.target.value })}
-                    />
+                      onValueChange={(value) => setFormState({ ...formState, tipo: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {EVENT_TYPES.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -257,7 +276,25 @@ export function AdminEvents(): JSX.Element {
                     {events.map((event) => (
                       <TableRow key={event.id}>
                         <TableCell className="font-medium">{event.nombre || event.title}</TableCell>
-                        <TableCell>{event.tipo || "-"}</TableCell>
+                        <TableCell>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${
+                              event.tipo === "concierto"
+                                ? "bg-blue-100 text-blue-800"
+                                : event.tipo === "actividad"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {event.tipo === "concierto"
+                              ? "Concierto"
+                              : event.tipo === "actividad"
+                                ? "Actividad"
+                                : event.tipo === "otro"
+                                  ? "Otro"
+                                  : event.tipo || "-"}
+                          </span>
+                        </TableCell>
                         <TableCell>{formatDate(event.fecha || event.date || "")}</TableCell>
                         <TableCell>{event.lugar || event.location}</TableCell>
                         <TableCell className="flex gap-2">
