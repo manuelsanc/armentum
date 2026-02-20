@@ -1,7 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Users, Calendar, FileText, LogOut, TrendingUp, Bell } from "lucide-react";
+import {
+  Users,
+  Calendar,
+  LogOut,
+  TrendingUp,
+  Bell,
+  Loader2,
+  DollarSign,
+  AlertTriangle,
+  CheckCircle,
+} from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
+import { useAdminDashboard } from "../../hooks/useAdminDashboard";
 import { AdminMembers } from "../components/admin/AdminMembers";
 import { AdminEvents } from "../components/admin/AdminEvents";
 import { AdminRehearsals } from "../components/admin/AdminRehearsals";
@@ -14,6 +25,7 @@ export function Admin(): JSX.Element {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState<TabType>("overview");
+  const { stats, loading, error, refetch } = useAdminDashboard();
 
   useEffect(() => {
     if (!user || user.userType !== "admin") {
@@ -26,11 +38,13 @@ export function Admin(): JSX.Element {
     navigate("/");
   };
 
-  const stats = {
-    totalMembers: 52,
-    activeMembers: 48,
-    upcomingEvents: 8,
-    pendingTasks: 5,
+  const formatCRC = (amount: number) => {
+    return new Intl.NumberFormat("es-CR", {
+      style: "currency",
+      currency: "CRC",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   return (
@@ -131,52 +145,116 @@ export function Admin(): JSX.Element {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === "overview" && (
           <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                    <Users className="w-6 h-6 text-red-600" />
-                  </div>
-                  <TrendingUp className="w-5 h-5 text-green-600" />
-                </div>
-                <p className="text-sm text-gray-600 mb-1">Total Miembros</p>
-                <p className="text-3xl text-gray-900">{stats.totalMembers}</p>
-                <p className="text-xs text-green-600 mt-2">+4 este mes</p>
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-red-600" />
               </div>
+            ) : error ? (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                <p className="text-red-700">{error}</p>
+                <button
+                  onClick={refetch}
+                  className="mt-2 text-red-600 hover:text-red-700 underline"
+                >
+                  Intentar de nuevo
+                </button>
+              </div>
+            ) : stats ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <Users className="w-6 h-6 text-red-600" />
+                      </div>
+                      <TrendingUp className="w-5 h-5 text-green-600" />
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">Total Miembros</p>
+                    <p className="text-3xl text-gray-900">{stats.totalMembers}</p>
+                    <p className="text-xs text-gray-600 mt-2">
+                      {stats.activeMembers} activos, {stats.inactiveMembers} inactivos
+                    </p>
+                  </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <Users className="w-6 h-6 text-green-600" />
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <Users className="w-6 h-6 text-green-600" />
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">Miembros Activos</p>
+                    <p className="text-3xl text-gray-900">{stats.activeMembers}</p>
+                    <p className="text-xs text-green-600 mt-2">
+                      {stats.totalMembers > 0
+                        ? Math.round((stats.activeMembers / stats.totalMembers) * 100)
+                        : 0}
+                      % del total
+                    </p>
                   </div>
-                </div>
-                <p className="text-sm text-gray-600 mb-1">Miembros Activos</p>
-                <p className="text-3xl text-gray-900">{stats.activeMembers}</p>
-                <p className="text-xs text-gray-600 mt-2">92% del total</p>
-              </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <Calendar className="w-6 h-6 text-orange-600" />
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <Calendar className="w-6 h-6 text-orange-600" />
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">Próximos Eventos</p>
+                    <p className="text-3xl text-gray-900">{stats.upcomingEvents}</p>
+                    <p className="text-xs text-gray-600 mt-2">
+                      + {stats.upcomingRehearsals} ensayos programados
+                    </p>
                   </div>
-                </div>
-                <p className="text-sm text-gray-600 mb-1">Próximos Eventos</p>
-                <p className="text-3xl text-gray-900">{stats.upcomingEvents}</p>
-                <p className="text-xs text-gray-600 mt-2">3 meses</p>
-              </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-blue-600" />
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <DollarSign className="w-6 h-6 text-blue-600" />
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">Ingresos Totales</p>
+                    <p className="text-2xl text-gray-900">
+                      {formatCRC(stats.finance.totalIngresos)}
+                    </p>
+                    <p className="text-xs text-orange-600 mt-2">
+                      {formatCRC(stats.finance.totalVencido)} vencido
+                    </p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-1">Tareas Pendientes</p>
-                <p className="text-3xl text-gray-900">{stats.pendingTasks}</p>
-                <p className="text-xs text-red-600 mt-2">2 urgentes</p>
-              </div>
-            </div>
+
+                {/* Additional Finance Summary */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <CheckCircle className="w-6 h-6 text-green-600" />
+                      <h3 className="text-lg text-gray-900">Total Pagado</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-green-600">
+                      {formatCRC(stats.finance.totalIngresos)}
+                    </p>
+                  </div>
+
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <DollarSign className="w-6 h-6 text-orange-600" />
+                      <h3 className="text-lg text-gray-900">Total Pendiente</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-orange-600">
+                      {formatCRC(stats.finance.totalPendiente)}
+                    </p>
+                  </div>
+
+                  <div className="bg-white rounded-lg shadow p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <AlertTriangle className="w-6 h-6 text-red-600" />
+                      <h3 className="text-lg text-gray-900">Total Vencido</h3>
+                    </div>
+                    <p className="text-2xl font-bold text-red-600">
+                      {formatCRC(stats.finance.totalVencido)}
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : null}
 
             <p className="text-center text-gray-500 py-8">
               Bienvenido al panel de administración. Selecciona una sección en los tabs superiores.
