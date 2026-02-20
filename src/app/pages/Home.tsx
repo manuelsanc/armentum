@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Calendar, Music, Users, Globe } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 import logo from "../../assets/isotipo_transparent.png";
 import { FeatureCard } from "../components/FeatureCard";
 import { StatItem } from "../components/StatItem";
 import { useEvents } from "../../hooks/useEvents";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 
 const FEATURES = [
   {
@@ -53,18 +54,27 @@ const STATS = [
 
 const getTypeColor = (type: string) => {
   switch (type) {
-    case "Concierto":
+    case "concierto":
       return "bg-red-100 text-red-800";
-    case "Ensayo":
+    case "actividad":
       return "bg-blue-100 text-blue-800";
-    case "Taller":
-      return "bg-green-100 text-green-800";
-    case "Festival":
-      return "bg-purple-100 text-purple-800";
-    case "Gira":
-      return "bg-orange-100 text-orange-800";
+    case "otro":
+      return "bg-gray-100 text-gray-800";
     default:
       return "bg-gray-100 text-gray-800";
+  }
+};
+
+const getTypeLabel = (type: string) => {
+  switch (type) {
+    case "concierto":
+      return "Concierto";
+    case "actividad":
+      return "Actividad";
+    case "otro":
+      return "Otro";
+    default:
+      return type || "Evento";
   }
 };
 
@@ -196,30 +206,20 @@ export function Home(): JSX.Element {
                 const eventTitle = event.nombre || event.title || "";
                 const eventDescription = event.descripcion || event.description || "";
                 const eventType = event.tipo || "Evento";
-                const eventImage =
-                  event.imagen_url ||
-                  "https://images.unsplash.com/photo-1610254449353-5698372fa83b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080";
 
                 return (
                   <div
                     key={event.id}
                     className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-gray-200"
                   >
-                    <div className="h-48 bg-gray-200 relative overflow-hidden">
-                      <ImageWithFallback
-                        src={eventImage}
-                        alt={eventTitle}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-4 left-4">
+                    <div className="p-6">
+                      <div className="mb-3">
                         <span
                           className={`px-3 py-1 rounded-full text-sm ${getTypeColor(eventType)}`}
                         >
-                          {eventType}
+                          {getTypeLabel(eventType)}
                         </span>
                       </div>
-                    </div>
-                    <div className="p-6">
                       <h3 className="text-lg font-semibold mb-2 text-gray-900 line-clamp-2">
                         {eventTitle}
                       </h3>
@@ -228,10 +228,7 @@ export function Home(): JSX.Element {
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4 flex-shrink-0" />
                             <span>
-                              {new Date(eventDate).toLocaleDateString("es-ES", {
-                                month: "short",
-                                day: "numeric",
-                              })}
+                              {format(parseISO(eventDate), "d 'de' MMMM", { locale: es })}
                             </span>
                           </div>
                         )}
@@ -242,13 +239,7 @@ export function Home(): JSX.Element {
                           </div>
                         )}
                       </div>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{eventDescription}</p>
-                      <Link
-                        to="/eventos"
-                        className="inline-block w-full text-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-                      >
-                        Más Información
-                      </Link>
+                      <p className="text-gray-600 text-sm line-clamp-2">{eventDescription}</p>
                     </div>
                   </div>
                 );
