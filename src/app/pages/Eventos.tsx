@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Calendar, MapPin, Clock, ChevronLeft, ChevronRight } from "lucide-react";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 import { useEvents } from "../../hooks/useEvents";
 
 export function Eventos(): JSX.Element {
@@ -35,7 +36,16 @@ export function Eventos(): JSX.Element {
   ).getDate();
   const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
 
-  const eventDates = allEvents.map((e) => new Date(e.fecha || e.date || "").toDateString());
+  const eventDates = allEvents
+    .map((e) => {
+      const dateStr = e.fecha || e.date || "";
+      try {
+        return parseISO(dateStr).toDateString();
+      } catch {
+        return "";
+      }
+    })
+    .filter(Boolean);
 
   const previousMonth = () => {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
@@ -56,18 +66,43 @@ export function Eventos(): JSX.Element {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "Concierto":
+      case "concierto":
         return "bg-red-100 text-red-800";
-      case "Ensayo":
+      case "actividad":
         return "bg-blue-100 text-blue-800";
-      case "Taller":
-        return "bg-green-100 text-green-800";
-      case "Festival":
-        return "bg-purple-100 text-purple-800";
-      case "Gira":
-        return "bg-orange-100 text-orange-800";
+      case "otro":
+        return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case "concierto":
+        return "Concierto";
+      case "actividad":
+        return "Actividad";
+      case "otro":
+        return "Otro";
+      default:
+        return type || "Evento";
+    }
+  };
+
+  const formatDate = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), "EEEE, d 'de' MMMM 'de' yyyy", { locale: es });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const formatShortDate = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), "d 'de' MMMM, yyyy", { locale: es });
+    } catch {
+      return dateStr;
     }
   };
 
@@ -105,43 +140,26 @@ export function Eventos(): JSX.Element {
                 const eventTitle = event.nombre || event.title || "";
                 const eventDescription = event.descripcion || event.description || "";
                 const eventType = event.tipo || "Evento";
-                const eventImage =
-                  event.imagen_url ||
-                  "https://images.unsplash.com/photo-1610254449353-5698372fa83b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080";
 
                 return (
                   <div
                     key={event.id}
                     className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
                   >
-                    <div className="h-48 bg-gray-200 relative overflow-hidden">
-                      <ImageWithFallback
-                        src={eventImage}
-                        alt={eventTitle}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-4 left-4">
+                    <div className="p-6">
+                      <div className="mb-3">
                         <span
                           className={`px-3 py-1 rounded-full text-sm ${getTypeColor(eventType)}`}
                         >
-                          {eventType}
+                          {getTypeLabel(eventType)}
                         </span>
                       </div>
-                    </div>
-                    <div className="p-6">
                       <h3 className="text-xl mb-3 text-gray-900">{eventTitle}</h3>
                       <div className="space-y-2 text-sm text-gray-600 mb-4">
                         {eventDate && (
                           <div className="flex items-start gap-2">
                             <Calendar className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                            <span>
-                              {new Date(eventDate).toLocaleDateString("es-ES", {
-                                weekday: "long",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })}
-                            </span>
+                            <span>{formatDate(eventDate)}</span>
                           </div>
                         )}
                         {eventTime && (
@@ -157,10 +175,7 @@ export function Eventos(): JSX.Element {
                           </div>
                         )}
                       </div>
-                      <p className="text-gray-600 mb-4">{eventDescription}</p>
-                      <button className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                        Más Información
-                      </button>
+                      <p className="text-gray-600">{eventDescription}</p>
                     </div>
                   </div>
                 );
@@ -271,9 +286,6 @@ export function Eventos(): JSX.Element {
                   const eventTitle = event.nombre || event.title || "";
                   const eventDescription = event.descripcion || event.description || "";
                   const eventType = event.tipo || "Evento";
-                  const eventImage =
-                    event.imagen_url ||
-                    "https://images.unsplash.com/photo-1610254449353-5698372fa83b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080";
                   const eventEstado = event.estado || "disponible";
 
                   return (
@@ -281,63 +293,43 @@ export function Eventos(): JSX.Element {
                       key={event.id}
                       className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                     >
-                      <div className="md:flex">
-                        <div className="md:w-1/3 h-48 md:h-auto bg-gray-200">
-                          <ImageWithFallback
-                            src={eventImage}
-                            alt={eventTitle}
-                            className="w-full h-full object-cover"
-                          />
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-3">
+                          <h3 className="text-2xl text-gray-900">{eventTitle}</h3>
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ml-4 ${getTypeColor(
+                              eventType
+                            )}`}
+                          >
+                            {getTypeLabel(eventType)}
+                          </span>
                         </div>
-                        <div className="md:w-2/3 p-6">
-                          <div className="flex items-start justify-between mb-3">
-                            <h3 className="text-2xl text-gray-900">{eventTitle}</h3>
-                            <span
-                              className={`px-3 py-1 rounded-full text-sm whitespace-nowrap ml-4 ${getTypeColor(
-                                eventType
-                              )}`}
-                            >
-                              {eventType}
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-sm text-gray-600">
-                            {eventDate && (
-                              <div className="flex items-center gap-2">
-                                <Calendar className="w-4 h-4 flex-shrink-0" />
-                                <span>
-                                  {new Date(eventDate).toLocaleDateString("es-ES", {
-                                    day: "numeric",
-                                    month: "short",
-                                    year: "numeric",
-                                  })}
-                                </span>
-                              </div>
-                            )}
-                            {eventTime && (
-                              <div className="flex items-center gap-2">
-                                <Clock className="w-4 h-4 flex-shrink-0" />
-                                <span>{eventTime}</span>
-                              </div>
-                            )}
-                            {eventLocation && (
-                              <div className="flex items-center gap-2">
-                                <MapPin className="w-4 h-4 flex-shrink-0" />
-                                <span>{eventLocation}</span>
-                              </div>
-                            )}
-                          </div>
-                          <p className="text-gray-600 mb-4">{eventDescription}</p>
-                          <div className="flex items-center gap-4">
-                            <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                              Más Información
-                            </button>
-                            {eventEstado && eventEstado !== "disponible" && (
-                              <span className="text-sm text-gray-500 italic">
-                                Próximamente más detalles
-                              </span>
-                            )}
-                          </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-sm text-gray-600">
+                          {eventDate && (
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4 flex-shrink-0" />
+                              <span>{formatShortDate(eventDate)}</span>
+                            </div>
+                          )}
+                          {eventTime && (
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4 flex-shrink-0" />
+                              <span>{eventTime}</span>
+                            </div>
+                          )}
+                          {eventLocation && (
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4 flex-shrink-0" />
+                              <span>{eventLocation}</span>
+                            </div>
+                          )}
                         </div>
+                        <p className="text-gray-600">{eventDescription}</p>
+                        {eventEstado && eventEstado !== "disponible" && (
+                          <p className="mt-4 text-sm text-gray-500 italic">
+                            Próximamente más detalles
+                          </p>
+                        )}
                       </div>
                     </div>
                   );
