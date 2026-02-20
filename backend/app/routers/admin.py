@@ -776,3 +776,59 @@ def finance_reports(
         total_vencido=_sum_estado("vencida"),
         cuotas=cuotas,
     )
+
+
+# ==========================================
+# Dashboard Stats
+# ==========================================
+
+@router.get("/dashboard/stats", response_model=dict)
+def get_dashboard_stats(
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Get dashboard statistics for admin overview."""
+    # Members stats
+    total_members = db.query(Miembro).count()
+    active_members = db.query(Miembro).filter(Miembro.estado == "activo").count()
+    
+    # Events stats (upcoming)
+    upcoming_events = db.query(EventoPublico).filter(
+        EventoPublico.estado.in_(['planificado', 'en_curso']),
+        EventoPublico.fecha >= date.today()
+    ).count()
+    
+    # Rehearsals stats (upcoming)
+    upcoming_rehearsals = db.query(Ensayo).filter(
+        Ensayo.fecha >= date.today()
+    ).count()
+    
+    # Finance summary
+    total_pagado = db.query(func.sum(Cuota.monto)).filter(
+        Cuota.estado == "pagada"
+    ).scalar() or Decimal(0)
+    
+    total_pendiente = db.query(func.sum(Cuota.monto)).filter(
+        Cuota.estado == "pendiente",
+        Cuota.fecha_vencimiento >= date.today()
+    ).scalar() or Decimal(0)
+    
+    total_vencido = db.query(func.sum(Cuota.monto)).filter(
+        or_(
+            Cuota.estado == "vencida",
+            and_(Cuota.estado == "pendiente", Cuota.fecha_vencimiento < date.today())
+        )
+    ).scalar() or Decimal(0)
+    
+    return {
+        "totalMembers": total_members,
+        "activeMembers": active_members,
+        "inactiveMembers": total_members - active_members,
+        "upcomingEvents": upcoming_events,
+        "upcomingRehearsals": upcoming_rehearsals,
+        "finance": {
+            "totalIngresos": float(total_pagado),
+            "totalPendiente": float(total_pendiente),
+            "totalVencido": float(total_vencido),
+        },
+    }
