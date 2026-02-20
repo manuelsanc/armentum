@@ -30,6 +30,8 @@ import {
   PaginationPrevious,
 } from "../ui/pagination";
 import { Plus, Edit, Trash2 } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
@@ -150,7 +152,7 @@ export function AdminRehearsals(): JSX.Element {
 
   const formatDate = (dateStr: string) => {
     try {
-      return new Date(dateStr).toLocaleDateString("es-ES");
+      return format(parseISO(dateStr), "d 'de' MMMM 'de' yyyy", { locale: es });
     } catch {
       return dateStr;
     }
