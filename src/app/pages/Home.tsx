@@ -1,12 +1,32 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { Calendar, Music, Users, Globe } from "lucide-react";
-import { format, parseISO } from "date-fns";
-import { es } from "date-fns/locale";
+import { Music, Users, Globe, Award } from "lucide-react";
 import logo from "../../assets/isotipo_transparent.png";
 import { FeatureCard } from "../components/FeatureCard";
 import { StatItem } from "../components/StatItem";
-import { useEvents } from "../../hooks/useEvents";
+
+// Importar imágenes de coristas
+import adrianaGuillen from "../../assets/coristas/adriana_guillen.jpg";
+import dianaArce from "../../assets/coristas/diana_arce.jpg";
+import lauraMunoz from "../../assets/coristas/laura_munoz.jpg";
+import giovannaChacon from "../../assets/coristas/giovanna_chacon.jpg";
+import katiaCalderon from "../../assets/coristas/katia_calderon.jpg";
+import lauraAlvarado from "../../assets/coristas/laura_alvarado.jpg";
+import lauraMora from "../../assets/coristas/laura_mora.jpg";
+import naomiBedoya from "../../assets/coristas/naomi_bedoya.jpg";
+import stevenGutierrez from "../../assets/coristas/steven_gutierrez.jpg";
+import manuelSanchez from "../../assets/coristas/manuel_sanchez.jpg";
+import leonardoDeLeon from "../../assets/coristas/leonardo_de_leon.jpg";
+import marioCalderon from "../../assets/coristas/mario_calderon.jpg";
+import marioAraya from "../../assets/coristas/mario_araya.jpg";
+import joseSolorzano from "../../assets/coristas/jose_solorzano.jpg";
+import marcoBolanos from "../../assets/coristas/marco_bolanos.jpg";
+import marcoMata from "../../assets/coristas/marco_mata.jpg";
+import vanessaSanchez from "../../assets/coristas/vanessa_sanchez.jpg";
+import fabiolaAlvarado from "../../assets/coristas/fabiola_alvarado.jpg";
+import odilieGomez from "../../assets/coristas/odilie_gomez.jpg";
+import karlaCeciliano from "../../assets/coristas/karla_siciliano.jpg";
+import eduardoBonilla from "../../assets/coristas/eduardo_bonilla.jpg";
+import dennisCantillo from "../../assets/coristas/dennis_cantillo.jpg";
 
 const FEATURES = [
   {
@@ -23,13 +43,13 @@ const FEATURES = [
     icon: <Users className="w-8 h-8" />,
     title: "Comunidad Diversa",
     description:
-      "40 coristas de diversas edades, profesiones y orígenes unidos por la pasión por el canto.",
+      "31 coristas de diversas edades, profesiones y orígenes unidos por la pasión por el canto.",
     iconBackgroundColor: "bg-orange-100",
     iconColor: "text-orange-600",
   },
   {
     id: 3,
-    icon: <Calendar className="w-8 h-8" />,
+    icon: <Award className="w-8 h-8" />,
     title: "Trayectoria",
     description: "Más de 150 presentaciones en escenarios de Costa Rica, Panamá, México y España.",
     iconBackgroundColor: "bg-red-100",
@@ -46,48 +66,69 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { value: "~40", label: "Coristas activos" },
+  { value: "~31", label: "Coristas activos" },
   { value: "150+", label: "Conciertos realizados" },
   { value: "2011", label: "Año de fundación" },
   { value: "4", label: "Países visitados" },
 ];
 
-const getTypeColor = (type: string) => {
-  switch (type) {
-    case "concierto":
-      return "bg-red-100 text-red-800";
-    case "actividad":
-      return "bg-blue-100 text-blue-800";
-    case "otro":
-      return "bg-gray-100 text-gray-800";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
-};
+interface Corista {
+  nombre: string;
+  foto?: string;
+}
 
-const getTypeLabel = (type: string) => {
-  switch (type) {
-    case "concierto":
-      return "Concierto";
-    case "actividad":
-      return "Actividad";
-    case "otro":
-      return "Otro";
-    default:
-      return type || "Evento";
-  }
-};
+interface Voz {
+  nombre: string;
+  coristas: Corista[];
+}
+
+const VOCES: Voz[] = [
+  {
+    nombre: "Sopranos",
+    coristas: [
+      { nombre: "Laura Alvarado Ulate", foto: lauraAlvarado },
+      { nombre: "Dilana Arce Vega", foto: dianaArce },
+      { nombre: "Katia Calderón Agüero", foto: katiaCalderon },
+      { nombre: "Giovanna Chacón Barrera", foto: giovannaChacon },
+      { nombre: "Naomy Gedoya Madrigal", foto: naomiBedoya },
+      { nombre: "Adriana Guillen Melendez", foto: adrianaGuillen },
+      { nombre: "Laura Mora Vargas", foto: lauraMora },
+      { nombre: "Laura Muñoz Umaña", foto: lauraMunoz },
+    ],
+  },
+  {
+    nombre: "Tenores",
+    coristas: [
+      { nombre: "Mario Araya Marchena", foto: marioAraya },
+      { nombre: "Mario Calderón Vargas", foto: marioCalderon },
+      { nombre: "Héctor Castro Castillo", foto: joseSolorzano }, // Usando foto de José Solozano como placeholder
+      { nombre: "Leonardo De León Aguilar", foto: leonardoDeLeon },
+      { nombre: "Steven Gutiérrez Zúñiga", foto: stevenGutierrez },
+    ],
+  },
+  {
+    nombre: "Contraltos",
+    coristas: [
+      { nombre: "Fabiola Alvarado Ulate", foto: fabiolaAlvarado },
+      { nombre: "Karla Ceciliano Zamora", foto: karlaCeciliano },
+      { nombre: "Odilie Gómez Orozco", foto: odilieGomez },
+      { nombre: "Vanessa Sánchez Villalta", foto: vanessaSanchez },
+    ],
+  },
+  {
+    nombre: "Bajos",
+    coristas: [
+      { nombre: "Marco Bolaños García", foto: marcoBolanos },
+      { nombre: "Dennis Cantillo Morua", foto: dennisCantillo },
+      { nombre: "Eduardo Jarquin Bonilla", foto: eduardoBonilla },
+      { nombre: "Marco Mata Estrada", foto: marcoMata },
+      { nombre: "Manuel Sánchez Ordóñez", foto: manuelSanchez }, // Usando foto de Steven como placeholder
+      { nombre: "José Solozano", foto: joseSolorzano },
+    ],
+  },
+];
 
 export function Home(): JSX.Element {
-  const { events, loading } = useEvents(5);
-  const [upcomingEvents, setUpcomingEvents] = useState(events.slice(0, 3));
-
-  useEffect(() => {
-    if (events.length > 0) {
-      setUpcomingEvents(events.slice(0, 3));
-    }
-  }, [events]);
-
   return (
     <div>
       {/* Hero Section */}
@@ -105,16 +146,16 @@ export function Home(): JSX.Element {
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
-                  to="/eventos"
+                  to="/historia"
                   className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                 >
-                  Ver Próximos Eventos
+                  Ver Historia
                 </Link>
                 <Link
-                  to="/historia"
+                  to="/mision"
                   className="px-6 py-3 bg-white text-red-600 border-2 border-red-600 rounded-lg hover:bg-red-50 transition-colors"
                 >
-                  Conoce Nuestra Historia
+                  Misión y Valores
                 </Link>
               </div>
             </div>
@@ -181,75 +222,80 @@ export function Home(): JSX.Element {
         </div>
       </section>
 
-      {/* Próximos Eventos Section */}
+      {/* Director Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl text-gray-900">Próximos Eventos</h2>
-            <Link
-              to="/eventos"
-              className="text-red-600 hover:text-red-700 transition-colors font-medium"
-            >
-              Ver todos →
-            </Link>
+          <h2 className="text-3xl text-center mb-12 text-gray-900">Sobre el Director</h2>
+          <div className="flex flex-col md:flex-row items-center gap-12 max-w-5xl mx-auto">
+            {/* Foto del director - rectangular */}
+            <div className="flex-shrink-0">
+              <div className="w-64 h-80 bg-gray-200 overflow-hidden rounded-lg shadow-lg">
+                <img
+                  src="https://lh3.googleusercontent.com/sitesv/APaQ0SQjzsYowRogCdGB3tOEkKESlCypqQUkoAdVWbaKeELErlV_TVnZF4nEGTzbdk4wyP3n9wcIfpcIE0eiRWa5lf-BJJqU_f4hsESpiDS5g7R2Hol4rMS3a8R8RqUWAWd8kLnrHms_qirlWAR7D0G28T2AblK072yeHW1ZVwWc9UUs0f2ARxwIPi_odzrJATEY0l_PYY5LLTCt5NNA_hvHGZ3qfL_keZhmbpZymRk=w1280"
+                  alt="Albin Delgado, Director"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/src/assets/isotipo.png";
+                  }}
+                />
+              </div>
+            </div>
+            {/* Texto */}
+            <div>
+              <h3 className="text-2xl mb-2 text-gray-900">Albin Delgado</h3>
+              <p className="text-red-600 mb-4 font-medium">Director</p>
+              <p className="text-gray-700 leading-relaxed">
+                Inicia sus estudios musicales en la Universidad Nacional de Costa Rica en el año
+                2008, especializándose en Pedagogía Musical y Dirección Coral. Ha profundizado su
+                formación bajo la tutela de importantes directores del mundo como Hanz Peters
+                Shurtz, Javier Busto y Vytautas Miškinis, entre otros. Como instrumentista, cantante
+                y director ha representado a Costa Rica en prestigiosos festivales y competencias en
+                Panamá, Nicaragua, Guatemala, México, Estados Unidos, Alemania, Austria, Gales,
+                Inglaterra, Italia y España.
+              </p>
+            </div>
           </div>
+        </div>
+      </section>
 
-          {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-            </div>
-          ) : upcomingEvents.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {upcomingEvents.map((event) => {
-                const eventDate = event.fecha || event.date;
-                const eventLocation = event.lugar || event.location || "";
-                const eventTitle = event.nombre || event.title || "";
-                const eventDescription = event.descripcion || event.description || "";
-                const eventType = event.tipo || "Evento";
-
-                return (
-                  <div
-                    key={event.id}
-                    className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow border border-gray-200"
-                  >
-                    <div className="p-6">
-                      <div className="mb-3">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm ${getTypeColor(eventType)}`}
-                        >
-                          {getTypeLabel(eventType)}
-                        </span>
-                      </div>
-                      <h3 className="text-lg font-semibold mb-2 text-gray-900 line-clamp-2">
-                        {eventTitle}
-                      </h3>
-                      <div className="space-y-1 text-sm text-gray-600 mb-4">
-                        {eventDate && (
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 flex-shrink-0" />
-                            <span>
-                              {format(parseISO(eventDate), "d 'de' MMMM", { locale: es })}
-                            </span>
-                          </div>
-                        )}
-                        {eventLocation && (
-                          <div className="flex items-center gap-2 truncate">
-                            <span className="flex-shrink-0">📍</span>
-                            <span className="truncate text-xs">{eventLocation}</span>
+      {/* Coristas Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl text-center mb-4 text-gray-900">Nuestros Coristas</h2>
+          <p className="text-center text-gray-600 mb-12">
+            ~40 voces unidas por la pasión por el canto
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {VOCES.map((voces, vocesIndex) => (
+              <div key={vocesIndex} className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-xl text-center mb-6 text-red-600 font-semibold">
+                  {voces.nombre}
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {voces.coristas.map((corista, index) => (
+                    <div key={index} className="flex flex-col items-center gap-2">
+                      <div className="w-[125px] h-[125px] rounded-full bg-gray-200 overflow-hidden border-2 border-gray-300 shadow">
+                        {corista.foto ? (
+                          <img
+                            src={corista.foto}
+                            alt={corista.nombre}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-red-100 to-orange-100 flex items-center justify-center">
+                            <span className="text-xl text-red-400">♪</span>
                           </div>
                         )}
                       </div>
-                      <p className="text-gray-600 text-sm line-clamp-2">{eventDescription}</p>
+                      <p className="text-xs text-center text-gray-600 font-medium leading-tight">
+                        {corista.nombre}
+                      </p>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-              <p className="text-gray-600">No hay eventos próximos en este momento.</p>
-            </div>
-          )}
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
