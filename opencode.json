@@ -5,6 +5,12 @@
     "edit": "ask",
     "bash": "ask"
   },
+  "mcp": {
+    "playwright": {
+      "type": "remote",
+      "url": "http://localhost:8931/mcp"
+    }
+  },
   "agent": {
     "orchestrator": {
       "mode": "primary",

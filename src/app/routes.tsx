@@ -14,6 +14,7 @@ import { Calendario } from "./pages/Calendario";
 import { MisAsistencias } from "./pages/MisAsistencias";
 import { Finanzas } from "./pages/Finanzas";
 import { Descargas } from "./pages/Descargas";
+import { Galeria } from "./pages/Galeria";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       { path: "historia", Component: Historia },
       { path: "mision", Component: Mision },
       { path: "noticias", Component: Noticias },
+      { path: "galeria", Component: Galeria },
       { path: "eventos", Component: Eventos },
       { path: "login", Component: Login },
       {
