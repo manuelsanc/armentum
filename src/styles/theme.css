@@ -16,7 +16,12 @@
   --muted-foreground: #717182;
   --accent: #e9ebef;
   --accent-foreground: #030213;
-  --destructive: #d4183d;
+
+  /* Brand Colors */
+  --brand-orange: #F69220;
+  --brand-red: #CD201E;
+
+  --destructive: #CD201E;
   --destructive-foreground: #ffffff;
   --border: rgba(0, 0, 0, 0.1);
   --input: transparent;
@@ -79,6 +84,36 @@
 }
 
 @theme inline {
+  /* Typography - Montserrat font family */
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Brand color swap: red-* classes show orange, orange-* classes show red */
+  /* Orange brand color (primary) - accessible via red-* classes */
+  --color-red-50: #fff8f1;
+  --color-red-100: #ffecd9;
+  --color-red-200: #fed5b3;
+  --color-red-300: #fdb782;
+  --color-red-400: #fc8f4f;
+  --color-red-500: #fa7028;
+  --color-red-600: #F69220;
+  --color-red-700: #c7540b;
+  --color-red-800: #a0430c;
+  --color-red-900: #823a0d;
+  --color-red-950: #461b05;
+
+  /* Red brand color (secondary) - accessible via orange-* classes */
+  --color-orange-50: #fef2f2;
+  --color-orange-100: #fee2e2;
+  --color-orange-200: #fecaca;
+  --color-orange-300: #fca5a5;
+  --color-orange-400: #f87171;
+  --color-orange-500: #ef4444;
+  --color-orange-600: #CD201E;
+  --color-orange-700: #991817;
+  --color-orange-800: #7f1d1d;
+  --color-orange-900: #7f1d1d;
+  --color-orange-950: #450a0a;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
