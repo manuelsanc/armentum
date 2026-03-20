@@ -5,7 +5,7 @@ import { es } from "date-fns/locale";
 import { useEvents } from "../../hooks/useEvents";
 
 export function Eventos(): JSX.Element {
-  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 1)); // February 2026
+  const [currentMonth, setCurrentMonth] = useState(new Date()); // Mes actual
   const [paginationLimit] = useState(20);
   const [paginationOffset, setPaginationOffset] = useState(0);
 
