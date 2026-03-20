@@ -1,4 +1,5 @@
-import { Facebook, Instagram, Globe, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin, Youtube, Images } from "lucide-react";
+import { Link } from "react-router";
 
 export function Footer(): JSX.Element {
   return (
@@ -31,7 +32,7 @@ export function Footer(): JSX.Element {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4" />
-                <span>SINPE Móvil: 8795-1116</span>
+                <span>SINPE Móvil: 8495-1116</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
@@ -63,16 +64,28 @@ export function Footer(): JSX.Element {
                 <Instagram className="w-5 h-5" />
               </a>
               <a
-                href="https://sites.google.com/view/estudiocoralarmentum"
+                href="https://www.youtube.com/channel/UCzILi5dzSAtnQf8ShTqzl-g"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-gray-800 rounded-full hover:bg-red-600 transition-colors"
-                title="Sitio Web"
+                title="YouTube"
               >
-                <Globe className="w-5 h-5" />
+                <Youtube className="w-5 h-5" />
               </a>
+              <Link
+                to="/galeria"
+                className="p-2 bg-gray-800 rounded-full hover:bg-red-600 transition-colors"
+                title="Galería"
+              >
+                <Images className="w-5 h-5" />
+              </Link>
             </div>
-            <p className="text-xs text-gray-500 mt-3">Donaciones: SINPE Móvil 8795-1116</p>
+            <p className="text-xs text-gray-500 mt-3">
+              <Link to="/galeria" className="hover:text-red-400 transition-colors">
+                Galería
+              </Link>
+            </p>
+            <p className="text-xs text-gray-500 mt-2">Donaciones: SINPE Móvil 8495-1116</p>
           </div>
         </div>
 

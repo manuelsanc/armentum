@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Music, Users, Globe, Award } from "lucide-react";
 import logo from "../../assets/isotipo_transparent.png";
+import directorImagen from "../../assets/director.jpeg";
 import { FeatureCard } from "../components/FeatureCard";
 import { StatItem } from "../components/StatItem";
 
@@ -14,7 +15,6 @@ import lauraAlvarado from "../../assets/coristas/laura_alvarado.jpg";
 import lauraMora from "../../assets/coristas/laura_mora.jpg";
 import naomiBedoya from "../../assets/coristas/naomi_bedoya.jpg";
 import stevenGutierrez from "../../assets/coristas/steven_gutierrez.jpg";
-import manuelSanchez from "../../assets/coristas/manuel_sanchez.jpg";
 import leonardoDeLeon from "../../assets/coristas/leonardo_de_leon.jpg";
 import marioCalderon from "../../assets/coristas/mario_calderon.jpg";
 import marioAraya from "../../assets/coristas/mario_araya.jpg";
@@ -27,6 +27,8 @@ import odilieGomez from "../../assets/coristas/odilie_gomez.jpg";
 import karlaCeciliano from "../../assets/coristas/karla_siciliano.jpg";
 import eduardoBonilla from "../../assets/coristas/eduardo_bonilla.jpg";
 import dennisCantillo from "../../assets/coristas/dennis_cantillo.jpg";
+import manuelSanchez from "../../assets/coristas/manuel_sanchez.jpg";
+import hectorCastro from "../../assets/coristas/hector_castro.jpg";
 
 const FEATURES = [
   {
@@ -100,8 +102,8 @@ const VOCES: Voz[] = [
     nombre: "Tenores",
     coristas: [
       { nombre: "Mario Araya Marchena", foto: marioAraya },
+      { nombre: "Héctor Castro Castillo", foto: hectorCastro },
       { nombre: "Mario Calderón Vargas", foto: marioCalderon },
-      { nombre: "Héctor Castro Castillo", foto: joseSolorzano }, // Usando foto de José Solozano como placeholder
       { nombre: "Leonardo De León Aguilar", foto: leonardoDeLeon },
       { nombre: "Steven Gutiérrez Zúñiga", foto: stevenGutierrez },
     ],
@@ -231,7 +233,7 @@ export function Home(): JSX.Element {
             <div className="flex-shrink-0">
               <div className="w-64 h-80 bg-gray-200 overflow-hidden rounded-lg shadow-lg">
                 <img
-                  src="https://lh3.googleusercontent.com/sitesv/APaQ0SQjzsYowRogCdGB3tOEkKESlCypqQUkoAdVWbaKeELErlV_TVnZF4nEGTzbdk4wyP3n9wcIfpcIE0eiRWa5lf-BJJqU_f4hsESpiDS5g7R2Hol4rMS3a8R8RqUWAWd8kLnrHms_qirlWAR7D0G28T2AblK072yeHW1ZVwWc9UUs0f2ARxwIPi_odzrJATEY0l_PYY5LLTCt5NNA_hvHGZ3qfL_keZhmbpZymRk=w1280"
+                  src={directorImagen}
                   alt="Albin Delgado, Director"
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -263,7 +265,7 @@ export function Home(): JSX.Element {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl text-center mb-4 text-gray-900">Nuestros Coristas</h2>
           <p className="text-center text-gray-600 mb-12">
-            ~40 voces unidas por la pasión por el canto
+            ~31 voces unidas por la pasión por el canto
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {VOCES.map((voces, vocesIndex) => (

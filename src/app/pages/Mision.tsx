@@ -113,32 +113,32 @@ export function Mision(): JSX.Element {
             <div className="bg-gray-50 rounded-lg p-6 border-l-4 border-red-600">
               <h3 className="text-xl mb-2 text-gray-900">Música Sacra</h3>
               <p className="text-gray-600">
-                Obras de compositores como Silvestri y Mendelssohn, que forman parte de la tradición
-                coral clásica.
+                Obras de compositores como Christopher Tin, Anthony Silvestre y Andrej Makor, que
+                forman parte de la tradición coral clásica e incluyen misas, motetes y antífonas.
               </p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-6 border-l-4 border-orange-600">
               <h3 className="text-xl mb-2 text-gray-900">Contemporánea</h3>
               <p className="text-gray-600">
-                Obras de compositores modernos como Christopher Tin, explorando nuevos sonidos y
-                estilos.
+                Repertorio de vanguardia con obras de compositores actuales, explorando nuevas
+                texturas, armonías y técnicas vocales modernas.
               </p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-6 border-l-4 border-red-600">
               <h3 className="text-xl mb-2 text-gray-900">Folclórica Latina y Costarricense</h3>
               <p className="text-gray-600">
-                Piezas como "Tico de Corazón" y "El Torito", que celebran nuestra identidad
-                nacional.
+                Piezas emblemáticas como "Tico de Corazón" y "El Torito" que celebran nuestra
+                identidad nacional, junto a tradiciones musicales de América Latina.
               </p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-6 border-l-4 border-orange-600">
               <h3 className="text-xl mb-2 text-gray-900">Pop y Tributos</h3>
               <p className="text-gray-600">
-                Arreglos corales de música popular, incluyendo tributos presentados en el Foyer del
-                Teatro Nacional.
+                Arreglos corales de música popular y tributos presentados en escenarios como el
+                Foyer del Teatro Nacional, acercando la música coral a nuevos públicos.
               </p>
             </div>
           </div>
