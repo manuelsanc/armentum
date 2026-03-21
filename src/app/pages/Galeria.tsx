@@ -34,7 +34,11 @@ export function Galeria(): JSX.Element {
   };
 
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
+    // Parse date as local date to avoid timezone conversion issues
+    // Backend sends dates in YYYY-MM-DD format
+    const [year, month, day] = dateString.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+
     return date.toLocaleDateString("es-CR", {
       year: "numeric",
       month: "long",

@@ -364,7 +364,14 @@ export function AdminGallery(): JSX.Element {
                         />
                       </TableCell>
                       <TableCell className="font-medium">{image.titulo}</TableCell>
-                      <TableCell>{new Date(image.fecha).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        {(() => {
+                          // Parse date as local to avoid timezone issues
+                          const [year, month, day] = image.fecha.split("-").map(Number);
+                          const date = new Date(year, month - 1, day);
+                          return date.toLocaleDateString();
+                        })()}
+                      </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
                           {image.tags && image.tags.length > 0 ? (
