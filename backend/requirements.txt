@@ -19,10 +19,10 @@ python-jose==3.3.0
 cryptography==41.0.7
 passlib==1.7.4
 bcrypt==4.1.2
-pydantic-settings==2.1.0
+pydantic-settings==2.11.0
 
 # Validation
-pydantic==2.5.0
+pydantic==2.11.7
 email-validator==2.1.0
 
 # Environment variables
