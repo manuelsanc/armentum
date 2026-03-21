@@ -94,6 +94,72 @@ def sample_evento_data():
 
 
 @pytest.fixture
+def admin_user(db_session):
+    """Create an admin user for testing."""
+    from app.models import User, Role, UserRole
+    from app.auth.jwt import get_password_hash
+    from uuid import uuid4
+
+    # Create admin role if doesn't exist
+    admin_role = db_session.query(Role).filter(Role.nombre == "admin").first()
+    if not admin_role:
+        admin_role = Role(nombre="admin", descripcion="Administrator role")
+        db_session.add(admin_role)
+        db_session.flush()
+
+    # Create admin user
+    admin_user = User(
+        id=uuid4(),
+        email="admin@test.com",
+        nombre="Admin User",
+        password_hash=get_password_hash("adminpass123"),
+        is_active=True,
+    )
+    db_session.add(admin_user)
+    db_session.flush()
+
+    # Assign admin role
+    user_role = UserRole(user_id=admin_user.id, role_id=admin_role.id)
+    db_session.add(user_role)
+    db_session.commit()
+
+    return admin_user
+
+
+@pytest.fixture
+def auth_headers(admin_user):
+    """Generate auth headers for admin user."""
+    from app.auth.jwt import create_access_token
+
+    access_token = create_access_token(
+        data={"sub": str(admin_user.id), "roles": ["admin"]}
+    )
+    return {"Authorization": f"Bearer {access_token}"}
+
+
+@pytest.fixture
+def test_gallery_image(db_session, admin_user):
+    """Create a test gallery image."""
+    from app.models import GalleryImage
+    from datetime import date
+
+    gallery_image = GalleryImage(
+        titulo="Concierto de Prueba",
+        descripcion="Una descripción de prueba",
+        fecha=date(2024, 12, 25),
+        tags=["conciertos", "navidad"],
+        image_url="https://example.com/images/test_full.jpg",
+        thumbnail_url="https://example.com/images/test_thumb.jpg",
+        created_by=admin_user.id,
+    )
+    db_session.add(gallery_image)
+    db_session.commit()
+    db_session.refresh(gallery_image)
+
+    return gallery_image
+
+
+@pytest.fixture
 def sample_ensayo_data():
     """Sample ensayo data for testing."""
     return {

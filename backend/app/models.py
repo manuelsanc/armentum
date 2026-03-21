@@ -4,7 +4,7 @@ Database table definitions
 """
 
 from sqlalchemy import Column, String, Boolean, DateTime, Date, Numeric, Text, ForeignKey, JSON
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
@@ -238,6 +238,31 @@ class Archivo(Base):
             kwargs['id'] = uuid.uuid4()
         if 'privado' not in kwargs:
             kwargs['privado'] = True
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.utcnow()
+        super().__init__(**kwargs)
+
+
+class GalleryImage(Base):
+    __tablename__ = "gallery_images"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    titulo = Column(String(255), nullable=False, index=True)
+    descripcion = Column(Text)
+    fecha = Column(Date, nullable=False, index=True)
+    tags = Column(JSONB, nullable=False, default=[])
+    image_url = Column(String(500), nullable=False)
+    thumbnail_url = Column(String(500), nullable=False)
+    created_by = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __init__(self, **kwargs):
+        # Ensure default values on instantiation
+        if 'id' not in kwargs:
+            kwargs['id'] = uuid.uuid4()
+        if 'tags' not in kwargs:
+            kwargs['tags'] = []
         if 'created_at' not in kwargs:
             kwargs['created_at'] = datetime.utcnow()
         super().__init__(**kwargs)

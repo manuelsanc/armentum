@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, status
 from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
 
@@ -17,6 +17,7 @@ from app.models import (
     Cuota,
     Ensayo,
     EventoPublico,
+    GalleryImage,
     Miembro,
     Role,
     User,
@@ -41,8 +42,13 @@ from app.schemas import (
     EnsayoCreate,
     EnsayoResponse,
     EnsayoUpdate,
+    GalleryImageListResponse,
+    GalleryImageResponse,
+    GalleryImageUploadResponse,
     Message,
 )
+from app.services.image_service import image_service
+from app.utils.storage_buckets import BUCKET_IMAGES, is_allowed_mime_type, get_max_file_size_mb
 
 
 router = APIRouter()
@@ -791,35 +797,35 @@ def get_dashboard_stats(
     # Members stats
     total_members = db.query(Miembro).count()
     active_members = db.query(Miembro).filter(Miembro.estado == "activo").count()
-    
+
     # Events stats (upcoming)
     upcoming_events = db.query(EventoPublico).filter(
         EventoPublico.estado.in_(['planificado', 'en_curso']),
         EventoPublico.fecha >= date.today()
     ).count()
-    
+
     # Rehearsals stats (upcoming)
     upcoming_rehearsals = db.query(Ensayo).filter(
         Ensayo.fecha >= date.today()
     ).count()
-    
+
     # Finance summary
     total_pagado = db.query(func.sum(Cuota.monto)).filter(
         Cuota.estado == "pagada"
     ).scalar() or Decimal(0)
-    
+
     total_pendiente = db.query(func.sum(Cuota.monto)).filter(
         Cuota.estado == "pendiente",
         Cuota.fecha_vencimiento >= date.today()
     ).scalar() or Decimal(0)
-    
+
     total_vencido = db.query(func.sum(Cuota.monto)).filter(
         or_(
             Cuota.estado == "vencida",
             and_(Cuota.estado == "pendiente", Cuota.fecha_vencimiento < date.today())
         )
     ).scalar() or Decimal(0)
-    
+
     return {
         "totalMembers": total_members,
         "activeMembers": active_members,
@@ -832,3 +838,271 @@ def get_dashboard_stats(
             "totalVencido": float(total_vencido),
         },
     }
+
+
+# ==========================================
+# Gallery Management
+# ==========================================
+
+@router.get("/gallery", response_model=GalleryImageListResponse)
+async def list_gallery_images(
+    limit: int = Query(25, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    search: Optional[str] = Query(None, min_length=1),
+    tags: Optional[str] = Query(None, description="Comma-separated tags"),
+    start_date: Optional[date] = Query(None),
+    end_date: Optional[date] = Query(None),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """List gallery images with pagination and filters."""
+    query = db.query(GalleryImage)
+
+    # Search filter (titulo or descripcion)
+    if search:
+        term = f"%{search.lower()}%"
+        query = query.filter(
+            or_(
+                func.lower(GalleryImage.titulo).like(term),
+                func.lower(GalleryImage.descripcion).like(term),
+            )
+        )
+
+    # Tags filter (AND logic: all tags must match)
+    if tags:
+        tag_list = [t.strip() for t in tags.split(",") if t.strip()]
+        for tag in tag_list:
+            query = query.filter(GalleryImage.tags.contains([tag]))
+
+    # Date range filter
+    if start_date:
+        query = query.filter(GalleryImage.fecha >= start_date)
+    if end_date:
+        query = query.filter(GalleryImage.fecha <= end_date)
+
+    total = query.count()
+    images = (
+        query.order_by(GalleryImage.fecha.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return GalleryImageListResponse(
+        total=total,
+        limit=limit,
+        offset=offset,
+        images=images,
+    )
+
+
+@router.post(
+    "/gallery",
+    response_model=GalleryImageUploadResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def upload_gallery_image(
+    file: UploadFile = File(...),
+    titulo: str = Form(...),
+    fecha: date = Form(...),
+    descripcion: Optional[str] = Form(None),
+    tags: Optional[str] = Form(None),
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(require_admin),
+):
+    """Upload a new gallery image with metadata."""
+    # Validate MIME type
+    if not is_allowed_mime_type(BUCKET_IMAGES, file.content_type):
+        raise HTTPException(
+            status_code=400,
+            detail=f"File type {file.content_type} not allowed. Allowed types: image/jpeg, image/png, image/gif, image/webp"
+        )
+
+    # Validate file size
+    file_content = await file.read()
+    max_size_mb = get_max_file_size_mb(BUCKET_IMAGES)
+    max_size_bytes = max_size_mb * 1024 * 1024
+
+    if len(file_content) > max_size_bytes:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Maximum size: {max_size_mb}MB"
+        )
+
+    # Process and upload image
+    try:
+        image_url, thumbnail_url = await image_service.process_and_upload(
+            file_content,
+            file.filename or "image.jpg"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    # Parse tags
+    tag_list = []
+    if tags:
+        tag_list = [t.strip() for t in tags.split(",") if t.strip()]
+
+    # Create database entry
+    gallery_image = GalleryImage(
+        titulo=titulo,
+        descripcion=descripcion,
+        fecha=fecha,
+        tags=tag_list,
+        image_url=image_url,
+        thumbnail_url=thumbnail_url,
+        created_by=current_admin.id,
+    )
+
+    db.add(gallery_image)
+    db.commit()
+    db.refresh(gallery_image)
+
+    return GalleryImageUploadResponse(
+        message="Image uploaded successfully",
+        image=gallery_image,
+    )
+
+
+@router.put("/gallery/{image_id}", response_model=GalleryImageResponse)
+async def update_gallery_image(
+    image_id: UUID,
+    titulo: Optional[str] = Form(None),
+    descripcion: Optional[str] = Form(None),
+    fecha: Optional[date] = Form(None),
+    tags: Optional[str] = Form(None),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Update gallery image metadata (not the image file itself)."""
+    gallery_image = db.query(GalleryImage).filter(GalleryImage.id == image_id).first()
+    if not gallery_image:
+        raise HTTPException(status_code=404, detail="Gallery image not found")
+
+    # Update fields
+    if titulo is not None:
+        gallery_image.titulo = titulo
+    if descripcion is not None:
+        gallery_image.descripcion = descripcion
+    if fecha is not None:
+        gallery_image.fecha = fecha
+    if tags is not None:
+        tag_list = [t.strip() for t in tags.split(",") if t.strip()]
+        gallery_image.tags = tag_list
+
+    gallery_image.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(gallery_image)
+
+    return gallery_image
+
+
+@router.put(
+    "/gallery/{image_id}/replace",
+    response_model=GalleryImageResponse,
+)
+async def replace_gallery_image(
+    image_id: UUID,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Replace the image file of an existing gallery image."""
+    gallery_image = db.query(GalleryImage).filter(GalleryImage.id == image_id).first()
+    if not gallery_image:
+        raise HTTPException(status_code=404, detail="Gallery image not found")
+
+    # Validate MIME type
+    if not is_allowed_mime_type(BUCKET_IMAGES, file.content_type):
+        raise HTTPException(
+            status_code=400,
+            detail=f"File type {file.content_type} not allowed"
+        )
+
+    # Validate file size
+    file_content = await file.read()
+    max_size_mb = get_max_file_size_mb(BUCKET_IMAGES)
+    max_size_bytes = max_size_mb * 1024 * 1024
+
+    if len(file_content) > max_size_bytes:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Maximum size: {max_size_mb}MB"
+        )
+
+    # Delete old images
+    try:
+        await image_service.delete_images(
+            gallery_image.image_url,
+            gallery_image.thumbnail_url
+        )
+    except Exception as e:
+        # Log but don't fail - old files might already be deleted
+        import logging
+        logging.warning(f"Failed to delete old images: {e}")
+
+    # Upload new images
+    try:
+        image_url, thumbnail_url = await image_service.process_and_upload(
+            file_content,
+            file.filename or "image.jpg"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    # Update database
+    gallery_image.image_url = image_url
+    gallery_image.thumbnail_url = thumbnail_url
+    gallery_image.updated_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(gallery_image)
+
+    return gallery_image
+
+
+@router.delete("/gallery/{image_id}", response_model=Message)
+async def delete_gallery_image(
+    image_id: UUID,
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Permanently delete a gallery image and its files."""
+    gallery_image = db.query(GalleryImage).filter(GalleryImage.id == image_id).first()
+    if not gallery_image:
+        raise HTTPException(status_code=404, detail="Gallery image not found")
+
+    # Delete images from storage
+    try:
+        await image_service.delete_images(
+            gallery_image.image_url,
+            gallery_image.thumbnail_url
+        )
+    except Exception as e:
+        # Log but continue with database deletion
+        import logging
+        logging.warning(f"Failed to delete images from storage: {e}")
+
+    # Delete from database
+    db.delete(gallery_image)
+    db.commit()
+
+    return Message(message="Gallery image deleted successfully")
+
+
+@router.get("/gallery/tags", response_model=list[str])
+async def get_all_gallery_tags(
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_admin),
+):
+    """Get all unique tags used in gallery images."""
+    # Get all gallery images
+    images = db.query(GalleryImage).all()
+
+    # Extract unique tags
+    all_tags = set()
+    for image in images:
+        if image.tags:
+            all_tags.update(image.tags)
+
+    return sorted(list(all_tags))

@@ -467,3 +467,48 @@ class PageResponse(BaseModel):
     slug: str
     title: str
     content: str
+
+
+# ============================================================
+# GALLERY IMAGE SCHEMAS
+# ============================================================
+
+class GalleryImageBase(BaseModel):
+    titulo: str = Field(..., min_length=1, max_length=255)
+    descripcion: Optional[str] = None
+    fecha: date
+    tags: list[str] = []
+
+
+class GalleryImageCreate(GalleryImageBase):
+    pass
+
+
+class GalleryImageUpdate(BaseModel):
+    titulo: Optional[str] = Field(None, min_length=1, max_length=255)
+    descripcion: Optional[str] = None
+    fecha: Optional[date] = None
+    tags: Optional[list[str]] = None
+
+
+class GalleryImageResponse(GalleryImageBase):
+    id: UUID
+    image_url: str
+    thumbnail_url: str
+    created_by: UUID
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GalleryImageListResponse(BaseModel):
+    total: int
+    limit: int
+    offset: int
+    images: list[GalleryImageResponse]
+
+
+class GalleryImageUploadResponse(BaseModel):
+    message: str
+    image: GalleryImageResponse
