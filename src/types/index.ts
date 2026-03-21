@@ -185,3 +185,40 @@ export interface MemberProfile extends User {
   telefono?: string;
   saldo_actual?: number;
 }
+
+// ============ Gallery Types ============
+
+export interface GalleryImage {
+  id: string;
+  titulo: string;
+  descripcion?: string;
+  fecha: string; // ISO date
+  tags: string[];
+  image_url: string;
+  thumbnail_url: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GalleryImageCreate {
+  titulo: string;
+  descripcion?: string;
+  fecha: string;
+  tags?: string[];
+  file: File;
+}
+
+export interface GalleryImageUpdate {
+  titulo?: string;
+  descripcion?: string;
+  fecha?: string;
+  tags?: string[];
+}
+
+export interface GalleryImageListResponse {
+  total: number;
+  limit: number;
+  offset: number;
+  images: GalleryImage[];
+}

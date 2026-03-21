@@ -3,10 +3,11 @@ from typing import List, Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func, or_
 
 from app.database import get_db
-from app.models import EventoPublico, Comunicado
-from app.schemas import EventoPublicoResponse, ComunicadoResponse, PageResponse
+from app.models import EventoPublico, Comunicado, GalleryImage
+from app.schemas import EventoPublicoResponse, ComunicadoResponse, PageResponse, GalleryImageListResponse
 
 router = APIRouter()
 
@@ -68,3 +69,35 @@ def get_public_page(slug: str):
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
     return {"slug": slug, "title": page["title"], "content": page["content"]}
+
+
+@router.get("/gallery", response_model=GalleryImageListResponse)
+def get_public_gallery(
+    limit: int = Query(100, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    tags: Optional[str] = Query(None, description="Comma-separated tags for filtering"),
+    db: Session = Depends(get_db),
+):
+    """Get public gallery images with optional tag filtering."""
+    query = db.query(GalleryImage)
+
+    # Tags filter (AND logic: all tags must match)
+    if tags:
+        tag_list = [t.strip() for t in tags.split(",") if t.strip()]
+        for tag in tag_list:
+            query = query.filter(GalleryImage.tags.contains([tag]))
+
+    total = query.count()
+    images = (
+        query.order_by(GalleryImage.fecha.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return GalleryImageListResponse(
+        total=total,
+        limit=limit,
+        offset=offset,
+        images=images,
+    )

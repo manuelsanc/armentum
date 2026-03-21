@@ -10,6 +10,7 @@ import {
   DollarSign,
   AlertTriangle,
   CheckCircle,
+  Images,
 } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
 import { useAdminDashboard } from "../../hooks/useAdminDashboard";
@@ -18,8 +19,9 @@ import { AdminEvents } from "../components/admin/AdminEvents";
 import { AdminRehearsals } from "../components/admin/AdminRehearsals";
 import { AdminAttendance } from "../components/admin/AdminAttendance";
 import { AdminFinance } from "../components/admin/AdminFinance";
+import { AdminGallery } from "../components/admin/AdminGallery";
 
-type TabType = "overview" | "members" | "events" | "rehearsals" | "attendance" | "finance";
+type TabType = "overview" | "members" | "events" | "rehearsals" | "attendance" | "finance" | "gallery";
 
 export function Admin(): JSX.Element {
   const navigate = useNavigate();
@@ -137,6 +139,16 @@ export function Admin(): JSX.Element {
               }`}
             >
               Finanzas
+            </button>
+            <button
+              onClick={() => setActiveTab("gallery")}
+              className={`py-4 border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === "gallery"
+                  ? "border-red-600 text-red-600"
+                  : "border-transparent text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Galería
             </button>
           </nav>
         </div>
@@ -267,6 +279,7 @@ export function Admin(): JSX.Element {
         {activeTab === "rehearsals" && <AdminRehearsals />}
         {activeTab === "attendance" && <AdminAttendance />}
         {activeTab === "finance" && <AdminFinance />}
+        {activeTab === "gallery" && <AdminGallery />}
       </div>
     </div>
   );
