@@ -40,8 +40,8 @@ class Settings(BaseSettings):
     # App URL (for email links)
     APP_URL: str = "http://localhost:5173"
     
-    # CORS
-    CORS_ORIGINS: str = '["http://localhost:5173","http://localhost:3000"]'
+    # CORS - JSON string list of allowed origins
+    CORS_ORIGINS: str = '["http://localhost:5173","http://localhost:3000","https://armentum.vercel.app"]'
     
     # App
     DEBUG: bool = False

@@ -43,8 +43,8 @@ En el dashboard de Render → **Environment**, añade estas variables (cópialas
 ```bash
 # Supabase
 SUPABASE_URL=https://tu-proyecto.supabase.co
-SUPABASE_KEY=tu_anon_key_aqui
-SUPABASE_SERVICE_KEY=tu_service_role_key_aqui
+SUPABASE_ANON_KEY=tu_anon_key_aqui
+SUPABASE_SERVICE_ROLE_KEY=tu_service_role_key_aqui
 
 # Database
 DATABASE_URL=postgresql://usuario:password@host:5432/database
@@ -53,6 +53,9 @@ DATABASE_URL=postgresql://usuario:password@host:5432/database
 JWT_SECRET_KEY=tu-clave-secreta-super-segura
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# CORS - IMPORTANTE: Incluye tu dominio de Vercel para permitir peticiones
+CORS_ORIGINS=["http://localhost:5173","https://armentum.vercel.app"]
 
 # Email (Opcional)
 SENDGRID_API_KEY=tu_sendgrid_key
