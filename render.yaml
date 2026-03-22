@@ -1,0 +1,28 @@
+services:
+  # Backend FastAPI
+  - type: web
+    name: armentum-backend
+    runtime: python
+    plan: free
+    rootDirectory: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash start.sh
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    healthCheckPath: /health
+    # Configure estas variables en el dashboard de Render:
+    # SUPABASE_URL, SUPABASE_KEY, SUPABASE_SERVICE_KEY,
+    # DATABASE_URL, JWT_SECRET_KEY, JWT_ALGORITHM,
+    # ACCESS_TOKEN_EXPIRE_MINUTES, SENDGRID_API_KEY (opcional),
+    # RESEND_API_KEY (opcional)
+
+# Nota: El frontend se despliega en Vercel (ver vercel.json)
+# Este archivo solo configura el backend en Render
+
+# Si prefieres PostgreSQL en Render en lugar de Supabase:
+# databases:
+#   - name: armentum-db
+#     databaseName: armentum
+#     user: armentum
+#     plan: free

@@ -2,6 +2,15 @@
 
 **Bienvenido a Armentum**, una plataforma moderna para centralizar la gestión del Estudio Coral Armentum.
 
+## 🚀 Deployment
+
+**¿Listo para desplegar?** Lee la [Guía de Deployment](./DEPLOYMENT.md) para instrucciones completas.
+
+- **Backend**: Render (gratis) → [Instrucciones](./DEPLOYMENT.md#-backend---deploy-en-render-gratis)
+- **Frontend**: Vercel (gratis) → [Instrucciones](./DEPLOYMENT.md#-frontend---deploy-en-vercel)
+
+---
+
 ## 📚 📖 DOCUMENTACIÓN CENTRALIZADA EN `docs/`
 
 **Toda la documentación del proyecto está organizada en la carpeta `docs/`**
