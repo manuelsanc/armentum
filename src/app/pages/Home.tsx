@@ -1,9 +1,23 @@
 import { Link } from "react-router";
-import { Music, Users, Globe, Award } from "lucide-react";
+import { useState } from "react";
+import {
+  Calendar,
+  MapPin,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  Music,
+  Users,
+  Globe,
+  Award,
+} from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 import logo from "../../assets/isotipo_transparent.png";
 import directorImagen from "../../assets/director.jpeg";
 import { FeatureCard } from "../components/FeatureCard";
 import { StatItem } from "../components/StatItem";
+import { useEvents } from "../../hooks/useEvents";
 
 // Importar imágenes de coristas
 import adrianaGuillen from "../../assets/coristas/adriana_guillen.jpg";
@@ -131,6 +145,60 @@ const VOCES: Voz[] = [
 ];
 
 export function Home(): JSX.Element {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const { events: allEvents, loading: eventsLoading } = useEvents(50, 0);
+
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const upcomingEvents = allEvents
+    .map((event) => {
+      const dateStr = event.fecha || event.date || "";
+      try {
+        return { event, date: parseISO(dateStr) };
+      } catch {
+        return { event, date: null };
+      }
+    })
+    .filter((item) => item.date && item.date >= startOfToday)
+    .sort((a, b) => (a.date?.getTime() || 0) - (b.date?.getTime() || 0))
+    .slice(0, 3);
+
+  const daysInMonth = new Date(
+    currentMonth.getFullYear(),
+    currentMonth.getMonth() + 1,
+    0
+  ).getDate();
+  const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+
+  const eventDates = allEvents
+    .map((e) => {
+      const dateStr = e.fecha || e.date || "";
+      try {
+        return parseISO(dateStr).toDateString();
+      } catch {
+        return "";
+      }
+    })
+    .filter(Boolean);
+
+  const hasEvent = (day: number) => {
+    const dateToCheck = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth(),
+      day
+    ).toDateString();
+    return eventDates.includes(dateToCheck);
+  };
+
+  const formatShortDate = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), "d 'de' MMMM, yyyy", { locale: es });
+    } catch {
+      return dateStr;
+    }
+  };
+
   return (
     <div>
       {/* Hero Section */}
@@ -297,6 +365,163 @@ export function Home(): JSX.Element {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Calendario y Próximos Eventos */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl text-gray-900">Próximos Eventos</h2>
+            <Link
+              to="/eventos"
+              className="text-red-600 font-medium hover:text-red-700 transition-colors"
+            >
+              Ver todos los eventos
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,260px)_1fr] gap-8">
+            {/* Calendario compacto */}
+            <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+              <div className="flex items-center justify-between mb-4">
+                <button
+                  onClick={() =>
+                    setCurrentMonth(
+                      new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1)
+                    )
+                  }
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="Mes anterior"
+                >
+                  <ChevronLeft className="w-4 h-4 text-gray-700" />
+                </button>
+                <h3 className="text-sm font-semibold text-gray-900">
+                  {format(currentMonth, "MMMM yyyy", { locale: es })}
+                </h3>
+                <button
+                  onClick={() =>
+                    setCurrentMonth(
+                      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1)
+                    )
+                  }
+                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="Mes siguiente"
+                >
+                  <ChevronRight className="w-4 h-4 text-gray-700" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-7 gap-1 text-[10px] text-gray-500 mb-2">
+                {"DLMMJVS".split("").map((day) => (
+                  <div key={day} className="text-center">
+                    {day}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-7 gap-1">
+                {Array.from({ length: firstDayOfMonth }).map((_, index) => (
+                  <div key={`empty-${index}`} className="h-7" />
+                ))}
+                {Array.from({ length: daysInMonth }).map((_, index) => {
+                  const day = index + 1;
+                  const isToday =
+                    new Date().toDateString() ===
+                    new Date(
+                      currentMonth.getFullYear(),
+                      currentMonth.getMonth(),
+                      day
+                    ).toDateString();
+                  const hasEventDay = hasEvent(day);
+
+                  return (
+                    <div
+                      key={day}
+                      className={`h-7 w-7 text-xs flex items-center justify-center rounded-md transition-colors ${
+                        isToday
+                          ? "bg-red-600 text-white"
+                          : hasEventDay
+                            ? "bg-orange-100 text-orange-900"
+                            : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {day}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-4 flex items-center gap-3 text-xs text-gray-500">
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-red-600 rounded" />
+                  Hoy
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-orange-100 border border-orange-300 rounded" />
+                  Con evento
+                </div>
+              </div>
+            </div>
+
+            {/* Lista de próximos eventos */}
+            <div className="space-y-4">
+              {eventsLoading ? (
+                <div className="flex items-center gap-3 text-gray-600">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600" />
+                  Cargando eventos...
+                </div>
+              ) : upcomingEvents.length > 0 ? (
+                upcomingEvents.map(({ event }) => {
+                  const eventDate = event.fecha || event.date || "";
+                  const eventTime = event.hora || "";
+                  const eventLocation = event.lugar || event.location || "";
+                  const eventTitle = event.nombre || event.title || "Evento";
+
+                  return (
+                    <div
+                      key={event.id}
+                      className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                    >
+                      <h3 className="text-lg text-gray-900 mb-2">{eventTitle}</h3>
+                      <div className="space-y-1 text-sm text-gray-600">
+                        {eventDate && (
+                          <div className="flex items-start gap-2">
+                            <Calendar className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span>{formatShortDate(eventDate)}</span>
+                          </div>
+                        )}
+                        {eventTime && (
+                          <div className="flex items-start gap-2">
+                            <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span>{eventTime}</span>
+                          </div>
+                        )}
+                        {eventLocation && (
+                          <div className="flex items-start gap-2">
+                            <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span>{eventLocation}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                  <p className="text-gray-600 mb-3">
+                    No hay eventos próximos disponibles en este momento.
+                  </p>
+                  <Link
+                    to="/eventos"
+                    className="text-red-600 font-medium hover:text-red-700 transition-colors"
+                  >
+                    Ver el calendario completo
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
