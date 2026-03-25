@@ -1,4 +1,5 @@
 import { Target, Heart, Users, Globe, Music } from "lucide-react";
+import { JoinChoirModal } from "../components/JoinChoirModal";
 
 export function Mision(): JSX.Element {
   return (
@@ -8,8 +9,8 @@ export function Mision(): JSX.Element {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl mb-6">Nuestra Misión y Valores</h1>
           <p className="text-xl text-orange-100 max-w-3xl">
-            Un espacio sociocultural para personas con aptitudes para el canto, fomentando
-            herramientas sociales, artísticas y culturales.
+            Armentum busca convertirse en un espacio sociocultural para personas con aptitudes para
+            el canto, donde se fomenten herramientas sociales, artísticas y culturales.
           </p>
         </div>
       </section>
@@ -23,8 +24,8 @@ export function Mision(): JSX.Element {
               <h2 className="text-3xl text-gray-900">Nuestra Misión</h2>
             </div>
             <p className="text-lg text-gray-700 mb-6">
-              Ofrecer un espacio sociocultural para personas con aptitudes para el canto, fomentando
-              herramientas sociales, artísticas y culturales.
+              Armentum busca convertirse en un espacio sociocultural para personas con aptitudes
+              para el canto, donde se fomenten herramientas sociales, artísticas y culturales.
             </p>
             <p className="text-lg text-gray-700">
               Promovemos la diversidad musical, representando a Costa Rica en eventos
@@ -43,8 +44,9 @@ export function Mision(): JSX.Element {
               <h2 className="text-3xl text-gray-900">Nuestra Visión</h2>
             </div>
             <p className="text-lg text-gray-700 mb-6">
-              Ser un coro costarricense reconocido internacionalmente por su calidad artística,
-              diversidad de repertorio y compromiso con la promoción de la cultura costarricense.
+              Ser un coro costarricense reconocido nacional e internacionalmente por su calidad
+              artística, diversidad de repertorio y compromiso con la promoción de la cultura
+              costarricense.
             </p>
             <p className="text-lg text-gray-700">
               Continuar representando a Costa Rica en escenarios mundiales, llevando nuestra música
@@ -65,7 +67,7 @@ export function Mision(): JSX.Element {
               </div>
               <h3 className="text-xl mb-3 text-gray-900">Diversidad Musical</h3>
               <p className="text-gray-600">
-                Repertorio que incluye música sacra, contemporánea, folclórica latina y
+                Repertorio versátil que incluye música sacra, contemporánea, folclórica latina y
                 costarricense.
               </p>
             </div>
@@ -98,7 +100,8 @@ export function Mision(): JSX.Element {
               </div>
               <h3 className="text-xl mb-3 text-gray-900">Identidad Nacional</h3>
               <p className="text-gray-600">
-                Representando a Costa Rica con énfasis en la biodiversidad y tradiciones locales.
+                Representando a Costa Rica con énfasis en las tradiciones locales y el respeto por
+                la naturaleza.
               </p>
             </div>
           </div>
@@ -154,22 +157,7 @@ export function Mision(): JSX.Element {
             invitamos a unirte a nosotros.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="https://facebook.com/estudiocoralarmentum"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block px-8 py-3 bg-white text-red-600 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              Facebook
-            </a>
-            <a
-              href="https://instagram.com/armentum.estudio.coral"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block px-8 py-3 bg-white text-red-600 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              Instagram
-            </a>
+            <JoinChoirModal />
           </div>
         </div>
       </section>

@@ -14,6 +14,7 @@ import { MisAsistencias } from "./pages/MisAsistencias";
 import { Finanzas } from "./pages/Finanzas";
 import { Descargas } from "./pages/Descargas";
 import { Galeria } from "./pages/Galeria";
+import { Servicios } from "./pages/Servicios";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       { path: "historia", Component: Historia },
       { path: "mision", Component: Mision },
       { path: "eventos", Component: Eventos },
+      { path: "servicios", Component: Servicios },
       { path: "galeria", Component: Galeria },
       { path: "login", Component: Login },
       {

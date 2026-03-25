@@ -1,5 +1,6 @@
 """Public API endpoints for events, news, and static pages."""
 from typing import List, Optional
+import html
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
@@ -7,7 +8,17 @@ from sqlalchemy import func, or_
 
 from app.database import get_db
 from app.models import EventoPublico, Comunicado, GalleryImage
-from app.schemas import EventoPublicoResponse, ComunicadoResponse, PageResponse, GalleryImageListResponse
+from app.schemas import (
+    EventoPublicoResponse,
+    ComunicadoResponse,
+    PageResponse,
+    GalleryImageListResponse,
+    ChoirInterestRequest,
+    ServiceQuoteRequest,
+    Message,
+)
+from app.services.email_service import email_service
+from app.config import settings
 
 router = APIRouter()
 
@@ -101,3 +112,55 @@ def get_public_gallery(
         offset=offset,
         images=images,
     )
+
+
+@router.post("/choir-interest", response_model=Message)
+async def submit_choir_interest(payload: ChoirInterestRequest):
+    """Receive interest form and send email notification."""
+    subject = "Nueva solicitud para unirse al coro"
+    body = f"""
+    <h2>Nueva solicitud para unirse al coro</h2>
+    <p><strong>Nombre completo:</strong> {html.escape(payload.nombre_completo)}</p>
+    <p><strong>Edad:</strong> {payload.edad}</p>
+    <p><strong>Experiencia musical/coral:</strong><br />{html.escape(payload.experiencia_musical)}</p>
+    <p><strong>Quién soy:</strong><br />{html.escape(payload.quien_soy)}</p>
+    <p><strong>Correo electrónico:</strong> {html.escape(payload.correo)}</p>
+    <p><strong>Número de teléfono:</strong> {html.escape(payload.telefono)}</p>
+    """
+
+    email_sent = await email_service.send_notification_email(
+        settings.CONTACT_EMAIL, subject, body
+    )
+
+    if not email_sent:
+        raise HTTPException(status_code=500, detail="No se pudo enviar el correo")
+
+    return {"message": "Solicitud enviada correctamente"}
+
+
+@router.post("/service-quote", response_model=Message)
+async def submit_service_quote(payload: ServiceQuoteRequest):
+    """Receive service quote request and send email notification."""
+    subject = "Nueva solicitud de servicios"
+    body = f"""
+    <h2>Nueva solicitud de servicios</h2>
+    <p><strong>Nombre completo:</strong> {html.escape(payload.nombre_completo)}</p>
+    <p><strong>Correo electrónico:</strong> {html.escape(payload.correo)}</p>
+    <p><strong>Número de teléfono:</strong> {html.escape(payload.telefono)}</p>
+    <p><strong>Tipo de evento:</strong> {html.escape(payload.tipo_evento)}</p>
+    <p><strong>Fecha del evento:</strong> {payload.fecha_evento}</p>
+    <p><strong>Ubicación del evento:</strong> {html.escape(payload.ubicacion_evento)}</p>
+    <p><strong>Tipo de música deseada:</strong> {html.escape(payload.musica_deseada or 'No indicado')}</p>
+    <p><strong>Duración aproximada:</strong> {html.escape(payload.duracion_evento)}</p>
+    <p><strong>Presupuesto estimado:</strong> {html.escape(payload.presupuesto or 'No indicado')}</p>
+    <p><strong>Mensaje adicional:</strong><br />{html.escape(payload.mensaje_adicional)}</p>
+    """
+
+    email_sent = await email_service.send_notification_email(
+        settings.CONTACT_EMAIL, subject, body
+    )
+
+    if not email_sent:
+        raise HTTPException(status_code=500, detail="No se pudo enviar el correo")
+
+    return {"message": "Solicitud enviada correctamente"}

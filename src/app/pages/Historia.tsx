@@ -1,8 +1,5 @@
 import { Clock } from "lucide-react";
-import puebloAntiguo from "../../assets/pueblo_antiguo.jpg";
 import sagradaFamilia from "../../assets/sagrada_familia.jpg";
-import festivalEsperanza from "../../assets/festival_esperanza_ambiental_2025.jpg";
-import festivalUcr from "../../assets/iii_festival_coral_ucr_2025.jpg";
 import conciertoPop from "../../assets/pop_2025.jpg";
 import giraColombia from "../../assets/gira_colombia.jpg";
 
@@ -36,97 +33,59 @@ export function Historia(): JSX.Element {
     },
     {
       year: "2022",
-      title: "V Festival Coral Nacional ACDA",
-      description: "Participación en el V Festival Coral Nacional, organizado por ACDA Costa Rica.",
-      location: "Catedral de Alajuela",
-    },
-    {
-      year: "2022",
-      title: "Voces de Esperanza",
+      title: "Conciertos y Festivales Nacionales",
       description:
-        "Concierto Voces de Esperanza, parte de la temporada de presentaciones del coro.",
+        "V Festival Coral Nacional, organizado por ACDA Costa Rica. Concierto Voces de Esperanza, parte de la temporada de presentaciones del coro.",
     },
     {
       year: "2023",
-      title: "VI Festival Coral Nacional",
-      description: "Participación en el VI Festival Coral Nacional de ACDA Costa Rica.",
-      location: "Iglesia San Vicente Ferrer, Moravia",
+      title: "Sunrise Mass (Ola Gjeilo)",
+      description:
+        "Presentación especial de la obra Sunrise Mass, del compositor noruego Ola Gjeilo, una de las piezas más destacadas del repertorio contemporáneo del coro.",
+      location:
+        "Basílica de los Ángeles (Cartago), Parroquia San Rafael de Heredia, Iglesia La Soledad",
     },
     {
       year: "2023",
-      title: "Sunrise Mass",
+      title: "Conciertos y Festivales Nacionales",
       description:
-        "Presentación especial de la obra Sunrise Mass, una de las piezas más destacadas del repertorio contemporáneo del coro.",
-    },
-    {
-      year: "2023",
-      title: "Festival Christus est Natus",
-      description:
-        "Participación en el Festival Christus est Natus, celebrando la temporada navideña con repertorio sacro y contemporáneo.",
+        "Participación en el Festival Christus est Natus, celebrando la temporada navideña con repertorio sacro y contemporáneo. VI Festival Coral Nacional de ACDA Costa Rica (Moravia).",
     },
     {
       year: "2024",
-      title: "Gira España — Pueblo Antiguo",
+      title: "Gira España — Madrid, Calella y Barcelona",
       description:
-        "Primera etapa de la gira española con concierto en el Parque Temático Pueblo Antiguo, Madrid.",
-      location: "Pueblo Antiguo, Madrid",
-      image: puebloAntiguo,
+        "Conciertos en escenarios como la Cripta de la Basílica de la Sagrada Familia en Barcelona, Auditorio Gabriela Mistral (Casa de America) y Catedral Anglicana del Redentor en Madrid.",
+      location: "Madrid y Barcelona",
     },
     {
       year: "2024",
-      title: "Sing for Gold — Cripta Sagrada Familia",
+      title: "Sing for Gold — Calella",
       description:
-        "Participación en la competencia coral internacional Sing for Gold en Barcelona. Concierto en la Cripta de la Sagrada Familia con categorías de música sacra y coro de cámara.",
-      location: "Cripta Sagrada Familia, Barcelona",
+        "Participación en la competencia coral internacional Sing for Gold en Barcelona, en la cual Armentum gana dos medallas de plata en las categorías Música de Cámara y Música Sacra.",
+      location: "Calella, Barcelona",
       image: sagradaFamilia,
     },
     {
       year: "2025",
-      title: "4to Festival Esperanza Ambiental",
-      description: "Participación en el 4to Festival Coral Esperanza Ambiental.",
-      location: "Costa Rica",
-      image: festivalEsperanza,
-    },
-    {
-      year: "2025",
-      title: "1er Concierto Internacional & III Festival Coral UCR",
+      title: "Conciertos y Festivales Nacionales",
       description:
-        "Doble participación en junio: 1er Concierto Internacional y III Festival Coral de la Universidad de Costa Rica.",
+        "4to Festival Esperanza Ambiental. 1er Concierto Internacional & III Festival Coral UCR. 3er Festival Internacional de Coros Femeninos (FICFE). 8vo Festival Coral Nacional ACDA. RIDE Cultural (Ministerio de Cultura y Deporte): Teatro Nacional y otros escenarios de San José Centro.",
       location: "San José, Costa Rica",
-      image: festivalUcr,
     },
     {
       year: "2025",
-      title: "3er Festival Internacional de Coros Femeninos (FICFE)",
+      title: "Gira Nacional “Concierto POP”",
       description:
-        "Participación en el 3er Festival Internacional de Coros Femeninos, afirmando la diversidad vocal del conjunto.",
-    },
-    {
-      year: "2025",
-      title: "Concierto POP — Municipalidad de Dota",
-      description: "Concierto de música popular en colaboración con la Municipalidad de Dota.",
-      location: "Dota, Costa Rica",
+        "Conciertos de música popular con repertorio de canciones de los 60s, 70s, 80s y 90s, en colaboración con municipalidades y asociaciones de desarrollo comunal en varias comunidades fuera del Valle Central.",
+      location: "Desamparados, Dota, Pérez Zeledón, La Fortuna, Grecia, Tilarán",
       image: conciertoPop,
     },
     {
-      year: "2025",
-      title: "8vo Festival Coral Nacional ACDA",
-      description:
-        "Participación en el 8vo Festival Coral Nacional organizado por ACDA Costa Rica.",
-      location: "Iglesia de la Soledad, San José",
-    },
-    {
-      year: "2025",
-      title: "Celebración de los 15 Años",
-      description:
-        "Año de celebración por los 15 años de trayectoria del Estudio Coral Armentum, con gira nacional, tributos pop en el Foyer del Teatro Nacional y conciertos especiales.",
-      location: "Teatro Nacional y gira nacional",
-    },
-    {
       year: "2026",
-      title: "Nueva Gira Internacional - Colombia",
+      title: "Gira Internacional - Colombia",
       description:
-        "Gira internacional por Colombia de conciertos idependiente y de intercambio cultural, con presentaciones en Medellín, expandiendo la presencia del coro en Sudamérica.",
+        "Gira internacional por Colombia de conciertos independientes y de intercambio cultural, con presentaciones en Medellín, expandiendo la presencia del coro en Sudamérica.",
       location: "Medellín, Colombia",
       image: giraColombia,
     },
@@ -151,8 +110,8 @@ export function Historia(): JSX.Element {
           <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
             <h2 className="text-3xl mb-6 text-gray-900">El Comienzo</h2>
             <p className="text-gray-700 mb-4">
-              El Estudio Coral Armentum es un coro costarricense aficionado con sede en San José,
-              fundado en 2011 como organización independiente sin fines de lucro, enfocada en el
+              El Estudio Coral Armentum es un coro costarricense fundado en 2011 con sede en San
+              José, como una organización independiente sin fines de lucro, enfocada en el
               desarrollo sociocultural a través del canto.
             </p>
             <p className="text-gray-700 mb-4">
