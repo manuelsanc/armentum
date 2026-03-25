@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import logo from "../../assets/isotipo_transparent.png";
+import follerTeatroNacional from "../../assets/foller_teatro_nacional.jpg";
 import directorImagen from "../../assets/director.jpeg";
 import { FeatureCard } from "../components/FeatureCard";
 import { StatItem } from "../components/StatItem";
@@ -231,8 +231,12 @@ export function Home(): JSX.Element {
                 </Link>
               </div>
             </div>
-            <div className="flex-1 flex justify-center">
-              <img src={logo} alt="Logo Armentum" className="w-64 h-64 md:w-80 md:h-80" />
+            <div className="flex-1 w-full">
+              <img
+                src={follerTeatroNacional}
+                alt="Teatro Nacional"
+                className="w-full max-w-2xl h-64 md:h-96 object-cover rounded-xl shadow-md"
+              />
             </div>
           </div>
         </div>
