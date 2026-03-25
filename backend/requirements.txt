@@ -31,6 +31,7 @@ python-dotenv==1.0.0
 # Email
 sendgrid==6.10.0
 resend==1.0.1
+aiosmtplib==2.0.2
 
 # HTTP Client
 httpx==0.28.1
