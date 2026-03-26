@@ -69,6 +69,42 @@ class ResendProvider(EmailProvider):
             return False
 
 
+class BrevoProvider(EmailProvider):
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+
+    async def send_email(self, to: str, subject: str, html_content: str) -> bool:
+        try:
+            import httpx
+
+            sender = {"email": settings.EMAIL_FROM}
+            if settings.EMAIL_FROM_NAME:
+                sender["name"] = settings.EMAIL_FROM_NAME
+
+            payload = {
+                "sender": sender,
+                "to": [{"email": to}],
+                "subject": subject,
+                "htmlContent": html_content,
+            }
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "https://api.brevo.com/v3/smtp/email",
+                    headers={
+                        "api-key": self.api_key,
+                        "Content-Type": "application/json",
+                        "accept": "application/json",
+                    },
+                    json=payload,
+                    timeout=20,
+                )
+                return response.status_code in (200, 201, 202)
+        except Exception as e:
+            logger.error(f"Brevo error: {e}")
+            return False
+
+
 class DevelopmentProvider(EmailProvider):
     async def send_email(self, to: str, subject: str, html_content: str) -> bool:
         logger.info(f"""
@@ -100,6 +136,8 @@ class EmailService:
         if provider_name == "resend" and settings.RESEND_API_KEY:
             return ResendProvider(settings.RESEND_API_KEY)
 
+        if provider_name == "brevo" and settings.BREVO_API_KEY:
+            return BrevoProvider(settings.BREVO_API_KEY)
         logger.warning("No email provider configured, using development mode")
         return DevelopmentProvider()
 
