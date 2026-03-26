@@ -450,6 +450,28 @@ class RoleResponse(RoleBase):
 # COMMON SCHEMAS
 # ============================================================
 
+class ChoirInterestRequest(BaseModel):
+    nombre_completo: str = Field(..., min_length=2, max_length=255)
+    edad: int = Field(..., ge=1, le=120)
+    experiencia_musical: str = Field(..., min_length=2, max_length=2000)
+    quien_soy: str = Field(..., min_length=2, max_length=2000)
+    correo: EmailStr
+    telefono: str = Field(..., min_length=6, max_length=30)
+
+
+class ServiceQuoteRequest(BaseModel):
+    nombre_completo: str = Field(..., min_length=2, max_length=255)
+    correo: EmailStr
+    telefono: str = Field(..., min_length=8, max_length=30)
+    tipo_evento: str = Field(..., min_length=2, max_length=255)
+    fecha_evento: date
+    ubicacion_evento: str = Field(..., min_length=2, max_length=255)
+    musica_deseada: Optional[str] = Field(None, max_length=500)
+    duracion_evento: str = Field(..., min_length=2, max_length=255)
+    presupuesto: Optional[str] = Field(None, max_length=255)
+    mensaje_adicional: str = Field(..., min_length=2, max_length=2000)
+
+
 class Message(BaseModel):
     message: str
 

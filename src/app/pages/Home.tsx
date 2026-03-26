@@ -13,10 +13,11 @@ import {
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import logo from "../../assets/isotipo_transparent.png";
+import follerTeatroNacional from "../../assets/foller_teatro_nacional.jpg";
 import directorImagen from "../../assets/director.jpeg";
 import { FeatureCard } from "../components/FeatureCard";
 import { StatItem } from "../components/StatItem";
+import { JoinChoirModal } from "../components/JoinChoirModal";
 import { useEvents } from "../../hooks/useEvents";
 
 // Importar imágenes de coristas
@@ -59,7 +60,7 @@ const FEATURES = [
     icon: <Users className="w-8 h-8" />,
     title: "Comunidad Diversa",
     description:
-      "31 coristas de diversas edades, profesiones y orígenes unidos por la pasión por el canto.",
+      "Más de 30 coristas de diversas edades, profesiones y orígenes unidos por la pasión por el canto.",
     iconBackgroundColor: "bg-orange-100",
     iconColor: "text-orange-600",
   },
@@ -67,7 +68,8 @@ const FEATURES = [
     id: 3,
     icon: <Award className="w-8 h-8" />,
     title: "Trayectoria",
-    description: "Más de 150 presentaciones en escenarios de Costa Rica, Panamá, México y España.",
+    description:
+      "Más de 150 conciertos y presentaciones en escenarios de Costa Rica, Panamá, México y España.",
     iconBackgroundColor: "bg-red-100",
     iconColor: "text-red-600",
   },
@@ -82,7 +84,7 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { value: "~31", label: "Coristas activos" },
+  { value: "30+", label: "Coristas" },
   { value: "150+", label: "Conciertos realizados" },
   { value: "2011", label: "Año de fundación" },
   { value: "4", label: "Países visitados" },
@@ -211,8 +213,8 @@ export function Home(): JSX.Element {
                 <span className="text-red-600">Estudio Coral Armentum</span>
               </h1>
               <p className="text-xl text-gray-700 mb-8">
-                Un coro costarricense aficionado con sede en San José, comprometido con la
-                excelencia musical y la difusión de la cultura coral desde 2011.
+                Un coro costarricense con sede en San José, que desde el 2011 ha estado comprometido
+                con la excelencia musical y la difusión de la cultura coral.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
@@ -229,8 +231,12 @@ export function Home(): JSX.Element {
                 </Link>
               </div>
             </div>
-            <div className="flex-1 flex justify-center">
-              <img src={logo} alt="Logo Armentum" className="w-64 h-64 md:w-80 md:h-80" />
+            <div className="flex-1 w-full">
+              <img
+                src={follerTeatroNacional}
+                alt="Teatro Nacional"
+                className="w-full max-w-2xl h-64 md:h-96 object-cover rounded-xl shadow-md"
+              />
             </div>
           </div>
         </div>
@@ -262,10 +268,10 @@ export function Home(): JSX.Element {
             <div>
               <h2 className="text-3xl mb-6 text-gray-900">Sobre Nosotros</h2>
               <p className="text-gray-700 mb-4">
-                El Estudio Coral Armentum es un coro costarricense aficionado con sede en San José,
-                fundado en 2011 y formalizado como Asociación Cultural Armentum en 2022. Actualmente
-                cuenta con alrededor de 40 integrantes de diversas edades, profesiones y orígenes,
-                dirigidos por Albin Delgado.
+                El Estudio Coral Armentum es un coro costarricense con sede en San José, fundado en
+                el 2011 y formalizado como Asociación Coral Armentum en 2022. Actualmente cuenta
+                con más de 30 integrantes de diversas edades, profesiones y orígenes, dirigidos por
+                el maestro Albin Delgado Torres.
               </p>
               <p className="text-gray-700 mb-6">
                 Nuestra misión es ofrecer un espacio sociocultural para personas con aptitudes para
@@ -320,8 +326,8 @@ export function Home(): JSX.Element {
                 formación bajo la tutela de importantes directores del mundo como Hanz Peters
                 Shurtz, Javier Busto y Vytautas Miškinis, entre otros. Como instrumentista, cantante
                 y director ha representado a Costa Rica en prestigiosos festivales y competencias en
-                Panamá, Nicaragua, Guatemala, México, Estados Unidos, Alemania, Austria, Gales,
-                Inglaterra, Italia y España.
+                Alemania, Austria, Gales, Inglaterra, Italia, España, Panamá, Nicaragua, Guatemala,
+                México y Estados Unidos.
               </p>
             </div>
           </div>
@@ -333,7 +339,7 @@ export function Home(): JSX.Element {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl text-center mb-4 text-gray-900">Nuestros Coristas</h2>
           <p className="text-center text-gray-600 mb-12">
-            ~31 voces unidas por la pasión por el canto
+            Más de 30 voces unidas por la pasión por el canto
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {VOCES.map((voces, vocesIndex) => (
@@ -414,8 +420,8 @@ export function Home(): JSX.Element {
               </div>
 
               <div className="grid grid-cols-7 gap-1 text-[10px] text-gray-500 mb-2">
-                {"DLMMJVS".split("").map((day) => (
-                  <div key={day} className="text-center">
+                {"DLMMJVS".split("").map((day, index) => (
+                  <div key={`${day}-${index}`} className="text-center">
                     {day}
                   </div>
                 ))}
@@ -535,22 +541,7 @@ export function Home(): JSX.Element {
             coral.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="https://facebook.com/estudiocoralarmentum"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block px-8 py-3 bg-white text-red-600 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              Facebook
-            </a>
-            <a
-              href="https://instagram.com/armentum.estudio.coral"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block px-8 py-3 bg-white text-red-600 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              Instagram
-            </a>
+            <JoinChoirModal />
           </div>
         </div>
       </section>

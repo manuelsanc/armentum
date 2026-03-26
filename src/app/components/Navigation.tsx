@@ -37,6 +37,7 @@ export function Navigation(): JSX.Element {
     { path: "/historia", label: "Historia" },
     { path: "/mision", label: "Misión" },
     { path: "/eventos", label: "Eventos" },
+    { path: "/servicios", label: "Servicios" },
     { path: "/galeria", label: "Galería" },
   ];
 

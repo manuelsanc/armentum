@@ -4,8 +4,8 @@ Supports SendGrid and Resend providers with development fallback
 """
 
 import logging
-from typing import Optional
 from abc import ABC, abstractmethod
+from email.message import EmailMessage
 
 from app.config import settings
 
@@ -119,6 +119,46 @@ class DevelopmentProvider(EmailProvider):
         return True
 
 
+class SMTPProvider(EmailProvider):
+    def __init__(self, host: str, port: int, username: str, password: str, use_tls: bool, use_ssl: bool):
+        self.host = host
+        self.port = port
+        self.username = username
+        self.password = password
+        self.use_tls = use_tls
+        self.use_ssl = use_ssl
+
+    async def send_email(self, to: str, subject: str, html_content: str) -> bool:
+        try:
+            import aiosmtplib
+
+            message = EmailMessage()
+            from_name = settings.EMAIL_FROM_NAME
+            from_address = settings.EMAIL_FROM
+            if from_name:
+                message["From"] = f"{from_name} <{from_address}>"
+            else:
+                message["From"] = from_address
+            message["To"] = to
+            message["Subject"] = subject
+            message.set_content("Esta es una notificación automática del Estudio Coral Armentum.")
+            message.add_alternative(html_content, subtype="html")
+
+            await aiosmtplib.send(
+                message,
+                hostname=self.host,
+                port=self.port,
+                username=self.username,
+                password=self.password,
+                start_tls=self.use_tls and not self.use_ssl,
+                use_tls=self.use_ssl,
+            )
+            return True
+        except Exception as e:
+            logger.error(f"SMTP error: {e}")
+            return False
+
+
 class EmailService:
     def __init__(self):
         self.provider: EmailProvider = self._get_provider()
@@ -126,7 +166,7 @@ class EmailService:
     def _get_provider(self) -> EmailProvider:
         provider_name = settings.EMAIL_PROVIDER.lower()
 
-        if settings.ENVIRONMENT == "development" and not settings.DEBUG is False:
+        if provider_name == "development":
             logger.info("Using development email provider (emails will be logged)")
             return DevelopmentProvider()
 
