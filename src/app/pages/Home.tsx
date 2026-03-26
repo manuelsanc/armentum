@@ -22,7 +22,7 @@ import { useEvents } from "../../hooks/useEvents";
 
 // Importar imágenes de coristas
 import adrianaGuillen from "../../assets/coristas/adriana_guillen.jpg";
-import dianaArce from "../../assets/coristas/diana_arce.jpg";
+import dilanaArce from "../../assets/coristas/diana_arce.jpg";
 import lauraMunoz from "../../assets/coristas/laura_munoz.jpg";
 import giovannaChacon from "../../assets/coristas/giovanna_chacon.jpg";
 import katiaCalderon from "../../assets/coristas/katia_calderon.jpg";
@@ -100,28 +100,35 @@ interface Voz {
   coristas: Corista[];
 }
 
+const placeHolder = "";
+
 const VOCES: Voz[] = [
   {
     nombre: "Sopranos",
     coristas: [
-      { nombre: "Laura Alvarado Ulate", foto: lauraAlvarado },
-      { nombre: "Dilana Arce Vega", foto: dianaArce },
-      { nombre: "Katia Calderón Agüero", foto: katiaCalderon },
+      { nombre: "Laura Violeta Alvarado Ulate", foto: lauraAlvarado },
+      { nombre: "Diana Carolina Alfaro Mata", foto: placeHolder },
+      { nombre: "Marcela Araya Esquivel", foto: placeHolder },
+      { nombre: "Dilana Arce Vega", foto: dilanaArce },
+      { nombre: "Kattia Vanessa Calderón Agüero", foto: katiaCalderon },
       { nombre: "Giovanna Chacón Barrera", foto: giovannaChacon },
-      { nombre: "Naomy Gedoya Madrigal", foto: naomiBedoya },
-      { nombre: "Adriana Guillen Melendez", foto: adrianaGuillen },
-      { nombre: "Laura Mora Vargas", foto: lauraMora },
-      { nombre: "Laura Muñoz Umaña", foto: lauraMunoz },
+      { nombre: "Naomy María Bedoya Madrigal", foto: naomiBedoya },
+      { nombre: "Andrea Guillén Meléndez", foto: adrianaGuillen },
+      { nombre: "Laura Angélica Muñoz Umaña", foto: lauraMora },
+      { nombre: "Laura Mora Vargas", foto: lauraMunoz },
     ],
   },
   {
     nombre: "Tenores",
     coristas: [
-      { nombre: "Mario Araya Marchena", foto: marioAraya },
-      { nombre: "Héctor Castro Castillo", foto: hectorCastro },
-      { nombre: "Mario Calderón Vargas", foto: marioCalderon },
-      { nombre: "Leonardo De León Aguilar", foto: leonardoDeLeon },
+      { nombre: "Mario Esteban Araya Marchena", foto: marioAraya },
+      { nombre: "Joel José Bermudez Sanabria", foto: placeHolder },
+      { nombre: "Héctor Francisco Castro Castillo", foto: hectorCastro },
+      { nombre: "Mario Esteban Calderón Vargas", foto: marioCalderon },
+      { nombre: "Leonardo Jesus De Leon Aguilar", foto: leonardoDeLeon },
       { nombre: "Steven Gutiérrez Zúñiga", foto: stevenGutierrez },
+      { nombre: "Jeffry Solís Picado", foto: placeHolder },
+      { nombre: "Erick Josué Zúñiga Zúñiga", foto: placeHolder },
     ],
   },
   {
@@ -129,19 +136,22 @@ const VOCES: Voz[] = [
     coristas: [
       { nombre: "Fabiola Alvarado Ulate", foto: fabiolaAlvarado },
       { nombre: "Karla Ceciliano Zamora", foto: karlaCeciliano },
-      { nombre: "Odilie Gómez Orozco", foto: odilieGomez },
-      { nombre: "Vanessa Sánchez Villalta", foto: vanessaSanchez },
+      { nombre: "Johanna Dinarte Segura", foto: placeHolder },
+      { nombre: "Amanda Garita Matamoros", foto: placeHolder },
+      { nombre: "Odilie Ma Gomez Orozco", foto: odilieGomez },
+      { nombre: "Cindy Vanessa Sánchez Villalta", foto: vanessaSanchez },
+      { nombre: "Stephanie Paola Tenorio Alvarado", foto: placeHolder },
     ],
   },
   {
     nombre: "Bajos",
     coristas: [
-      { nombre: "Marco Bolaños García", foto: marcoBolanos },
-      { nombre: "Dennis Cantillo Morua", foto: dennisCantillo },
-      { nombre: "Eduardo Jarquin Bonilla", foto: eduardoBonilla },
-      { nombre: "Marco Mata Estrada", foto: marcoMata },
+      { nombre: "Marco Antonio Bolaños García", foto: marcoBolanos },
+      { nombre: "Dennis Cantillo Morúa", foto: dennisCantillo },
+      { nombre: "José Eduardo Jarquín Bonilla", foto: eduardoBonilla },
+      { nombre: "Marco Antonio Mata Estrada", foto: marcoMata },
       { nombre: "Manuel Sánchez Ordóñez", foto: manuelSanchez }, // Usando foto de Steven como placeholder
-      { nombre: "José Solozano", foto: joseSolorzano },
+      { nombre: "José Miguel Solórzano Enríquez", foto: joseSolorzano },
     ],
   },
 ];
@@ -269,9 +279,9 @@ export function Home(): JSX.Element {
               <h2 className="text-3xl mb-6 text-gray-900">Sobre Nosotros</h2>
               <p className="text-gray-700 mb-4">
                 El Estudio Coral Armentum es un coro costarricense con sede en San José, fundado en
-                el 2011 y formalizado como Asociación Coral Armentum en 2022. Actualmente cuenta
-                con más de 30 integrantes de diversas edades, profesiones y orígenes, dirigidos por
-                el maestro Albin Delgado Torres.
+                el 2011 y formalizado como Asociación Coral Armentum en 2022. Actualmente cuenta con
+                más de 30 integrantes de diversas edades, profesiones y orígenes, dirigidos por el
+                maestro Albin Delgado Torres.
               </p>
               <p className="text-gray-700 mb-6">
                 Nuestra misión es ofrecer un espacio sociocultural para personas con aptitudes para
@@ -308,7 +318,7 @@ export function Home(): JSX.Element {
               <div className="w-64 h-80 bg-gray-200 overflow-hidden rounded-lg shadow-lg">
                 <img
                   src={directorImagen}
-                  alt="Albin Delgado, Director"
+                  alt="Albin Delgado Torres, Director"
                   className="w-full h-full object-cover"
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = "/src/assets/isotipo.png";
@@ -318,7 +328,7 @@ export function Home(): JSX.Element {
             </div>
             {/* Texto */}
             <div>
-              <h3 className="text-2xl mb-2 text-gray-900">Albin Delgado</h3>
+              <h3 className="text-2xl mb-2 text-gray-900">Albin Delgado Torres</h3>
               <p className="text-red-600 mb-4 font-medium">Director</p>
               <p className="text-gray-700 leading-relaxed">
                 Inicia sus estudios musicales en la Universidad Nacional de Costa Rica en el año
@@ -350,7 +360,7 @@ export function Home(): JSX.Element {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {voces.coristas.map((corista, index) => (
                     <div key={index} className="flex flex-col items-center gap-2">
-                      <div className="w-[125px] h-[125px] rounded-full bg-gray-200 overflow-hidden border-2 border-gray-300 shadow">
+                      <div className="w-[125px] h-[125px] rounded-full bg-black overflow-hidden border-2 border-black/40 shadow">
                         {corista.foto ? (
                           <img
                             src={corista.foto}
@@ -358,8 +368,17 @@ export function Home(): JSX.Element {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-red-100 to-orange-100 flex items-center justify-center">
-                            <span className="text-xl text-red-400">♪</span>
+                          <div className="w-full h-full bg-black flex items-center justify-center">
+                            <svg
+                              aria-hidden="true"
+                              viewBox="0 0 48 48"
+                              className="w-12 h-12 text-white/70"
+                            >
+                              <path
+                                fill="currentColor"
+                                d="M24 24c5.523 0 10-4.477 10-10S29.523 4 24 4s-10 4.477-10 10 4.477 10 10 10Zm0 4c-9.389 0-17 5.373-17 12v4h34v-4c0-6.627-7.611-12-17-12Z"
+                              />
+                            </svg>
                           </div>
                         )}
                       </div>

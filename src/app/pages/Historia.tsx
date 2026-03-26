@@ -20,10 +20,16 @@ export function Historia(): JSX.Element {
         "Se crea el Estudio Coral Armentum como organización independiente sin fines de lucro en San José, Costa Rica, enfocada en el desarrollo sociocultural a través del canto.",
     },
     {
-      year: "2014",
-      title: "Primeras Giras Internacionales",
+      year: "2018",
+      title: "Primera Gira Internacional - Panamá",
       description:
-        "Comienzan las giras internacionales con presentaciones en Panamá y México, expandiendo la presencia del coro en Centroamérica y el mundo.",
+        "Como parte del segundo Encuentro Lantinoamericano de Música Coral 'ELAMCO', en ciudad de Panamá.",
+    },
+    {
+      year: "2019",
+      title: "Segunda Gira Internacional - México",
+      description:
+        "Como parte del segundo festival internacional 'Voces por la paz', llevado a cabo en ciudad de Monterrey, Nuevo León, México.",
     },
     {
       year: "2022",
@@ -41,7 +47,7 @@ export function Historia(): JSX.Element {
       year: "2023",
       title: "Sunrise Mass (Ola Gjeilo)",
       description:
-        "Presentación especial de la obra Sunrise Mass, del compositor noruego Ola Gjeilo, una de las piezas más destacadas del repertorio contemporáneo del coro.",
+        "Presentación especial de la obra Sunrise Mass, del compositor noruego Ola Gjeilo, una de las piezas más destacadas del repertorio contemporáneo del coro. Contó con la participación del Coro Municipal de San Rafael y la orquestea de cuerdas de la Escuela Música de Paraíso 'EMUSPAR'.",
       location:
         "Basílica de los Ángeles (Cartago), Parroquia San Rafael de Heredia, Iglesia La Soledad",
     },
@@ -205,7 +211,7 @@ export function Historia(): JSX.Element {
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl text-center mb-12 text-gray-900">Logros Destacados</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="bg-white rounded-lg p-8 shadow-lg text-center">
               <div className="text-4xl text-red-600 mb-4">🎤</div>
               <h3 className="text-xl mb-2 text-gray-900">Conciertos</h3>
@@ -219,10 +225,19 @@ export function Historia(): JSX.Element {
               <p className="text-gray-600">Panamá, México, España (Barcelona y Madrid)</p>
             </div>
             <div className="bg-white rounded-lg p-8 shadow-lg text-center">
+              <div className="text-4xl text-red-600 mb-4">🏅</div>
+              <h3 className="text-xl mb-2 text-gray-900">Mejor proyecto musical - cultural</h3>
+              <p className="text-gray-600">
+                Ganadores del primer lugar en mejor proyecto musical - cultural en Ciudad de Panamá
+                2018
+              </p>
+            </div>
+            <div className="bg-white rounded-lg p-8 shadow-lg text-center">
               <div className="text-4xl text-red-600 mb-4">🏆</div>
               <h3 className="text-xl mb-2 text-gray-900">Sing for Gold 2024</h3>
               <p className="text-gray-600">
-                Participación en Barcelona con categorías de música sacra y coro de cámara
+                Participación en Barcelona, ganadores de dos medallas de plata en las categorías
+                Música de Cámara y Música Sacra.
               </p>
             </div>
           </div>
