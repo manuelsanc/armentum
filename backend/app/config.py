@@ -38,7 +38,9 @@ class Settings(BaseSettings):
     BREVO_API_KEY: Optional[str] = None
     EMAIL_FROM: str = "noreply@armentum.com"
     EMAIL_FROM_NAME: Optional[str] = None
-    CONTACT_EMAIL: str = "noreply@armentum.com"
+    CONTACT_EMAIL: str = "contacto@armentum.com"
+
+
     
     # App URL (for email links)
     APP_URL: str = "http://localhost:5173"
