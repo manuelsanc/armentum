@@ -269,7 +269,7 @@ export function Home(): JSX.Element {
               <h2 className="text-3xl mb-6 text-gray-900">Sobre Nosotros</h2>
               <p className="text-gray-700 mb-4">
                 El Estudio Coral Armentum es un coro costarricense con sede en San José, fundado en
-                el 2011 y formalizado como Asociación Cultural Armentum en 2022. Actualmente cuenta
+                el 2011 y formalizado como Asociación Coral Armentum en 2022. Actualmente cuenta
                 con más de 30 integrantes de diversas edades, profesiones y orígenes, dirigidos por
                 el maestro Albin Delgado Torres.
               </p>

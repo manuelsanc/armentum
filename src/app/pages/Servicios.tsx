@@ -1,4 +1,28 @@
 import { ServiceQuoteModal } from "../components/ServiceQuoteModal";
+import enEscenaVideo from "../../assets/servicios/en_escena_1.mp4";
+import enEscena01 from "../../assets/servicios/en_escena_01.jpeg";
+import enEscena02 from "../../assets/servicios/en_escena_02.jpeg";
+import enEscena03 from "../../assets/servicios/en_escena_03.jpeg";
+import enEscena04 from "../../assets/servicios/en_escena_04.jpeg";
+import enEscena05 from "../../assets/servicios/en_escena_05.jpeg";
+import enEscena06 from "../../assets/servicios/en_escena_06.jpeg";
+import enEscena07 from "../../assets/servicios/en_escena_07.jpeg";
+import enEscena08 from "../../assets/servicios/en_escena_08.jpeg";
+import enEscena09 from "../../assets/servicios/en_escena_09.jpeg";
+import enEscena10 from "../../assets/servicios/en_escena_10.jpeg";
+import enEscena11 from "../../assets/servicios/en_escena_11.jpeg";
+import enEscena12 from "../../assets/servicios/en_escena_12.jpeg";
+import enEscena13 from "../../assets/servicios/en_escena_13.jpeg";
+import enEscena14 from "../../assets/servicios/en_escena_14.jpeg";
+import enEscena15 from "../../assets/servicios/en_escena_15.jpeg";
+import enEscena16 from "../../assets/servicios/en_escena_16.jpeg";
+import enEscena17 from "../../assets/servicios/en_escena_17.jpeg";
+import enEscena18 from "../../assets/servicios/en_escena_18.jpeg";
+import enEscena19 from "../../assets/servicios/en_escena_19.jpeg";
+import enEscena20 from "../../assets/servicios/en_escena_20.jpeg";
+import enEscena21 from "../../assets/servicios/en_escena_21.jpeg";
+import enEscena22 from "../../assets/servicios/en_escena_22.jpeg";
+import enEscena23 from "../../assets/servicios/en_escena_23.jpeg";
 
 const EVENT_TYPES = [
   "Aniversarios corporativos",
@@ -14,6 +38,32 @@ const REPERTOIRE = [
   "Música latinoamericana",
   "Arreglos corales de música pop",
   "Villancicos y repertorio navideño",
+];
+
+const GALLERY_IMAGES = [
+  enEscena01,
+  enEscena02,
+  enEscena03,
+  enEscena04,
+  enEscena05,
+  enEscena06,
+  enEscena07,
+  enEscena08,
+  enEscena09,
+  enEscena10,
+  enEscena11,
+  enEscena12,
+  enEscena13,
+  enEscena14,
+  enEscena15,
+  enEscena16,
+  enEscena17,
+  enEscena18,
+  enEscena19,
+  enEscena20,
+  enEscena21,
+  enEscena22,
+  enEscena23,
 ];
 
 export function Servicios(): JSX.Element {
@@ -76,26 +126,41 @@ export function Servicios(): JSX.Element {
             <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
               <h3 className="text-xl text-gray-900 mb-3">Destacado</h3>
               <p className="text-gray-600 mb-4">
-                Próximamente podrás ver un extracto en video de nuestras presentaciones.
+                Mira un extracto en video de nuestras presentaciones.
               </p>
-              <div className="h-48 rounded-lg bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-500">
-                Espacio para video
+              <div className="overflow-hidden rounded-lg border border-gray-200 bg-black">
+                <video
+                  className="w-full h-56 md:h-64 object-cover"
+                  controls
+                  preload="metadata"
+                  poster={enEscena12}
+                >
+                  <source src={enEscenaVideo} type="video/mp4" />
+                  Tu navegador no soporta la reproducción de video.
+                </video>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Gallery placeholders */}
+      {/* Gallery */}
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl text-center text-gray-900 mb-8">Momentos en escena</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <div
-                key={index}
-                className="h-32 md:h-40 rounded-lg bg-gray-200/80 border border-gray-200"
-              />
+            {GALLERY_IMAGES.map((image, index) => (
+              <figure
+                key={image}
+                className="overflow-hidden rounded-lg border border-gray-200 bg-gray-100"
+              >
+                <img
+                  src={image}
+                  alt={`Presentación en escena ${index + 1}`}
+                  className="h-32 md:h-40 w-full object-cover"
+                  loading="lazy"
+                />
+              </figure>
             ))}
           </div>
         </div>

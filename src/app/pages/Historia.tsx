@@ -27,9 +27,9 @@ export function Historia(): JSX.Element {
     },
     {
       year: "2022",
-      title: "Asociación Cultural Armentum",
+      title: "Asociación Coral Armentum",
       description:
-        "El coro concluye el proceso para constituirse formalmente como Asociación Cultural Armentum, fortaleciendo su estructura organizativa y proyección.",
+        "El coro concluye el proceso para constituirse formalmente como Asociación Coral Armentum, fortaleciendo su estructura organizativa y proyección.",
     },
     {
       year: "2022",

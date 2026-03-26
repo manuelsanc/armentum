@@ -20,6 +20,7 @@ export function Footer(): JSX.Element {
               Coro costarricense con sede en San José, dedicado a la excelencia musical y la
               promoción de la cultura coral desde 2011.
             </p>
+            <p className="text-sm text-gray-400 mt-3">Céd. Jurídica 3-002-953162</p>
           </div>
 
           {/* Contact */}
