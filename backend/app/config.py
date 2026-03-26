@@ -35,15 +35,9 @@ class Settings(BaseSettings):
     EMAIL_PROVIDER: str = "sendgrid"
     SENDGRID_API_KEY: Optional[str] = None
     RESEND_API_KEY: Optional[str] = None
-    EMAIL_FROM: str = "msanchezo@gmail.com"
+    BREVO_API_KEY: Optional[str] = None
+    EMAIL_FROM: str = "noreply@armentum.com"
     EMAIL_FROM_NAME: Optional[str] = None
-    CONTACT_EMAIL: str = "msanchezo@gmail.com"
-    SMTP_HOST: Optional[str] = None
-    SMTP_PORT: int = 587
-    SMTP_USERNAME: Optional[str] = None
-    SMTP_PASSWORD: Optional[str] = None
-    SMTP_USE_TLS: bool = True
-    SMTP_USE_SSL: bool = False
     
     # App URL (for email links)
     APP_URL: str = "http://localhost:5173"
