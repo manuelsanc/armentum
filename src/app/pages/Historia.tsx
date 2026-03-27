@@ -23,7 +23,7 @@ export function Historia(): JSX.Element {
       year: "2018",
       title: "Primera Gira Internacional - Panamá",
       description:
-        "Como parte del segundo Encuentro Lantinoamericano de Música Coral 'ELAMCO', en ciudad de Panamá.",
+        "Como parte del segundo Encuentro Latinoamericano de Música Coral 'ELAMCO', en ciudad de Panamá.",
     },
     {
       year: "2019",
@@ -47,7 +47,7 @@ export function Historia(): JSX.Element {
       year: "2023",
       title: "Sunrise Mass (Ola Gjeilo)",
       description:
-        "Presentación especial de la obra Sunrise Mass, del compositor noruego Ola Gjeilo, una de las piezas más destacadas del repertorio contemporáneo del coro. Contó con la participación del Coro Municipal de San Rafael y la orquestea de cuerdas de la Escuela Música de Paraíso 'EMUSPAR'.",
+        "Presentación especial de la obra Sunrise Mass, del compositor noruego Ola Gjeilo, una de las piezas más destacadas del repertorio contemporáneo del coro. Contó con la participación del Coro Municipal de San Rafael y la orquesta de cuerdas de la Escuela Música de Paraíso 'EMUSPAR'.",
       location:
         "Basílica de los Ángeles (Cartago), Parroquia San Rafael de Heredia, Iglesia La Soledad",
     },
