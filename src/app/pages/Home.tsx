@@ -44,6 +44,9 @@ import eduardoBonilla from "../../assets/coristas/eduardo_bonilla.jpg";
 import dennisCantillo from "../../assets/coristas/dennis_cantillo.jpg";
 import manuelSanchez from "../../assets/coristas/manuel_sanchez.jpg";
 import hectorCastro from "../../assets/coristas/hector_castro.jpg";
+import marcelaAraya from "../../assets/coristas/marcela_araya.jpg";
+import jeffrySolis from "../../assets/coristas/jeffry_solis.jpg";
+import joelBermudez from "../../assets/coristas/joel_bermudez.jpg";
 
 const FEATURES = [
   {
@@ -108,7 +111,7 @@ const VOCES: Voz[] = [
     coristas: [
       { nombre: "Laura Violeta Alvarado Ulate", foto: lauraAlvarado },
       { nombre: "Diana Carolina Alfaro Mata", foto: placeHolder },
-      { nombre: "Marcela Araya Esquivel", foto: placeHolder },
+      { nombre: "Marcela Araya Esquivel", foto: marcelaAraya },
       { nombre: "Dilana Arce Vega", foto: dilanaArce },
       { nombre: "Kattia Vanessa Calderón Agüero", foto: katiaCalderon },
       { nombre: "Giovanna Chacón Barrera", foto: giovannaChacon },
@@ -122,12 +125,12 @@ const VOCES: Voz[] = [
     nombre: "Tenores",
     coristas: [
       { nombre: "Mario Esteban Araya Marchena", foto: marioAraya },
-      { nombre: "Joel José Bermudez Sanabria", foto: placeHolder },
+      { nombre: "Joel José Bermudez Sanabria", foto: joelBermudez },
       { nombre: "Héctor Francisco Castro Castillo", foto: hectorCastro },
       { nombre: "Mario Esteban Calderón Vargas", foto: marioCalderon },
       { nombre: "Leonardo Jesus De Leon Aguilar", foto: leonardoDeLeon },
       { nombre: "Steven Gutiérrez Zúñiga", foto: stevenGutierrez },
-      { nombre: "Jeffry Solís Picado", foto: placeHolder },
+      { nombre: "Jeffry Solís Picado", foto: jeffrySolis },
       { nombre: "Erick Josué Zúñiga Zúñiga", foto: placeHolder },
     ],
   },
