@@ -47,6 +47,11 @@ import hectorCastro from "../../assets/coristas/hector_castro.jpg";
 import marcelaAraya from "../../assets/coristas/marcela_araya.jpg";
 import jeffrySolis from "../../assets/coristas/jeffry_solis.jpg";
 import joelBermudez from "../../assets/coristas/joel_bermudez.jpg";
+import dianaAlfaro from "../../assets/coristas/diana_alfaro.jpg";
+import erickZuniga from "../../assets/coristas/erick_zuniga.jpg";
+import johannaDinarte from "../../assets/coristas/johanna_dinarte.jpg";
+import amandaGarita from "../../assets/coristas/amanda_garita.jpg";
+import stephanieTenorio from "../../assets/coristas/stephanie_tenorio.jpg";
 
 const FEATURES = [
   {
@@ -103,14 +108,12 @@ interface Voz {
   coristas: Corista[];
 }
 
-const placeHolder = "";
-
 const VOCES: Voz[] = [
   {
     nombre: "Sopranos",
     coristas: [
       { nombre: "Laura Violeta Alvarado Ulate", foto: lauraAlvarado },
-      { nombre: "Diana Carolina Alfaro Mata", foto: placeHolder },
+      { nombre: "Diana Carolina Alfaro Mata", foto: dianaAlfaro },
       { nombre: "Marcela Araya Esquivel", foto: marcelaAraya },
       { nombre: "Dilana Arce Vega", foto: dilanaArce },
       { nombre: "Kattia Vanessa Calderón Agüero", foto: katiaCalderon },
@@ -131,7 +134,7 @@ const VOCES: Voz[] = [
       { nombre: "Leonardo Jesus De Leon Aguilar", foto: leonardoDeLeon },
       { nombre: "Steven Gutiérrez Zúñiga", foto: stevenGutierrez },
       { nombre: "Jeffry Solís Picado", foto: jeffrySolis },
-      { nombre: "Erick Josué Zúñiga Zúñiga", foto: placeHolder },
+      { nombre: "Erick Josué Zúñiga Zúñiga", foto: erickZuniga },
     ],
   },
   {
@@ -139,11 +142,11 @@ const VOCES: Voz[] = [
     coristas: [
       { nombre: "Fabiola Alvarado Ulate", foto: fabiolaAlvarado },
       { nombre: "Karla Ceciliano Zamora", foto: karlaCeciliano },
-      { nombre: "Johanna Dinarte Segura", foto: placeHolder },
-      { nombre: "Amanda Garita Matamoros", foto: placeHolder },
+      { nombre: "Johanna Dinarte Segura", foto: johannaDinarte },
+      { nombre: "Amanda Garita Matamoros", foto: amandaGarita },
       { nombre: "Odilie Ma Gomez Orozco", foto: odilieGomez },
       { nombre: "Cindy Vanessa Sánchez Villalta", foto: vanessaSanchez },
-      { nombre: "Stephanie Paola Tenorio Alvarado", foto: placeHolder },
+      { nombre: "Stephanie Paola Tenorio Alvarado", foto: stephanieTenorio },
     ],
   },
   {
