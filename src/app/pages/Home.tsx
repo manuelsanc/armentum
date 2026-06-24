@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Calendar,
   MapPin,
@@ -14,6 +14,11 @@ import {
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import follerTeatroNacional from "../../assets/foller_teatro_nacional.jpg";
+import banner1 from "../../assets/banners/banner_colombia/1.1.png";
+import banner2 from "../../assets/banners/banner_colombia/1.2.png";
+import banner3 from "../../assets/banners/banner_colombia/1.3.png";
+import banner4 from "../../assets/banners/banner_colombia/1.4.png";
+import banner5 from "../../assets/banners/banner_colombia/1.5.png";
 import directorImagen from "../../assets/director.jpeg";
 import { FeatureCard } from "../components/FeatureCard";
 import { StatItem } from "../components/StatItem";
@@ -162,9 +167,25 @@ const VOCES: Voz[] = [
   },
 ];
 
+const TOUR_START_DATE = new Date(2026, 8, 28); // 28 de septiembre de 2026
+
+function getDaysUntilTour(): number {
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const diff = TOUR_START_DATE.getTime() - startOfToday.getTime();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
 export function Home(): JSX.Element {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [daysUntilTour, setDaysUntilTour] = useState(getDaysUntilTour);
   const { events: allEvents, loading: eventsLoading } = useEvents(50, 0);
+
+  // Actualiza el contador cada hora
+  useEffect(() => {
+    const timer = setInterval(() => setDaysUntilTour(getDaysUntilTour()), 1000 * 60 * 60);
+    return () => clearInterval(timer);
+  }, []);
 
   const today = new Date();
   const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -254,6 +275,107 @@ export function Home(): JSX.Element {
                 className="w-full max-w-2xl h-64 md:h-96 object-cover rounded-xl shadow-md"
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Banner Colombia */}
+      <section className="w-full overflow-hidden">
+        <div className="flex">
+          {/* Imagen 1.1 con texto superpuesto */}
+          <div className="relative flex-1">
+            <img
+              src={banner1}
+              alt="Banner Colombia 1"
+              className="w-full h-full object-cover block"
+            />
+            <span
+              className="absolute inset-0 flex items-start justify-center"
+              style={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: "5.5vw",
+                fontWeight: 700,
+                color: "#85cfd8",
+                lineHeight: 1,
+                paddingTop: "30%",
+                pointerEvents: "none",
+                userSelect: "none",
+              }}
+            >
+              {daysUntilTour}
+            </span>
+          </div>
+          <div className="flex-1">
+            <img
+              src={banner2}
+              alt="Banner Colombia 2"
+              className="w-full h-full object-cover block"
+            />
+          </div>
+          <div className="flex-1">
+            <img
+              src={banner3}
+              alt="Banner Colombia 3"
+              className="w-full h-full object-cover block"
+            />
+          </div>
+          <div className="flex-1">
+            <img
+              src={banner4}
+              alt="Banner Colombia 4"
+              className="w-full h-full object-cover block"
+            />
+          </div>
+          {/* Imagen 1.5 con enlaces clicables sobre iconos */}
+          <div className="relative flex-1">
+            <img
+              src={banner5}
+              alt="Banner Colombia 5"
+              className="w-full h-full object-cover block"
+            />
+            {/* Facebook */}
+            <a
+              href="https://facebook.com/estudiocoralarmentum"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute"
+              style={{ left: "27%", top: "57%", width: "16%", height: "10%", cursor: "pointer" }}
+              aria-label="Facebook"
+            />
+            {/* Instagram */}
+            <a
+              href="https://instagram.com/armentum.estudio.coral"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute"
+              style={{ left: "43%", top: "57%", width: "16%", height: "10%", cursor: "pointer" }}
+              aria-label="Instagram"
+            />
+            {/* TikTok */}
+            <a
+              href="https://www.tiktok.com/@coroarmentum"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute"
+              style={{ left: "59%", top: "57%", width: "16%", height: "10%", cursor: "pointer" }}
+              aria-label="TikTok"
+            />
+            {/* Email */}
+            <a
+              href="mailto:coro.armentum@gmail.com"
+              className="absolute"
+              style={{ left: "20%", top: "71%", width: "60%", height: "6%", cursor: "pointer" }}
+              aria-label="Email"
+            />
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/50687998476"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute"
+              style={{ left: "20%", top: "77%", width: "60%", height: "6%", cursor: "pointer" }}
+              aria-label="WhatsApp"
+            />
           </div>
         </div>
       </section>
